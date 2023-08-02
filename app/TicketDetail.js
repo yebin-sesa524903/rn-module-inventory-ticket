@@ -8,7 +8,7 @@ import {
   ScrollView,
   Platform,
   DeviceEventEmitter,
-  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal
+  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal, Image
 } from 'react-native';
 
 import Toolbar from './components/Toolbar';
@@ -64,6 +64,27 @@ import PhotoShowView from "./components/assets/PhotoShowView";
 import privilegeHelper, {CodeMap} from "./utils/privilegeHelper";
 // import Share from "react-native-share";
 
+const DEVICE_STATUS = [
+  {name:'在用',type:1,icon:require('./images/device_status/device_use.png')},
+  {name:'闲置',type:2,icon:require('./images/device_status/device_offline.png')},
+  {name:'缺失',type:3,icon:require('./images/device_status/device_miss.png')}
+]
+
+const DEVICE_STATUS_ICON = {
+  1:require('./images/device_status/device_use.png'),
+  2:require('./images/device_status/device_offline.png'),
+  3:require('./images/device_status/device_miss.png'),
+}
+
+function makeTestDevices() {
+  return [
+    {name:'空调',code:'FCCD-77498489489'},
+    {name:'冰箱',code:'FCCD-77498489481'},
+    {name:'净水器',code:'FCCD-77498489482'},
+    {name:'洗碗机',code:'FCCD-77498489483'}
+  ]
+}
+
 class Avatar extends Component {
 
   _renderImage(radius) {
@@ -100,7 +121,19 @@ export default class TicketDetail extends Component{
     super(props);
     let {width} = Dimensions.get('window');
     this.picWid = parseInt((width-46-40)/4.0);
-    this.state = {toolbarOpacity:0,showToolbar:false,forceStoped:false,};
+    this.state = {toolbarOpacity:0,showToolbar:false,forceStoped:false,deviceList:makeTestDevices()};
+  }
+
+  _renderInventoryTicketInfo() {
+    return (
+        <View style={{margin:16,padding:16,backgroundColor:"#fff",borderRadius:12}}>
+          <Text style={{fontSize:16,color:'#333',fontWeight:'600'}}>{`三里屯太古里2店设备疑似缺失`}</Text>
+          <Text style={{fontSize:12,color:'#666',marginVertical:8}}>
+            {`执行时间：${moment(this.state.rowData.startTime).format('YYYY年MM月DD日')} - ${moment(this.state.rowData.endTime).format('YYYY年MM月DD日')}`}
+          </Text>
+          <Text style={{fontSize:12,lineHeight:20,color:'#666',}}>{`执行人：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
+        </View>
+    )
   }
 
   _getAssetView(){
@@ -495,7 +528,7 @@ export default class TicketDetail extends Component{
       return (
         <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
           <Button
-            style={[styles.button,{borderWidth:1,borderColor:'#888',
+            style={[styles.button,{borderWidth:1,borderColor:'#888',display:'none',
               backgroundColor:'#fff',marginLeft:16,flex:1,marginRight:0
             }]}
             textStyle={{
@@ -506,7 +539,7 @@ export default class TicketDetail extends Component{
             onClick={() => this._doIgnore()} />
           <Button
             style={[styles.button,{
-              backgroundColor:GREEN,marginLeft:16,flex:2
+              backgroundColor:GREEN,marginLeft:16,flex:2,borderRadius: 8
             }]}
             textStyle={{
               fontSize:16,
@@ -785,6 +818,51 @@ export default class TicketDetail extends Component{
     },1500);
   }
 
+  _showInventoryMenu = (device)=>{
+    this.setState({
+      arrActions:DEVICE_STATUS.map(item => {
+        return {
+          title:item.name,
+          click:()=>{
+            device.type = item.type;
+            this.setState({})
+          }
+        }
+      }),
+      modalVisible:true
+    })
+  }
+
+  _renderInventoryDeviceList() {
+    const devices = this.state.deviceList.map((item,index) => {
+      return (
+          <View key={index} style={{flexDirection:'row',alignItems:'center',marginTop:10,borderTopColor:'#f5f5f5',
+            borderTopWidth:1,paddingTop:10}}>
+            <Image resizeMode={'cover'} style={{width:70,height:50,borderRadius:8,backgroundColor:'#f5f5f5'}}
+                   source={require('./images/building_default/building.png')}/>
+            <View style={{marginLeft:16,flex:1}}>
+              <Text style={{color:'#333',fontSize:14}}>{item.name}</Text>
+              <Text style={{color:'#666',fontSize:12,marginTop:8}}>{`编号：${item.code}`}</Text>
+            </View>
+            <TouchableOpacity style={{height:50,width:60,alignItems:'center'}} onPress={()=>this._showInventoryMenu(item)}>
+              {
+                !item.type? <Text style={{fontSize:12,color:GREEN,marginTop:8}}>盘点</Text>:
+                <Image style={{width:60,height:60}} source={DEVICE_STATUS_ICON[item.type]}/>
+              }
+
+            </TouchableOpacity>
+
+          </View>
+      )
+    })
+    return (
+        <View style={{margin:16,marginTop:0,borderRadius:12,backgroundColor:'#fff',padding:16}}>
+            <Text style={{fontSize:16,fontWeight:'600',color:'#333'}}>{`待盘设备(${devices.length})`}</Text>
+          {devices}
+        </View>
+    )
+  }
+
   _renderToast() {
     if(!this.state.showToast) return null;
     return (
@@ -853,13 +931,15 @@ export default class TicketDetail extends Component{
         {this._getToolbar(this.state.rowData)}
         <ScrollView showsVerticalScrollIndicator={false} style={[styles.wrapper,marginBottom]}>
           <ViewShot style={{flex:1,backgroundColor:LIST_BG}} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
-            {this._getAssetView()}
+            {/*{this._getAssetView()}*/}
+            {this._renderInventoryTicketInfo()}
+            {this._renderInventoryDeviceList()}
             {this._renderRejection()}
             <View style={{height:1,backgroundColor:'#f2f2f2',marginLeft:16}}/>
-            {this._getTaskView()}
+            {/*{this._getTaskView()}*/}
             <View style={{height:1,backgroundColor:'#f2f2f2',marginLeft:16}}/>
             {/*{this._getDocumentsView()}*/}
-            {this._getLogMessage()}
+            {/*{this._getLogMessage()}*/}
             {this._getIDView()}
             <View style={{height:10,flex:1,backgroundColor:LIST_BG}}>
             </View>
