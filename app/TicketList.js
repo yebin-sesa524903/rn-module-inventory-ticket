@@ -2,7 +2,7 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {
   DeviceEventEmitter,
-  Image,
+  Image, InteractionManager,
   Modal,
   Platform,
   RefreshControl,
@@ -55,18 +55,21 @@ export default class TicketList extends Component {
   }
 
   componentDidMount() {
-    if(privilegeHelper.hasCodes()) {
-      this.loadTicketList(new Date(),1);
-      let start = moment().add(-1,'months').format(DAY_FORMAT);
-      let end = moment().add(1,'months').format(DAY_FORMAT);
-      this.loadTicketCount(start,end);
-    } else {
-      this.setState({refreshing:true,hasPermission:true})
-    }
-    this._initListener = DeviceEventEmitter.addListener('TICKET_INIT_OK',()=>{
-      this.setState({hasPermission:privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW)})
-      this.loadTicketList(new Date(),1);
+    InteractionManager.runAfterInteractions(()=>{
+      if(privilegeHelper.hasCodes()) {
+        this.loadTicketList(new Date(),1);
+        let start = moment().add(-1,'months').format(DAY_FORMAT);
+        let end = moment().add(1,'months').format(DAY_FORMAT);
+        this.loadTicketCount(start,end);
+      } else {
+        this.setState({refreshing:true,hasPermission:true})
+      }
+      this._initListener = DeviceEventEmitter.addListener('TICKET_INIT_OK',()=>{
+        this.setState({hasPermission:privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW)})
+        this.loadTicketList(new Date(),1);
+      })
     })
+
   }
 
   componentWillUnmount() {
@@ -397,6 +400,8 @@ export default class TicketList extends Component {
     )
   }
 
+  _goBack = () => this.props.navigator.pop();
+
   _renderTop() {
     //如果是工单筛选，显示工单筛选，否则显示日历
     if(this.state.showFilterResult) {
@@ -404,6 +409,9 @@ export default class TicketList extends Component {
         <View style={{marginTop:MP}}>
           <View style={{flexDirection:'row',paddingTop:4,justifyContent:'center',alignItems:'center'}}>
             <Text style={{fontSize:17,color:'#333',fontWeight:'500'}}>{localStr('lang_ticket_filter')}</Text>
+            <TouchableOpacity  onPress={this._goBack} style={{position:'absolute',left:16}}>
+              <Icon name="left-square" size={24} color={'#666'} />
+            </TouchableOpacity>
             <View style={{position:'absolute',right:16+(this.props.paddingRight||0)}}>
               <TouchFeedback onPress={this._clickFilter}>
                 <Icon name="filter" size={24} color={'#333'} />
@@ -438,6 +446,9 @@ export default class TicketList extends Component {
           }}
           weekStartsOn={1} // 0,1,2,3,4,5,6 for S M T W T F S, defaults to 0
         />
+        <TouchableOpacity  onPress={this._goBack} style={{position:'absolute',left:16}}>
+          <Icon name="left-square" size={24} color={'#666'} />
+        </TouchableOpacity>
         {this._renderRightButton()}
       </View>
     )

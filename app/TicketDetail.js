@@ -8,7 +8,7 @@ import {
   ScrollView,
   Platform,
   DeviceEventEmitter,
-  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal, Image
+  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal, Image, InteractionManager
 } from 'react-native';
 
 import Toolbar from './components/Toolbar';
@@ -44,13 +44,14 @@ const REJECT_OPERATION_TYPE = 34
 import {localStr} from "./utils/Localizations/localization";
 import NetworkImage from './components/NetworkImage'
 import {
+  apiCheckDeviceStatus,
   apiCloseTicket,
   apiCreateTicket,
   apiDelTicketLog,
   apiEditTicket,
   apiGetTicketExecutors, apiIgnoreTicket, apiRejectTicket, apiSubmitTicket,
-  apiTicketDetail,
-  apiTicketExecute,
+  apiTicketDetail, apiTicketDeviceStatus,
+  apiTicketExecute, apiTicketLostDevices, customerId, getBaseUri,
   userId
 } from "./middleware/bff";
 import ImagePicker from "./components/ImagePicker";
@@ -65,15 +66,15 @@ import privilegeHelper, {CodeMap} from "./utils/privilegeHelper";
 // import Share from "react-native-share";
 
 const DEVICE_STATUS = [
-  {name:'在用',type:1,icon:require('./images/device_status/device_use.png')},
+  {name:'在用',type:0,icon:require('./images/device_status/device_use.png')},
   {name:'闲置',type:2,icon:require('./images/device_status/device_offline.png')},
-  {name:'缺失',type:3,icon:require('./images/device_status/device_miss.png')}
+  {name:'缺失',type:1,icon:require('./images/device_status/device_miss.png')}
 ]
 
 const DEVICE_STATUS_ICON = {
-  1:require('./images/device_status/device_use.png'),
+  0:require('./images/device_status/device_use.png'),
   2:require('./images/device_status/device_offline.png'),
-  3:require('./images/device_status/device_miss.png'),
+  1:require('./images/device_status/device_miss.png'),
 }
 
 function makeTestDevices() {
@@ -121,7 +122,7 @@ export default class TicketDetail extends Component{
     super(props);
     let {width} = Dimensions.get('window');
     this.picWid = parseInt((width-46-40)/4.0);
-    this.state = {toolbarOpacity:0,showToolbar:false,forceStoped:false,deviceList:makeTestDevices()};
+    this.state = {toolbarOpacity:0,showToolbar:false,forceStoped:false,deviceList:null};
   }
 
   _renderInventoryTicketInfo() {
@@ -714,7 +715,65 @@ export default class TicketDetail extends Component{
     this._logLongPress=DeviceEventEmitter.addListener('logLongPress',menu=>{
       this._showMenu(menu);
     });
-    this._loadTicketDetail();
+    InteractionManager.runAfterInteractions(()=>{
+      this._loadTicketDetail();
+    })
+
+  }
+
+  _checkDeviceStatus = (device,checkStatus) => {
+    //这里转换提交参数格式
+    let data = {
+      "customerId": customerId,
+      "deviceIds": [
+        device.assetId
+      ],
+      "hierarchyId": device.locationId,
+      "pointCheckStatus": checkStatus,
+      //"userId": 813928
+    }
+    apiCheckDeviceStatus(data).then(data => {
+      if(data.code === CODE_OK) {
+        this._loadTicketDetail();
+      }else {
+        //给出提示
+        Alert.alert("",data.msg || '设置状态失败！',[
+          {text:'确定',onPress:()=>{}}
+        ]);
+      }
+    })
+  }
+
+  _loadDeviceStatus(data) {
+    apiTicketDeviceStatus(data).then(data => {
+      if(data.code === CODE_OK) {
+        data.data.forEach(device => {
+          if(device.logo) {
+            let logo = JSON.parse(device.logo);
+            if(logo) {
+              //如果是数组
+              if(logo instanceof Array && logo.length > 0) {
+                device.logoUrl = logo[0].key;
+              }else if(logo instanceof Object && logo.key) {
+                device.logoUrl = logo.key
+              }
+              if(device.logoUrl) {
+                if('device.logoUrl'.indexOf('/hardcore/') !== 0) {
+                  device.logoUrl = '/hardcore/se-ecox-static/'+device.logoUrl
+                }
+                device.logoUrl = getBaseUri()+device.logoUrl;
+              }
+              //如果是对象
+            }
+          }
+          let findAsset = this.state.rowData.assets.find(asset => asset.assetId === device.deviceId);
+          Object.assign(findAsset,device);
+        })
+        this.setState({})
+      }else {
+        //给出提示
+      }
+    })
   }
 
   _loadTicketDetail() {
@@ -722,6 +781,9 @@ export default class TicketDetail extends Component{
     this.setState({isFetching:true})
     apiTicketDetail(this.props.ticketId).then(data => {
       if(data.code === CODE_OK) {
+        this._loadDeviceStatus({
+          deviceId:data.data.assets.map(asset => asset.assetId).join(',')
+        })
         //获取详情ok
         let isCreateUser = data.data.createUser === userId;
         let isExecutor = false;//data.data.executors.incl
@@ -818,14 +880,15 @@ export default class TicketDetail extends Component{
     },1500);
   }
 
+
+
   _showInventoryMenu = (device)=>{
     this.setState({
       arrActions:DEVICE_STATUS.map(item => {
         return {
           title:item.name,
           click:()=>{
-            device.type = item.type;
-            this.setState({})
+            this._checkDeviceStatus(device,item.type)
           }
         }
       }),
@@ -834,23 +897,37 @@ export default class TicketDetail extends Component{
   }
 
   _renderInventoryDeviceList() {
-    const devices = this.state.deviceList.map((item,index) => {
+    let status = this.state.rowData.ticketState;
+    let canCheck = this.state.isExecutor && (status === STATE_STARTING || status ===STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
+    const devices = this.state.rowData.assets.map((item,index) => {
+      let imgUrl = null;
+      if(item.logoUrl) {
+        // getBaseUri()
+        imgUrl = {uri: item.logoUrl,}
+      }else {
+        imgUrl = require('./images/building_default/building.png');
+      }
       return (
           <View key={index} style={{flexDirection:'row',alignItems:'center',marginTop:10,borderTopColor:'#f5f5f5',
             borderTopWidth:1,paddingTop:10}}>
             <Image resizeMode={'cover'} style={{width:70,height:50,borderRadius:8,backgroundColor:'#f5f5f5'}}
-                   source={require('./images/building_default/building.png')}/>
+                   defaultSource={require('./images/building_default/building.png')}
+                   source={imgUrl}/>
             <View style={{marginLeft:16,flex:1}}>
-              <Text style={{color:'#333',fontSize:14}}>{item.name}</Text>
-              <Text style={{color:'#666',fontSize:12,marginTop:8}}>{`编号：${item.code}`}</Text>
+              <Text style={{color:'#333',fontSize:14}}>{item.assetName}</Text>
+              <Text style={{color:'#666',fontSize:12,marginTop:8}}>{`编号：${item.code || ''}`}</Text>
             </View>
-            <TouchableOpacity style={{height:50,width:60,alignItems:'center'}} onPress={()=>this._showInventoryMenu(item)}>
-              {
-                !item.type? <Text style={{fontSize:12,color:GREEN,marginTop:8}}>盘点</Text>:
-                <Image style={{width:60,height:60}} source={DEVICE_STATUS_ICON[item.type]}/>
-              }
+            {
+              this.state.rowData.ticketState === STATE_NOT_START ? null :
+                  <TouchableOpacity disabled={!canCheck} style={{height:50,width:60,alignItems:'center'}} onPress={()=>this._showInventoryMenu(item)}>
+                    {
+                      !item.status && item.status !== 0? <Text style={{fontSize:12,color:GREEN,marginTop:8}}>盘点</Text>:
+                          <Image style={{width:60,height:60}} source={DEVICE_STATUS_ICON[item.status]}/>
+                    }
 
-            </TouchableOpacity>
+                  </TouchableOpacity>
+            }
+
 
           </View>
       )

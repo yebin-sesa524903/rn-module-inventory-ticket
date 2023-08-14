@@ -4,7 +4,7 @@ import RNFetchBlobFile from "react-native-fetch-blob/class/RNFetchBlobFile";
 import privilegeHelper from "../utils/privilegeHelper";
 import {localStr} from "../utils/Localizations/localization";
 import {DeviceEventEmitter} from "react-native";
-let _BASEURL = "https://micro-to.energymost.com/bff/comp-ticket/rest/";
+let _BASEURL = '';//"https://micro-to.energymost.com/bff/comp-ticket/rest/";
 //_BASEURL = 'https://micro-sup.energymost.com/bff/comp-ticket/rest/' //sup环境
 //生产环境地址
 let prodUrl = 'https://micro.energymost.com/bff/comp-ticket/rest/';
@@ -12,6 +12,10 @@ let prodUrl = 'https://micro.energymost.com/bff/comp-ticket/rest/';
 export function getBaseUri() {
   if(prod) return prodUrl;
   return _BASEURL;
+}
+
+export function getCookie() {
+  return setCookie;
 }
 
 let defaultFetch = async function(options){
@@ -27,7 +31,12 @@ let defaultFetch = async function(options){
   if(setCookie) {
     headers['cookie'] = setCookie;
   }
-  let url = baseUrl + options.url
+  let url = null;
+  if(options.url.includes('/bff/')){
+    url = baseUrl + options.url
+  }else {
+    url  = `${baseUrl}/bff/comp-ticket/rest/${options.url}`
+  }
   if(options.url.includes('http')) url = options.url;
   let body=null;
   if (options.contenttype) {
@@ -118,7 +127,8 @@ export let setCookie = null;
 let sysId = 0;
 export let prod = null;
 export let userId = 90;
-export let userName = '1'
+export let userName = '1';
+export let customerId = null;
 let token = '';
 let tokenKey = '';
 let hierarchyId = 0;
@@ -139,12 +149,7 @@ export async function apiTicketList(date,pageNo) {
     body:{
       searchDate:date,
       pageNo,
-      locations:[
-        {
-          locationId:hierarchyId,
-          locationType:100
-        }
-      ]
+      ticketType:11
     }
   })
 }
@@ -166,12 +171,12 @@ export async function apiTicketCount(start,end) {
     body:{
       startDate:start,
       endDate:end,
-      locations:[
-        {
-          locationId:hierarchyId,
-          locationType:100
-        }
-      ]
+      // locations:[
+      //   {
+      //     locationId:hierarchyId,
+      //     locationType:100
+      //   }
+      // ]
     }
   })
 }
@@ -198,12 +203,12 @@ export async function apiQueryTicketList(filter) {
     data.endDate = moment(filter.EndTime).format(DAY_FORMAT);
   }
   if(filter.ticketName) data.title = filter.ticketName;
-  data.locations=[
-    {
-      locationId:hierarchyId,
-      locationType:100
-    }
-  ]
+  // data.locations=[
+  //   {
+  //     locationId:hierarchyId,
+  //     locationType:100
+  //   }
+  // ]
 
   return await defaultFetch({
     url:'ticket/daysTicketList',
@@ -216,8 +221,11 @@ export async function apiQueryTicketList(filter) {
 export async function configCookie(data) {
   sysId = data.sysId;
   userId = data.userId;
+  customerId = data.customerId;
   userName = data.userName
-  // token = data.token;
+  token = data.token;
+  setCookie = data.token;
+  _BASEURL = data.host;
   // tokenKey = data.tokenKey;
   hierarchyId = data.hierarchyId;
   prod = data.prod;
@@ -227,11 +235,11 @@ export async function configCookie(data) {
     userId,userName,sysId
   }
   body.prod = null;
-  return await defaultFetch({
-    url:'getCookie',
-    verb:'post',
-    body:body
-  })
+  // return await defaultFetch({
+  //   url:'getCookie',
+  //   verb:'post',
+  //   body:body
+  // })
 }
 
 //获取工单详情
@@ -242,6 +250,33 @@ export async function apiTicketDetail(tid) {
     body:{
       id:tid
     }
+  })
+}
+
+//获取盘点工单待盘点设备
+export async function apiTicketLostDevices(data) {
+  return await defaultFetch({
+    url:`/bff/eh/rest/getMaybeLostDeviceDetailsByShop`,
+    verb:'post',
+    body:data
+  })
+}
+
+//获取盘点工单待盘点设备状态
+export async function apiTicketDeviceStatus(data) {
+  return await defaultFetch({
+    url:`/bff/eh/rest/getDevicesStatusByIds`,
+    verb:'post',
+    body:data
+  })
+}
+
+//设置盘点工单待盘点设备状态
+export async function apiCheckDeviceStatus(data) {
+  return await defaultFetch({
+    url:`/bff/eh/rest/setDevicesStatus`,
+    verb:'post',
+    body:data
   })
 }
 
