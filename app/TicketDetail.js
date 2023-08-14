@@ -377,7 +377,7 @@ export default class TicketDetail extends Component{
       )
     })
     return (
-      <View style={{backgroundColor:'#fff',marginTop:10}}>
+      <View style={{backgroundColor:'#fff',margin:16,marginTop:0,borderRadius:12}}>
         <View style={{marginLeft:16}}>
           {this._getTab()}
           <View style={{height:1,backgroundColor:LINE}}/>
@@ -1016,7 +1016,7 @@ export default class TicketDetail extends Component{
             {/*{this._getTaskView()}*/}
             <View style={{height:1,backgroundColor:'#f2f2f2',marginLeft:16}}/>
             {/*{this._getDocumentsView()}*/}
-            {/*{this._getLogMessage()}*/}
+            {this._getLogMessage()}
             {this._getIDView()}
             <View style={{height:10,flex:1,backgroundColor:LIST_BG}}>
             </View>
