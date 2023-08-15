@@ -128,7 +128,7 @@ export default class TicketDetail extends Component{
   _renderInventoryTicketInfo() {
     return (
         <View style={{margin:16,padding:16,backgroundColor:"#fff",borderRadius:12}}>
-          <Text style={{fontSize:16,color:'#333',fontWeight:'600'}}>{`三里屯太古里2店设备疑似缺失`}</Text>
+          <Text style={{fontSize:16,color:'#333',fontWeight:'600'}}>{this.state.rowData.title}</Text>
           <Text style={{fontSize:12,color:'#666',marginVertical:8}}>
             {`执行时间：${moment(this.state.rowData.startTime).format('YYYY年MM月DD日')} - ${moment(this.state.rowData.endTime).format('YYYY年MM月DD日')}`}
           </Text>
