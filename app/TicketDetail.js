@@ -855,7 +855,7 @@ export default class TicketDetail extends Component{
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{backgroundColor:'#fff',padding:16,marginTop:10,marginBottom:10}}>
+      <View style={{backgroundColor:'#fff',padding:16,margin:16,marginTop:0,borderRadius:12}}>
         <View style={{flexDirection:'row',alignItems:'center'}}>
           <Text style={{fontSize:17,color:'#333',fontWeight:'500'}}>{localStr('lang_ticket_detail_reject_reason')}</Text>
         </View>
