@@ -1,2 +1,2 @@
-# react-native-dsmodules
-移动端公共模块
+# rn-module-inventory-ticket
+移动端盘点工单公共模块
