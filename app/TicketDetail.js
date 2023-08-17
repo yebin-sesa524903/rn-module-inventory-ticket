@@ -494,10 +494,18 @@ export default class TicketDetail extends Component{
       Alert.alert(localStr('lang_alert_title'),localStr('lang_ticket_submit_invalid'));
       return;
     }
+    //还要判断盘点设备是否有设置了状态
+    let devices = this.state.rowData.assets || []
+    if(devices.find(d => !d.status && d.status !==0)) {
+      this.showToast('请为所有设备填写盘点结果')
+      return;
+    }
+
+
     apiSubmitTicket({id:this.state.rowData.id}).then(ret => {
       if(ret.code === CODE_OK) {
         this.props.ticketChanged && this.props.ticketChanged();
-        this.showToast(localStr('lang_ticket_submit_toast'))
+        Alert.alert(localStr('lang_alert_title'),'工单提交后，状态为闲置和缺失的设备将被停用自动盘点的监测规则');
         this._loadTicketDetail();
         // //接口异步更新，重新获取详情可能状态还没变，这里手动更新状态
         // let rowData = this.state.rowData;
