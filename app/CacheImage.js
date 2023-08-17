@@ -68,7 +68,7 @@ export default class CacheImage extends Component {
               this._stopDownload();
             }
 
-            let downUrl = getBaseUri()+'document/get?id='+cacheKey;
+            let downUrl = getBaseUri()+'/bff/comp-ticket/rest/document/get?id='+cacheKey;
             // var headers={};
             // headers[TOKENHEADER]=token;
             // headers[HEADERDEVICEID]=deviceid;
@@ -80,9 +80,9 @@ export default class CacheImage extends Component {
                 Cookie:getCookie()
               }
             };
-
             RNFS.downloadFile(downloadOptions).promise
               .then((res) => {
+                console.log('res',res,downloadOptions)
                 // the temp file path
                 if(res.statusCode === 200) {
                   //成功了
@@ -96,6 +96,7 @@ export default class CacheImage extends Component {
               });
           })
           .catch((err) => {
+            console.log('err',err,downloadOptions)
             this._deleteFilePath(filePath);
             this.setState({cacheable: false, cachedImagePath: null});
           });

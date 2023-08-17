@@ -496,7 +496,14 @@ export default class TicketDetail extends Component{
     }
     //还要判断盘点设备是否有设置了状态
     let devices = this.state.rowData.assets || []
-    if(devices.find(d => !d.status && d.status !==0)) {
+    if(devices.find(d => {
+      if(this.state.localDeviceState) {
+        return !this.state.localDeviceState[d.assetId] && this.state.localDeviceState[d.assetId] !== 0
+      }else {
+        return !d.status && d.status !==0
+      }
+
+    })) {
       this.showToast('请为所有设备填写盘点结果')
       return;
     }
@@ -742,6 +749,10 @@ export default class TicketDetail extends Component{
     }
     apiCheckDeviceStatus(data).then(data => {
       if(data.code === CODE_OK) {
+        if(this.state.localDeviceState) {
+          this.state.localDeviceState[device.assetId] = checkStatus
+          this.setState({})
+        }
         this._loadTicketDetail();
       }else {
         //给出提示
@@ -789,6 +800,13 @@ export default class TicketDetail extends Component{
     this.setState({isFetching:true})
     apiTicketDetail(this.props.ticketId).then(data => {
       if(data.code === CODE_OK) {
+        if(!this._isLoad) {
+          this._isLoad = true;
+          if(data.data.ticketState === STATE_NOT_START) {
+            this.setState({localDeviceState:{}})
+          }
+
+        }
         this._loadDeviceStatus({
           deviceId:data.data.assets.map(asset => asset.assetId).join(',')
         })
@@ -929,7 +947,9 @@ export default class TicketDetail extends Component{
               this.state.rowData.ticketState === STATE_NOT_START ? null :
                   <TouchableOpacity disabled={!canCheck} style={{height:50,width:60,alignItems:'center'}} onPress={()=>this._showInventoryMenu(item)}>
                     {
-                      !item.status && item.status !== 0? <Text style={{fontSize:12,color:GREEN,marginTop:8}}>盘点</Text>:
+                      ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
+                          || (!item.status && item.status !== 0)) ?
+                          <Text style={{fontSize:12,color:GREEN,marginTop:8}}>盘点</Text> :
                           <Image style={{width:60,height:60}} source={DEVICE_STATUS_ICON[item.status]}/>
                     }
 
