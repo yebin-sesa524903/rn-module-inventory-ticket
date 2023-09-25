@@ -40,7 +40,7 @@ export default class SchActionSheet extends Component {
     return (
       <FadeInView visible={this.props.modalVisible}>
         <Modal
-          animationType="slide"
+          animationType="fade"
           transparent={true}
           visible={this.props.modalVisible}
           onRequestClose={this.props.onCancel}>
