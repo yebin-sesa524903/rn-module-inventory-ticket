@@ -13,7 +13,7 @@ import {GRAY, GREEN} from "./styles/color";
 import moment from 'moment';
 import {isPhoneX} from "./utils";
 import Icon from "./components/Icon";
-import SingleSelect from "../../app/components/assets/AssetInfoSingleSelect";
+import SingleSelect from "./components/assets/AssetInfoSingleSelect";
 import DateTimePicker from "react-native-modal-datetime-picker";
 
 
