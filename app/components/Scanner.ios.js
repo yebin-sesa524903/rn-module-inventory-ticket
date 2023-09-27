@@ -3,7 +3,8 @@
 import React,{Component,NativeModules} from 'react';
 
 import {
-  View,
+    Text,
+    View,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {RNCamera} from 'react-native-camera';
@@ -40,9 +41,9 @@ export default class Scanner extends Component{
              </View>
          </View>
 
-           <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,}}>
-
-           </View>
+          <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,alignItems:'center',paddingTop:12}}>
+              <Text style={{fontSize:16,color:'#bfbfbf'}}>对准设备上的二维码</Text>
+          </View>
        </CameraView>
     );
   }

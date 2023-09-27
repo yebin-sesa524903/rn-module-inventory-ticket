@@ -2,7 +2,7 @@
 
 import React,{Component} from 'react';
 import {
-  View,
+  View,Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import ViewFinder from './ViewFinder.js';
@@ -41,8 +41,8 @@ export default class Scanner extends Component{
             </View>
         </View>
 
-          <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,}}>
-
+          <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,alignItems:'center',paddingTop:12}}>
+            <Text style={{fontSize:16,color:'#bfbfbf'}}>对准设备上的二维码</Text>
           </View>
       </RNCamera>
     );

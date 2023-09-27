@@ -26,6 +26,7 @@ import Loading from './components/Loading';
 import { isPhoneX } from './utils';
 
 import SchActionSheet from './components/actionsheet/SchActionSheet';
+import CommonDialog from './components/actionsheet/CommonActionSheet';
 // import AssetsText from '../AssetsText';
 // import ViewShot from "react-native-view-shot";
 // import CameraRoll from "@react-native-community/cameraroll";
@@ -63,6 +64,8 @@ import TicketSelectExecutors from "./TicketSelectExecutors";
 import { ImageViewer } from "./ImageViewer";
 import PhotoShowView from "./components/assets/PhotoShowView";
 import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
+import Scan from "./Scan";
+import DeviceAdd from "./DeviceAdd";
 // import Share from "react-native-share";
 
 const DEVICE_STATUS = [
@@ -399,6 +402,10 @@ export default class TicketDetail extends Component {
   }
 
   _closeTicket() {
+    if (true) {
+      this._showSubmitDialog();
+      return;
+    }
     Alert.alert(
       '',
       localStr('lang_ticket_close_confirm'),
@@ -609,6 +616,54 @@ export default class TicketDetail extends Component {
       );
     }
     return null;
+  }
+
+  //新增盘盈
+  _addNewInventory = () => {
+    console.log('add inventory')
+    this.props.navigator.push({
+      id: 'device_add',
+      component: DeviceAdd,
+      passProps: {
+        onRefresh: () => { }
+      }
+    })
+  }
+
+  //扫描盘点
+  _scanInventory = () => {
+    console.log('scan inventory')
+    this.props.navigator.push({
+      id: 'scan_device',
+      component: Scan,
+      passProps: {
+        onRefresh: () => { }
+      }
+    })
+  }
+
+  //新增盘盈
+  _addNewInventory = () => {
+    console.log('add inventory')
+    this.props.navigator.push({
+      id: 'device_add',
+      component: DeviceAdd,
+      passProps: {
+        onRefresh: () => { }
+      }
+    })
+  }
+
+  //扫描盘点
+  _scanInventory = () => {
+    console.log('scan inventory')
+    this.props.navigator.push({
+      id: 'scan_device',
+      component: Scan,
+      passProps: {
+        onRefresh: () => { }
+      }
+    })
   }
 
   _getToolbar(data) {
@@ -893,8 +948,8 @@ export default class TicketDetail extends Component {
     let status = this.state.rowData.ticketState;
     if (status !== STATE_REJECTED) return null;
     let reason = this.state.rejectData.content
-    let RejectUser = this.state.rejectData.userName
-    let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
+    // let RejectUser = this.state.rejectData.userName
+    // let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
       <View style={{ backgroundColor: '#fff', padding: 16, margin: 16, marginTop: 0, borderRadius: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -985,6 +1040,25 @@ export default class TicketDetail extends Component {
     )
   }
 
+  _renderInventoryTabs() {
+    let tabs = ['全部(5)', '未盘(5)', '已盘(5)', '盘亏(5)', '盘盈(5)'];
+    return (
+      <View style={{ marginBottom: -10, flexDirection: 'row', justifyContent: 'space-between' }}>
+        {
+          tabs.map((item, index) => {
+            let isSel = index === this.state.deviceTab;
+            return (
+              <TouchableOpacity onPress={() => this.setState({ deviceTab: index })}>
+                <Text style={{ fontSize: 14, color: isSel ? GREEN : '#8C8C8C' }}>{item}</Text>
+                <View style={{ height: 1, marginTop: 12, backgroundColor: isSel ? GREEN : undefined }} />
+              </TouchableOpacity>
+            )
+          })
+        }
+      </View>
+    )
+  }
+
   _renderToast() {
     if (!this.state.showToast) return null;
     return (
@@ -999,6 +1073,70 @@ export default class TicketDetail extends Component {
           </View>
         </View>
       </Modal>
+    )
+  }
+
+  _makeMenus() {
+    return [
+      { title: '盘盈资产自动新增入库', sel: false },
+      { title: '未盘资产自动盘亏处理并创建清理报废单', sel: false },
+      { title: '盘亏资产自动创建清理报废单', sel: false },
+      { title: '标记为故障的资产自动创建报修单', sel: false },
+      { title: '标记为待清理的资产自动创建清理报废单', sel: false },
+    ]
+  }
+
+  _showSubmitDialog() {
+    this.setState({
+      submitModalVisible: true,
+      submitMenus: this._makeMenus()
+    })
+  }
+
+  _renderSubmitDialog() {
+    if (!this.state.submitModalVisible) return;
+    //icon 161
+    let menus = this.state.submitMenus.map(m => {
+      return (
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}
+          onPress={() => {
+            m.sel = !m.sel;
+            this.setState({})
+          }}
+        >
+          <View style={{
+            width: 16, height: 16, justifyContent: 'center', alignItems: 'center', borderRadius: 2, borderWidth: 1,
+            borderColor: '#d9d9d9', marginRight: 6
+          }}>
+            {!m.sel ? null :
+              <Icon type={'icon_check'} color={'#595959'} size={14} />
+            }
+          </View>
+          <Text style={{ fontSize: 14, color: '#595959' }}>{m.title}</Text>
+        </TouchableOpacity>
+      )
+    })
+    return (
+      <CommonDialog modalVisible={this.state.submitModalVisible} title={'审批通过'}>
+        <View style={{ padding: 16, borderRadius: 12, backgroundColor: '#fff', marginHorizontal: 32 }}>
+          <Text style={{ fontSize: 17, color: '#1f1f1f', fontWeight: '600', alignSelf: 'center' }}>{'审批通过'}</Text>
+          {menus}
+          <View style={{
+            borderTopColor: '#bfbfbf', flexDirection: 'row', height: 40, borderTopWidth: 1, marginHorizontal: -16,
+            marginBottom: -16, marginTop: 16
+          }}>
+            <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#3491FA', fontSize: 17 }}>{'取消'}</Text>
+            </TouchableOpacity>
+            <View style={{ width: 1, backgroundColor: '#bfbfbf' }} />
+            <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#3491FA', fontSize: 17 }}>{'确定'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <TouchableOpacity onPress={() => this.setState({ submitModalVisible: false })} style={{ flex: 1 }} />
+      </CommonDialog>
     )
   }
 
@@ -1054,6 +1192,7 @@ export default class TicketDetail extends Component {
         <ScrollView showsVerticalScrollIndicator={false} style={[styles.wrapper, marginBottom]}>
           <ViewShot style={{ flex: 1, backgroundColor: LIST_BG }} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
             {/*{this._getAssetView()}*/}
+            {this._renderRejection()}
             {this._renderInventoryTicketInfo()}
             {this._renderInventoryDeviceList()}
             {this._renderRejection()}
@@ -1070,6 +1209,7 @@ export default class TicketDetail extends Component {
         {bottomButton}
         {this._getActionSheet()}
         {this._renderToast()}
+        {this._renderSubmitDialog()}
       </View>
     );
   }
