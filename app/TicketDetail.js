@@ -594,25 +594,39 @@ export default class TicketDetail extends Component {
     //执行中和已驳回操作一样
     if (this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) && !isScollView) {
       return (
-        <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
-          <View style={{ flexDirection: 'row', flex: 1 }}>
-            <View style={{ flex: 1 }}>
-              {logButton}
+          <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+            <View style={{flexDirection:'row',flex:1}}>
+              <View style={{flex:1}}>
+                {logButton}
+              </View>
             </View>
-          </View>
-          <Button
-            style={[styles.button, {
-              backgroundColor: GREEN,
-              marginLeft: 0,
-              flex: 3,
-            }]}
-            textStyle={{
-              fontSize: 16,
-              color: '#ffffff'
-            }}
-            text={localStr('lang_ticket_detail_submit_ticket')}
-            onClick={() => this._submitTicket()} />
-        </Bottom>
+            <View style={{flex:3,alignItems:'center',marginRight:16,flexDirection:'row',height:34,borderRadius:8,backgroundColor:GREEN}}>
+              <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}} onPress={this._addNewInventory}>
+                <Text style={{color:'#fff',fontSize:14}}>{'新增盘盈'}</Text>
+              </TouchableOpacity>
+              <View style={{width:1,height:20,backgroundColor:'#64D975'}}/>
+              <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}} onPress={this._scanInventory}>
+                <Text style={{color:'#fff',fontSize:14}}>{'扫描盘点'}</Text>
+              </TouchableOpacity>
+              <View style={{width:1,height:20,backgroundColor:'#64D975'}}/>
+              <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}} onPress={()=>this._submitTicket()}>
+                <Text style={{color:'#fff',fontSize:14}}>{'提交审批'}</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/*<Button*/}
+            {/*  style={[styles.button,{*/}
+            {/*    backgroundColor:GREEN,*/}
+            {/*    marginLeft:0,*/}
+            {/*    flex:3,*/}
+            {/*  }]}*/}
+            {/*  textStyle={{*/}
+            {/*    fontSize:16,*/}
+            {/*    color:'#ffffff'*/}
+            {/*  }}*/}
+            {/*  text={localStr('lang_ticket_detail_submit_ticket')}*/}
+            {/*  onClick={() => this._submitTicket()} />*/}
+          </Bottom>
       );
     }
     return null;
@@ -1034,7 +1048,7 @@ export default class TicketDetail extends Component {
     })
     return (
       <View style={{ margin: 16, marginTop: 0, borderRadius: 12, backgroundColor: '#fff', padding: 16 }}>
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>{`待盘设备(${devices.length})`}</Text>
+        {this._renderInventoryTabs()}
         {devices}
       </View>
     )
