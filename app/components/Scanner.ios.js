@@ -21,6 +21,7 @@ export default class Scanner extends Component{
         style={{flex:1,}}
         captureAudio={false}
         zoom={this.props.zoom/12.0}
+        flashMode={this.props.flashMode === 'on' ? RNCamera.Constants.FlashMode.on : RNCamera.Constants.FlashMode.off}
         onBarCodeRead={this.props.onBarCodeRead}
          >
 
@@ -72,4 +73,5 @@ Scanner.propTypes = {
   onBarCodeRead:PropTypes.func.isRequired,
   hasCameraAuth:PropTypes.bool.isRequired,
   zoom:PropTypes.number,
+    flashMode: PropTypes.string,
 }
