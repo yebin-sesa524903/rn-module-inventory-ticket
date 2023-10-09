@@ -19,7 +19,7 @@ export default class Scan extends Component{
 
   constructor(props){
     super(props);
-    this.state = {openCamera:false,hasCameraAuth:false,modalShow:false,zoom:0};
+    this.state = {openCamera:false,hasCameraAuth:false,modalShow:false,zoom:0, flashMode:'off'};
   }
   _getScanData(data){
     this._clearZoom();
@@ -111,12 +111,15 @@ export default class Scan extends Component{
   }
 
   _gotoScanResult = () => {
-    this.props.navigator.push({
-      id:'scan_result',
-      component:ScanResult,
-      passProps:{
-        onRefresh:()=>{}
-      }
+    let flash = this.state.flashMode;
+    let modeString = '';
+    if (flash === 'off'){
+      modeString = 'on';
+    }else {
+      modeString = 'off';
+    }
+    this.setState({
+      flashMode: modeString,
     })
   }
 
@@ -132,6 +135,7 @@ export default class Scan extends Component{
               isFromPanelAdd={this.props.isFromPanelAdd}
               modalShow={this.state.modalShow}
               zoom={this.state.zoom}
+              flashMode={this.state.flashMode}
               onOncancelInputDialog={()=>{
               }}
               onConfirmInputDialog={(name)=>{
@@ -146,7 +150,7 @@ export default class Scan extends Component{
             <TouchableOpacity onPress={()=>this._gotoScanResult()}>
               <Image style={{width:56,height:56}} source={require('./images/scan_light/light_on.png')}/>
             </TouchableOpacity>
-            <Text style={{color:'#595959',fontSize:16,marginTop:12}}>打开手电筒</Text>
+            <Text style={{color:'#595959',fontSize:16,marginTop:12}}>{`${this.state.flashMode === 'on' ? '打开' : '关闭'}手电筒`}</Text>
           </View>
         </View>
 
