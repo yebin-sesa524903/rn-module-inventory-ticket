@@ -70,14 +70,18 @@ import DeviceAdd from "./DeviceAdd";
 
 const DEVICE_STATUS = [
   { name: '在用', type: 0, icon: require('./images/device_status/device_use.png') },
+  { name: '缺失', type: 1, icon: require('./images/device_status/device_miss.png') },
   { name: '闲置', type: 2, icon: require('./images/device_status/device_offline.png') },
-  { name: '缺失', type: 1, icon: require('./images/device_status/device_miss.png') }
+  { name: '闲置', type: 3, icon: require('./images/device_status/device_offline.png') },
+  { name: '闲置', type: 4, icon: require('./images/device_status/device_offline.png') },
 ]
 
 const DEVICE_STATUS_ICON = {
   0: require('./images/device_status/device_use.png'),
-  2: require('./images/device_status/device_offline.png'),
   1: require('./images/device_status/device_miss.png'),
+  2: require('./images/device_status/device_offline.png'),
+  3: require('./images/device_status/device_offline.png'),
+  4: require('./images/device_status/device_offline.png'),
 }
 
 function makeTestDevices() {
@@ -127,7 +131,7 @@ export default class TicketDetail extends Component {
     super(props);
     let { width } = Dimensions.get('window');
     this.picWid = parseInt((width - 46 - 40) / 4.0);
-    this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, deviceList: null };
+    this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, deviceList: null, deviceTab: 0 };
   }
 
   _renderInventoryTicketInfo() {
@@ -594,39 +598,39 @@ export default class TicketDetail extends Component {
     //执行中和已驳回操作一样
     if (this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) && !isScollView) {
       return (
-          <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
-            <View style={{flexDirection:'row',flex:1}}>
-              <View style={{flex:1}}>
-                {logButton}
-              </View>
+        <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+          <View style={{ flexDirection: 'row', flex: 1 }}>
+            <View style={{ flex: 1 }}>
+              {logButton}
             </View>
-            <View style={{flex:3,alignItems:'center',marginRight:16,flexDirection:'row',height:34,borderRadius:8,backgroundColor:GREEN}}>
-              <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}} onPress={this._addNewInventory}>
-                <Text style={{color:'#fff',fontSize:14}}>{'新增盘盈'}</Text>
-              </TouchableOpacity>
-              <View style={{width:1,height:20,backgroundColor:'#64D975'}}/>
-              <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}} onPress={this._scanInventory}>
-                <Text style={{color:'#fff',fontSize:14}}>{'扫描盘点'}</Text>
-              </TouchableOpacity>
-              <View style={{width:1,height:20,backgroundColor:'#64D975'}}/>
-              <TouchableOpacity style={{flex:1,alignItems:'center',justifyContent:'center'}} onPress={()=>this._submitTicket()}>
-                <Text style={{color:'#fff',fontSize:14}}>{'提交审批'}</Text>
-              </TouchableOpacity>
-            </View>
+          </View>
+          <View style={{ flex: 3, alignItems: 'center', marginRight: 16, flexDirection: 'row', height: 34, borderRadius: 8, backgroundColor: GREEN }}>
+            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._addNewInventory}>
+              <Text style={{ color: '#fff', fontSize: 14 }}>{'新增盘盈'}</Text>
+            </TouchableOpacity>
+            <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
+            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
+              <Text style={{ color: '#fff', fontSize: 14 }}>{'扫描盘点'}</Text>
+            </TouchableOpacity>
+            <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
+            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={() => this._submitTicket()}>
+              <Text style={{ color: '#fff', fontSize: 14 }}>{'提交审批'}</Text>
+            </TouchableOpacity>
+          </View>
 
-            {/*<Button*/}
-            {/*  style={[styles.button,{*/}
-            {/*    backgroundColor:GREEN,*/}
-            {/*    marginLeft:0,*/}
-            {/*    flex:3,*/}
-            {/*  }]}*/}
-            {/*  textStyle={{*/}
-            {/*    fontSize:16,*/}
-            {/*    color:'#ffffff'*/}
-            {/*  }}*/}
-            {/*  text={localStr('lang_ticket_detail_submit_ticket')}*/}
-            {/*  onClick={() => this._submitTicket()} />*/}
-          </Bottom>
+          {/*<Button*/}
+          {/*  style={[styles.button,{*/}
+          {/*    backgroundColor:GREEN,*/}
+          {/*    marginLeft:0,*/}
+          {/*    flex:3,*/}
+          {/*  }]}*/}
+          {/*  textStyle={{*/}
+          {/*    fontSize:16,*/}
+          {/*    color:'#ffffff'*/}
+          {/*  }}*/}
+          {/*  text={localStr('lang_ticket_detail_submit_ticket')}*/}
+          {/*  onClick={() => this._submitTicket()} />*/}
+        </Bottom>
       );
     }
     return null;
@@ -644,17 +648,17 @@ export default class TicketDetail extends Component {
     })
   }
 
-  //扫描盘点
-  _scanInventory = () => {
-    console.log('scan inventory')
-    this.props.navigator.push({
-      id: 'scan_device',
-      component: Scan,
-      passProps: {
-        onRefresh: () => { }
-      }
-    })
-  }
+  // //扫描盘点
+  // _scanInventory = () => {
+  //   console.log('scan inventory')
+  //   this.props.navigator.push({
+  //     id: 'scan_device',
+  //     component: Scan,
+  //     passProps: {
+  //       onRefresh: () => { }
+  //     }
+  //   })
+  // }
 
   //新增盘盈
   _addNewInventory = () => {
@@ -1009,6 +1013,7 @@ export default class TicketDetail extends Component {
   _renderInventoryDeviceList() {
     let status = this.state.rowData.ticketState;
     let canCheck = this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
+    let arrStatus = new Array(5).fill(0);
     const devices = this.state.rowData.assets.map((item, index) => {
       let imgUrl = null;
       if (item.logoUrl) {
@@ -1016,6 +1021,12 @@ export default class TicketDetail extends Component {
         imgUrl = { uri: item.logoUrl, }
       } else {
         imgUrl = require('./images/building_default/building.png');
+      }
+      if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
+        arrStatus[item.extensionProperties.assetPointCheckState] += 1;
+      }
+      if (this.state.deviceTab != 0 && this.state.deviceTab != item.extensionProperties.assetPointCheckState) {
+        return;
       }
       return (
         <View key={index} style={{
@@ -1036,26 +1047,25 @@ export default class TicketDetail extends Component {
                   ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
                     || (!item.status && item.status !== 0)) ?
                     <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
-                    <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.status]} />
+                    <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties.assetPointCheckState]} />
                 }
 
               </TouchableOpacity>
           }
-
-
         </View>
       )
     })
+    arrStatus[0] = this.state.rowData.assets.length;
     return (
       <View style={{ margin: 16, marginTop: 0, borderRadius: 12, backgroundColor: '#fff', padding: 16 }}>
-        {this._renderInventoryTabs()}
+        {this._renderInventoryTabs(arrStatus)}
         {devices}
       </View>
     )
   }
 
-  _renderInventoryTabs() {
-    let tabs = ['全部(5)', '未盘(5)', '已盘(5)', '盘亏(5)', '盘盈(5)'];
+  _renderInventoryTabs(arrStatus) {
+    let tabs = [`全部(${arrStatus[0]})`, `未盘(${arrStatus[1]})`, `已盘(${arrStatus[2]})`, `盘亏(${arrStatus[3]})`, `盘盈(${arrStatus[4]})`];
     return (
       <View style={{ marginBottom: -10, flexDirection: 'row', justifyContent: 'space-between' }}>
         {
