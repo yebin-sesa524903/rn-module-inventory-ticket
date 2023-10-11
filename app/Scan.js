@@ -26,7 +26,60 @@ export default class Scan extends Component {
 
     //处理扫描结果，是跳转到页面还是提示错误
 
+    try {
+      let dataLower = data.toLowerCase();
+      if (dataLower.indexOf('.energymost.com') !== -1 &&
+        dataLower.indexOf('.energymost.com/download-app/sn=') === -1) {
+        // this.props.updateSpHttpInfo({type:'scan',data});
+        this.setState({ openCamera: false });
+        Linking.canOpenURL(data).then(async (supported) => {
+          if (supported) {
+            // this.props.updateSpHttpInfo({ type: 'scan', data });
+          } else {
+            throw new Error();
+          }
+        });
 
+        return;
+      }
+      // this.props.updateEntry({ isFromPanelAdd: !!this.props.isFromPanelAdd });
+      data = JSON.parse(data);
+      if ('PanelId' in data) {
+        this.setState({ openCamera: false, panelId: data.PanelId });
+        if (data.PanelId) {
+          // this.props.loadPanelHierarchy(data.PanelId);
+        }
+      } else if ('RoomId' in data) {
+        this.setState({ openCamera: false, panelId: data.RoomId });
+        if (data.RoomId) {
+          // this.props.loadRoomHierarchy(data.RoomId);
+        }
+      } else if ('DeviceId' in data) {
+        this.setState({ openCamera: false, deviceId: data.DeviceId });
+        if (data.DeviceId) {
+          this.props.scanResult(data, 'device');
+          // this.props.updateScanDeviceData({ DeviceId: data.DeviceId, DeviceName: data.DeviceName });
+        }
+      } else {
+        Alert.alert('识别失败', '非系统可识别的二维码',
+          [
+            {
+              text: '知道了', onPress: () => {
+                return;
+              }
+            }
+          ]
+        )
+        // this.props.scanResult(data);
+        // throw new Error();
+      }
+    } catch (e) {
+      this.setState({ openCamera: false });
+      // if (this.props.isBindQRCode || this.props.isFromPanelAdd) {
+      //   this.strQrcode = data;
+      // }
+      // this.props.loadAssetWithQrcode(data, this.props.isFromPanelAdd, this.props.isBindQRCode);
+    }
   }
 
   _mounted(v, cb = () => { }) {
@@ -54,6 +107,9 @@ export default class Scan extends Component {
   }
 
   componentDidMount() {
+    // setTimeout(() => {
+    //   this._getScanData('{"DeviceId":123,"DeviceName":"制冰机"}');
+    // }, 1000);
 
     InteractionManager.runAfterInteractions(() => {
       let cameraPermission = Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;

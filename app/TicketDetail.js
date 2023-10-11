@@ -67,6 +67,7 @@ import PhotoShowView from "./components/assets/PhotoShowView";
 import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
 import Scan from "./Scan";
 import DeviceAdd from "./DeviceAdd";
+import { Toast } from '@ant-design/react-native';
 // import Share from "react-native-share";
 
 const DEVICE_STATUS = [
@@ -406,30 +407,17 @@ export default class TicketDetail extends Component {
     )
   }
 
-  _closeTicket() {
-    if (true) {
-      this._showSubmitDialog();
-      return;
-    }
-    Alert.alert(
-      '',
-      localStr('lang_ticket_close_confirm'),
-      [
-        { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-        {
-          text: localStr('lang_ticket_filter_ok'), onPress: async () => {
-            //审批通过
-            apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
-              if (ret.code === CODE_OK) {
-                this.props.ticketChanged && this.props.ticketChanged();
-                this.showToast(localStr('lang_ticket_close_toast'))
-                this._loadTicketDetail();
-              } else {
-                Alert.alert(localStr('lang_alert_title'), ret.msg);
-              }
-            })
-          }
-        }])
+  _approveTicket() {
+    //审批通过
+    apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
+      if (ret.code === CODE_OK) {
+        this.props.ticketChanged && this.props.ticketChanged();
+        this.showToast(localStr('lang_ticket_close_toast'))
+        this._loadTicketDetail();
+      } else {
+        Alert.alert(localStr('lang_alert_title'), ret.msg);
+      }
+    })
   }
 
   _renderSubmittedButton() {
@@ -458,7 +446,7 @@ export default class TicketDetail extends Component {
             color: '#ffffff'
           }}
           text={localStr('lang_ticket_detail_approved')}
-          onClick={() => this._closeTicket()} />
+          onClick={() => this._showSubmitDialog()} />
       </Bottom>
     )
   }
@@ -517,33 +505,34 @@ export default class TicketDetail extends Component {
   _submitTicket() {
     let ticketLogs = this.state.rowData.ticketLogs;
     if (!ticketLogs || ticketLogs.length === 0) {
-      Alert.alert(localStr('lang_alert_title'), localStr('lang_ticket_submit_invalid'));
-      return;
+      // Alert.alert(localStr('lang_alert_title'), localStr('lang_ticket_submit_invalid'));
+      // return;
     }
     //还要判断盘点设备是否有设置了状态
-    let devices = this.state.rowData.assets || []
-    if (devices.find(d => {
-      if (this.state.localDeviceState) {
-        return !this.state.localDeviceState[d.assetId] && this.state.localDeviceState[d.assetId] !== 0
-      } else {
-        return !d.status && d.status !== 0
-      }
+    // let devices = this.state.rowData.assets || []
+    // if (devices.find(d => {
+    //   if (this.state.localDeviceState) {
+    //     return !this.state.localDeviceState[d.assetId] && this.state.localDeviceState[d.assetId] !== 0
+    //   } else {
+    //     return !d.status && d.status !== 0
+    //   }
 
-    })) {
-      this.showToast('请为所有设备填写盘点结果')
-      return;
-    }
+    // })) {
+    //   this.showToast('请为所有设备填写盘点结果')
+    //   return;
+    // }
 
 
     apiSubmitTicket({ id: this.state.rowData.id }).then(ret => {
       if (ret.code === CODE_OK) {
         this.props.ticketChanged && this.props.ticketChanged();
-        Alert.alert(localStr('lang_alert_title'), '工单提交后，状态为闲置和缺失的设备将被停用自动盘点的监测规则');
+        // Alert.alert(localStr('lang_alert_title'), '工单提交后，状态为闲置和缺失的设备将被停用自动盘点的监测规则');
         this._loadTicketDetail();
         // //接口异步更新，重新获取详情可能状态还没变，这里手动更新状态
         // let rowData = this.state.rowData;
         // rowData.ticketState = STATE_PENDING_AUDIT;
         // this.setState({rowData})
+        this.showToast("提交成功");
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
       }
@@ -649,18 +638,6 @@ export default class TicketDetail extends Component {
     })
   }
 
-  // //扫描盘点
-  // _scanInventory = () => {
-  //   console.log('scan inventory')
-  //   this.props.navigator.push({
-  //     id: 'scan_device',
-  //     component: Scan,
-  //     passProps: {
-  //       onRefresh: () => { }
-  //     }
-  //   })
-  // }
-
   //新增盘盈
   _addNewInventory = () => {
     console.log('add inventory')
@@ -680,11 +657,33 @@ export default class TicketDetail extends Component {
       id: 'scan_device',
       component: Scan,
       passProps: {
-        onRefresh: () => { }
+        onRefresh: () => { },
+        scanResult: (result, type) => {
+          if (type == 'device') {
+            let device = this.state.rowData.assets.find((item) => item.assetId === result.DeviceId);
+            if (!device) {
+              Alert.alert('该资产不在本次盘点范围内', null,
+                [
+                  {
+                    text: '知道了', onPress: () => {
+                      return;
+                    }
+                  }
+                ]
+              )
+              return;
+            } else {
+              this._gotoPointCheckResult(device);
+            }
+          }
+        }
+        // updateExecutingDetailInfo(result);
       }
     })
   }
-
+  _gotoPointCheckResult(device) {
+    this._showInventoryMenu(device);
+  }
   _getToolbar(data) {
     this._actions = [];
     let actionSelected = [];
@@ -998,7 +997,6 @@ export default class TicketDetail extends Component {
 
 
   _showInventoryMenu = (device) => {
-
     this.props.navigator.push({
       id: 'ticket_pd',
       component: ScanResult,
@@ -1035,7 +1033,7 @@ export default class TicketDetail extends Component {
       if (item.extensionProperties && item.extensionProperties.assetLogo) {
         let jsonLogo = JSON.parse(item.extensionProperties.assetLogo);
         console.warn('------', jsonLogo);
-        // imgUrl = jsonLogo[0].key;
+        imgUrl = jsonLogo[0].key;
         // imgUrl = "668673300442906624";
       } else {
         imgUrl = require('./images/building_default/building.png');
@@ -1065,7 +1063,7 @@ export default class TicketDetail extends Component {
                   // || (!item.status && item.status !== 0)) ?
                   (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
                     <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
-                    <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties.assetPointCheckState]} />
+                    <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
                 }
               </TouchableOpacity>
           }
@@ -1166,11 +1164,13 @@ export default class TicketDetail extends Component {
             borderTopColor: '#bfbfbf', flexDirection: 'row', height: 40, borderTopWidth: 1, marginHorizontal: -16,
             marginBottom: -16, marginTop: 16
           }}>
-            <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}
+              onPress={() => this.setState({ submitModalVisible: false })}>
               <Text style={{ color: '#3491FA', fontSize: 17 }}>{'取消'}</Text>
             </TouchableOpacity>
             <View style={{ width: 1, backgroundColor: '#bfbfbf' }} />
-            <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}
+              onPress={() => this._approveTicket()}>
               <Text style={{ color: '#3491FA', fontSize: 17 }}>{'确定'}</Text>
             </TouchableOpacity>
           </View>

@@ -183,7 +183,6 @@ export default class extends Component {
   }
 
   _renderStatusTag() {
-    let assetPointCheckState = this.props.device.extensionProperties.assetPointCheckState;
     let color = 'gray';
     let tag = '查询中';
     if (!this.state.isRequestStatus) {
