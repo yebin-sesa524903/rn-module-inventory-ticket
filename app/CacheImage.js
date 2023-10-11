@@ -1,8 +1,8 @@
-import React,{Component} from 'react';
-import {Image, ActivityIndicator, Platform, View} from 'react-native';
-import RNFS, { DocumentDirectoryPath,ExternalDirectoryPath } from 'react-native-fs';
+import React, { Component } from 'react';
+import { Image, ActivityIndicator, Platform, View } from 'react-native';
+import RNFS, { DocumentDirectoryPath, ExternalDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
-import {getBaseUri, getCookie} from './middleware/bff';
+import { getBaseUri, getCookie } from './middleware/bff';
 import RNFetchBlob from 'react-native-fetch-blob'
 
 const dirPath = Platform.OS === 'ios' ? DocumentDirectoryPath : ExternalDirectoryPath
@@ -46,19 +46,19 @@ export default class CacheImage extends Component {
   }
 
   async checkImageCache(cacheKey) {
-    const filePath = dirPath+'/'+cacheKey;
+    const filePath = dirPath + '/' + cacheKey;
     RNFS.exists(filePath)
       .then((res) => {
         if (res) {
-          this.setState({cacheable: true, cachedImagePath: filePath});
-          if(this.props.onLoad) this.props.onLoad();
+          this.setState({ cacheable: true, cachedImagePath: filePath });
+          if (this.props.onLoad) this.props.onLoad();
         }
         else {
           throw Error("CacheableImage: Invalid file in checkImageCache()");
         }
       })
       .catch((err) => {
-        RNFS.mkdir(dirPath, {NSURLIsExcludedFromBackupKey: true})
+        RNFS.mkdir(dirPath, { NSURLIsExcludedFromBackupKey: true })
           .then(() => {
             if (this.state.cacheable && this.state.cachedImagePath) {
               let delImagePath = this.state.cachedImagePath;
@@ -68,7 +68,8 @@ export default class CacheImage extends Component {
               this._stopDownload();
             }
 
-            let downUrl = getBaseUri()+'/bff/comp-ticket/rest/document/get?id='+cacheKey;
+            let downUrl = getBaseUri() + '/bff/comp-ticket/rest/document/get?id=' + cacheKey;
+            console.warn("-----2:", downUrl);
             // var headers={};
             // headers[TOKENHEADER]=token;
             // headers[HEADERDEVICEID]=deviceid;
@@ -76,29 +77,29 @@ export default class CacheImage extends Component {
             let downloadOptions = {
               fromUrl: downUrl,
               toFile: filePath,
-              headers:{
-                Cookie:getCookie()
+              headers: {
+                Cookie: getCookie()
               }
             };
             RNFS.downloadFile(downloadOptions).promise
               .then((res) => {
-                console.log('res',res,downloadOptions)
+                console.log('res', res, downloadOptions)
                 // the temp file path
-                if(res.statusCode === 200) {
+                if (res.statusCode === 200) {
                   //成功了
-                  if(this.props.onLoad) this.props.onLoad();
-                  this.setState({cacheable: true, cachedImagePath: filePath});
-                }else {
+                  if (this.props.onLoad) this.props.onLoad();
+                  this.setState({ cacheable: true, cachedImagePath: filePath });
+                } else {
                   //失败了,删除缓存文件
                   this._deleteFilePath(filePath);
-                  this.setState({cacheable: false, cachedImagePath: null});
+                  this.setState({ cacheable: false, cachedImagePath: null });
                 }
               });
           })
           .catch((err) => {
-            console.log('err',err,downloadOptions)
+            console.log('err', err, downloadOptions)
             this._deleteFilePath(filePath);
-            this.setState({cacheable: false, cachedImagePath: null});
+            this.setState({ cacheable: false, cachedImagePath: null });
           });
       });
   }
@@ -109,7 +110,7 @@ export default class CacheImage extends Component {
         if (res) {
           RNFS
             .unlink(filePath)
-            .catch((err) => {console.warn('error _deleteFilePath...',err);});
+            .catch((err) => { console.warn('error _deleteFilePath...', err); });
         }
       });
   }
@@ -130,16 +131,16 @@ export default class CacheImage extends Component {
   }
 
   render() {
-    if(this.state.cacheable && this.state.cachedImagePath) {
+    if (this.state.cacheable && this.state.cachedImagePath) {
       //说明本地有缓存文件
       return (
-        <View style={{borderWidth:this.props.borderWidth||0,borderColor:'#f2f2f2',borderRadius:2,marginRight:this.props.space || 0,marginTop:this.props.space || 0}}>
-          <Image resizeMode={this.props.mode || 'cover'} source={{uri:pathPre+this.state.cachedImagePath}} style={{width:this.props.width,height:this.props.height}}/>
+        <View style={{ borderWidth: this.props.borderWidth || 0, borderColor: '#f2f2f2', borderRadius: 2, marginRight: this.props.space || 0, marginTop: this.props.space || 0 }}>
+          <Image resizeMode={this.props.mode || 'cover'} source={{ uri: pathPre + this.state.cachedImagePath }} style={{ width: this.props.width, height: this.props.height }} />
         </View>
       )
     }
     return (
-      <View style={{width:this.props.width,height:this.props.height}}>
+      <View style={{ width: this.props.width, height: this.props.height }}>
         <Loading />
       </View>
 
