@@ -966,8 +966,8 @@ export default class TicketDetail extends Component {
     let status = this.state.rowData.ticketState;
     if (status !== STATE_REJECTED) return null;
     let reason = this.state.rejectData.content
-    // let RejectUser = this.state.rejectData.userName
-    // let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
+    let RejectUser = this.state.rejectData.userName
+    let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
       <View style={{ backgroundColor: '#fff', padding: 16, margin: 16, marginTop: 0, borderRadius: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1236,7 +1236,7 @@ export default class TicketDetail extends Component {
             {this._renderRejection()}
             {this._renderInventoryTicketInfo()}
             {this._renderInventoryDeviceList()}
-            {this._renderRejection()}
+            {/* {this._renderRejection()} */}
             <View style={{ height: 1, backgroundColor: '#f2f2f2', marginLeft: 16 }} />
             {/*{this._getTaskView()}*/}
             <View style={{ height: 1, backgroundColor: '#f2f2f2', marginLeft: 16 }} />
