@@ -24,6 +24,7 @@ import Icon from './components/Icon.js';
 import Bottom from './components/Bottom.js';
 import Loading from './components/Loading';
 import { isPhoneX } from './utils';
+import ScanResult from "./ScanResult";
 
 import SchActionSheet from './components/actionsheet/SchActionSheet';
 import CommonDialog from './components/actionsheet/CommonActionSheet';
@@ -69,19 +70,19 @@ import DeviceAdd from "./DeviceAdd";
 // import Share from "react-native-share";
 
 const DEVICE_STATUS = [
-  { name: '在用', type: 0, icon: require('./images/device_status/device_use.png') },
-  { name: '缺失', type: 1, icon: require('./images/device_status/device_miss.png') },
-  { name: '闲置', type: 2, icon: require('./images/device_status/device_offline.png') },
-  { name: '闲置', type: 3, icon: require('./images/device_status/device_offline.png') },
-  { name: '闲置', type: 4, icon: require('./images/device_status/device_offline.png') },
+  // { name: '在用', type: 0, icon: require('./images/device_status/device_new.png') },
+  // { name: '缺失', type: 1, icon: require('./images/device_status/device_new.png') },
+  { name: '已盘', type: 2, icon: require('./images/device_status/device_already_pd.png') },
+  { name: '盘亏', type: 3, icon: require('./images/device_status/device_loss.png') },
+  { name: '盘盈', type: 4, icon: require('./images/device_status/device_new.png') },
 ]
 
 const DEVICE_STATUS_ICON = {
-  0: require('./images/device_status/device_use.png'),
-  1: require('./images/device_status/device_miss.png'),
-  2: require('./images/device_status/device_offline.png'),
-  3: require('./images/device_status/device_offline.png'),
-  4: require('./images/device_status/device_offline.png'),
+  0: require('./images/device_status/device_new.png'),
+  1: require('./images/device_status/device_new.png'),
+  2: require('./images/device_status/device_already_pd.png'),
+  3: require('./images/device_status/device_loss.png'),
+  4: require('./images/device_status/device_new.png'),
 }
 
 function makeTestDevices() {
@@ -599,12 +600,12 @@ export default class TicketDetail extends Component {
     if (this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) && !isScollView) {
       return (
         <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
-          <View style={{ flexDirection: 'row', flex: 1 }}>
+          {/* <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flex: 1 }}>
               {logButton}
             </View>
-          </View>
-          <View style={{ flex: 3, alignItems: 'center', marginRight: 16, flexDirection: 'row', height: 34, borderRadius: 8, backgroundColor: GREEN }}>
+          </View> */}
+          <View style={{ flex: 3, alignItems: 'center', marginHorizontal: 16, flexDirection: 'row', height: 34, borderRadius: 8, backgroundColor: GREEN, }}>
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._addNewInventory}>
               <Text style={{ color: '#fff', fontSize: 14 }}>{'新增盘盈'}</Text>
             </TouchableOpacity>
@@ -997,35 +998,53 @@ export default class TicketDetail extends Component {
 
 
   _showInventoryMenu = (device) => {
-    this.setState({
-      arrActions: DEVICE_STATUS.map(item => {
-        return {
-          title: item.name,
-          click: () => {
-            this._checkDeviceStatus(device, item.type)
-          }
-        }
-      }),
-      modalVisible: true
+
+    this.props.navigator.push({
+      id: 'ticket_pd',
+      component: ScanResult,
+      passProps: {
+        title: '',
+        tid: this.state.rowData.id,
+        device: device,
+        callBack: () => {
+          // this.props.navigator.pop();
+          // this._loadTicketDetail();
+        },
+        onBack: () => this.props.navigator.pop()
+      }
     })
+    // this.setState({
+    //   arrActions: DEVICE_STATUS.map(item => {
+    //     return {
+    //       title: item.name,
+    //       click: () => {
+    //         this._checkDeviceStatus(device, item.type)
+    //       }
+    //     }
+    //   }),
+    //   modalVisible: true
+    // })
   }
 
   _renderInventoryDeviceList() {
     let status = this.state.rowData.ticketState;
-    let canCheck = this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
     let arrStatus = new Array(5).fill(0);
     const devices = this.state.rowData.assets.map((item, index) => {
+      let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
-      if (item.logoUrl) {
-        // getBaseUri()
-        imgUrl = { uri: item.logoUrl, }
+      if (item.extensionProperties && item.extensionProperties.assetLogo) {
+        let jsonLogo = JSON.parse(item.extensionProperties.assetLogo);
+        console.warn('------', jsonLogo);
+        // imgUrl = jsonLogo[0].key;
+        // imgUrl = "668673300442906624";
       } else {
         imgUrl = require('./images/building_default/building.png');
       }
       if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
         arrStatus[item.extensionProperties.assetPointCheckState] += 1;
       }
-      if (this.state.deviceTab != 0 && this.state.deviceTab != item.extensionProperties.assetPointCheckState) {
+      if (this.state.deviceTab != 0 && item.extensionProperties &&
+        this.state.deviceTab != item.extensionProperties.assetPointCheckState) {
         return;
       }
       return (
@@ -1033,9 +1052,7 @@ export default class TicketDetail extends Component {
           flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: '#f5f5f5',
           borderTopWidth: 1, paddingTop: 10
         }}>
-          <Image resizeMode={'cover'} style={{ width: 70, height: 50, borderRadius: 8, backgroundColor: '#f5f5f5' }}
-            defaultSource={require('./images/building_default/building.png')}
-            source={imgUrl} />
+          <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} width={70} height={50} />
           <View style={{ marginLeft: 16, flex: 1 }}>
             <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
             <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || ''}`}</Text>
@@ -1044,12 +1061,12 @@ export default class TicketDetail extends Component {
             this.state.rowData.ticketState === STATE_NOT_START ? null :
               <TouchableOpacity disabled={!canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
                 {
-                  ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
-                    || (!item.status && item.status !== 0)) ?
+                  // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
+                  // || (!item.status && item.status !== 0)) ?
+                  (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
                     <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
                     <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties.assetPointCheckState]} />
                 }
-
               </TouchableOpacity>
           }
         </View>
@@ -1224,7 +1241,7 @@ export default class TicketDetail extends Component {
             {/*{this._getTaskView()}*/}
             <View style={{ height: 1, backgroundColor: '#f2f2f2', marginLeft: 16 }} />
             {/*{this._getDocumentsView()}*/}
-            {this._getLogMessage()}
+            {/* {this._getLogMessage()} */}
             {this._getIDView()}
             <View style={{ height: 10, flex: 1, backgroundColor: LIST_BG }}>
             </View>

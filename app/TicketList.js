@@ -275,6 +275,8 @@ export default class TicketList extends Component {
       component: TicketDetail,
       passProps: {
         ticketId: "667867695152889856",//rowData.id,
+        // ticketId: "631047826061656064",
+        // ticketId: rowData.id,
         ticketChanged: () => this._onRefresh()
       }
     })
