@@ -288,6 +288,14 @@ export async function apiLoadDevicePointCheckStatus(data) {
   })
 }
 
+export async function apiRemoveTicketInitAsset(data) {
+  return await defaultFetch({
+    url: `/bff/comp-ticket/rest/ticket/removeDeviceInitData`,
+    verb: 'post',
+    body: data
+  })
+}
+
 export async function apiSubmitPointCheckResult(data) {
   return await defaultFetch({
     url: `/bff/comp-ticket/rest/ticket/changePointCheckState`,

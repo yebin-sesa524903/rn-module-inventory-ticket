@@ -52,7 +52,7 @@ import {
   apiDelTicketLog,
   apiEditTicket,
   apiGetTicketExecutors, apiIgnoreTicket, apiRejectTicket, apiSubmitTicket,
-  apiTicketDetail, apiTicketDeviceStatus,
+  apiTicketDetail, apiTicketDeviceStatus, apiRemoveTicketInitAsset,
   apiTicketExecute, apiTicketLostDevices, customerId, getBaseUri,
   userId
 } from "./middleware/bff";
@@ -681,6 +681,32 @@ export default class TicketDetail extends Component {
       }
     })
   }
+  _deleteDevice(device, index) {
+    if (device.extensionProperties?.assetPointCheckState !== 4) {
+      return;
+    }
+    Alert.alert(
+      '',
+      localStr('确定删除这个盘盈设备吗？'),
+      [
+        { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        {
+          text: localStr('lang_ticket_log_del_ok'), onPress: async () => {
+            apiRemoveTicketInitAsset({
+              id: this.state.rowData.id,
+              assetId: device.assetId
+            }).then(res => {
+              if (res.code === CODE_OK) {
+                this._loadTicketDetail();
+              } else {
+                Alert.alert(localStr('lang_alert_title'), res.msg);
+              }
+            })
+          }
+        }
+      ]
+    )
+  }
   _gotoPointCheckResult(device) {
     this._showInventoryMenu(device);
   }
@@ -1046,28 +1072,34 @@ export default class TicketDetail extends Component {
         return;
       }
       return (
-        <View key={index} style={{
-          flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: '#f5f5f5',
-          borderTopWidth: 1, paddingTop: 10
-        }}>
-          <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} width={70} height={50} />
-          <View style={{ marginLeft: 16, flex: 1 }}>
-            <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
-            <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || ''}`}</Text>
+        <TouchFeedback
+          //style={{flex:1,backgroundColor:'transparent'}}
+          key={String(index)}
+          onLongPress={() => this._deleteDevice(item, index)}>
+          <View key={index} style={{
+            flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: '#f5f5f5',
+            borderTopWidth: 1, paddingTop: 10
+          }}>
+            <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} width={70} height={50} />
+            <View style={{ marginLeft: 16, flex: 1 }}>
+              <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
+              <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || ''}`}</Text>
+            </View>
+            {
+              this.state.rowData.ticketState === STATE_NOT_START ? null :
+                <TouchableOpacity disabled={!canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
+                  {
+                    // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
+                    // || (!item.status && item.status !== 0)) ?
+                    (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
+                      <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
+                      <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
+                  }
+                </TouchableOpacity>
+            }
           </View>
-          {
-            this.state.rowData.ticketState === STATE_NOT_START ? null :
-              <TouchableOpacity disabled={!canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
-                {
-                  // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
-                  // || (!item.status && item.status !== 0)) ?
-                  (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
-                    <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
-                    <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
-                }
-              </TouchableOpacity>
-          }
-        </View>
+        </TouchFeedback>
+
       )
     })
     arrStatus[0] = this.state.rowData.assets.length;
