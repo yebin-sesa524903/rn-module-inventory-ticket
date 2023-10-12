@@ -638,6 +638,8 @@ export default class TicketDetail extends Component {
       component: DeviceAdd,
       passProps: {
         ticketId: this.state.rowData.id,
+        objectId: this.state.rowData.objectId,
+        objectType: this.state.rowData.objectType,
         onRefresh: () => {
           this._loadTicketDetail()
         }

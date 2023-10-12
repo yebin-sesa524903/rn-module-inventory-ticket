@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Image, ActivityIndicator, Platform, View } from 'react-native';
 import RNFS, { DocumentDirectoryPath, ExternalDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
-import { getBaseUri, getCookie } from './middleware/bff';
+import { getBaseUri, getCookie, ossPath } from './middleware/bff';
 import RNFetchBlob from 'react-native-fetch-blob'
 
 const dirPath = Platform.OS === 'ios' ? DocumentDirectoryPath : ExternalDirectoryPath
