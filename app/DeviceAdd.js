@@ -91,6 +91,9 @@ export default class extends Component {
   }
 
   componentDidMount() {
+    apiGetOssPath().then(ret => {
+      console.log('oss path', ret);
+    })
     //spid固定70
     apiTplTree('70').then((data) => {
       if (isCodeOk(data.Code)) {
@@ -158,6 +161,7 @@ export default class extends Component {
             color: '#595959',
             marginRight: 6,
           }}
+          textAlign='right'
           value={value}
           placeholder={'请输入'}
           editable={!row.readOnly}

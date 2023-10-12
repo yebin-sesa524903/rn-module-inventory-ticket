@@ -68,7 +68,7 @@ export default class CacheImage extends Component {
               this._stopDownload();
             }
 
-            let downUrl = getBaseUri() + '/hardcore/se-ecox-static/' + cacheKey;
+            let downUrl = getBaseUri() + ossPath + '/' + cacheKey;
             // var headers={};
             // headers[TOKENHEADER]=token;
             // headers[HEADERDEVICEID]=deviceid;
