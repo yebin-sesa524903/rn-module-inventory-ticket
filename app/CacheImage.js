@@ -68,8 +68,7 @@ export default class CacheImage extends Component {
               this._stopDownload();
             }
 
-            let downUrl = getBaseUri() + '/bff/comp-ticket/rest/document/get?id=' + cacheKey;
-            console.warn("-----2:", downUrl);
+            let downUrl = getBaseUri() + '/hardcore/se-ecox-static/' + cacheKey;
             // var headers={};
             // headers[TOKENHEADER]=token;
             // headers[HEADERDEVICEID]=deviceid;
@@ -136,6 +135,13 @@ export default class CacheImage extends Component {
       return (
         <View style={{ borderWidth: this.props.borderWidth || 0, borderColor: '#f2f2f2', borderRadius: 2, marginRight: this.props.space || 0, marginTop: this.props.space || 0 }}>
           <Image resizeMode={this.props.mode || 'cover'} source={{ uri: pathPre + this.state.cachedImagePath }} style={{ width: this.props.width, height: this.props.height }} />
+        </View>
+      )
+    }
+    if (!this.props.cacheKey) {
+      return (
+        <View style={{ borderWidth: this.props.borderWidth || 0, borderColor: '#f2f2f2', borderRadius: 2, marginRight: this.props.space || 0, marginTop: this.props.space || 0 }}>
+          <Image resizeMode={this.props.mode || 'cover'} source={this.props.defaultImgPath} style={{ width: this.props.width, height: this.props.height }} />
         </View>
       )
     }

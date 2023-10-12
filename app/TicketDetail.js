@@ -1056,13 +1056,11 @@ export default class TicketDetail extends Component {
     const devices = this.state.rowData.assets.map((item, index) => {
       let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
-      if (item.extensionProperties?.assetLogo) {
+      let defaultImg = require('./images/building_default/building.png');
+      if (item.extensionProperties && item.extensionProperties?.assetLogo) {
         let jsonLogo = JSON.parse(item.extensionProperties.assetLogo);
         imgUrl = jsonLogo[0].key;
-        // console.warn('------', imgUrl);
         // imgUrl = "668673300442906624";
-      } else {
-        imgUrl = require('./images/building_default/building.png');
       }
       if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
         arrStatus[item.extensionProperties.assetPointCheckState] += 1;
@@ -1080,7 +1078,7 @@ export default class TicketDetail extends Component {
             flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: '#f5f5f5',
             borderTopWidth: 1, paddingTop: 10
           }}>
-            <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} width={70} height={50} />
+            <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
             <View style={{ marginLeft: 16, flex: 1 }}>
               <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
               <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || ''}`}</Text>
