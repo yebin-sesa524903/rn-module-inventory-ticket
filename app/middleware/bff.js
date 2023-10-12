@@ -270,6 +270,39 @@ export async function apiTicketDeviceStatus(data) {
   })
 }
 
+//获取台账模板
+export async function apiTplTree(spid) {
+  return await defaultFetch({
+    url: `/bff/xiot/rest/getTemplateParametertree`,
+    verb: 'post',
+    body: {
+      spId: spid
+    }
+  })
+}
+
+//获取层级台账模板
+export async function apiHierarchyTpl() {
+  return await defaultFetch({
+    url: `/bff/xiot/rest/getHierarchyTemplate`,
+    verb: 'post',
+    body: {
+      id: '1',
+      type: 'fmhc'
+    }
+  })
+}
+
+//获取层级台账模板
+export async function apiAddDeviceInitData(data) {
+  return await defaultFetch({
+    url: `/bff/comp-ticket/rest/ticket/addDeviceInitData`,
+    verb: 'post',
+    body: data
+  })
+}
+
+
 //设置盘点工单待盘点设备状态
 export async function apiCheckDeviceStatus(data) {
   return await defaultFetch({

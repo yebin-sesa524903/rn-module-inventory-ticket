@@ -408,6 +408,9 @@ export default class TicketDetail extends Component {
   }
 
   _approveTicket() {
+    this.setState({
+      submitModalVisible: false,
+    })
     //审批通过
     apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
       if (ret.code === CODE_OK) {
@@ -626,17 +629,6 @@ export default class TicketDetail extends Component {
     return null;
   }
 
-  //新增盘盈
-  _addNewInventory = () => {
-    console.log('add inventory')
-    this.props.navigator.push({
-      id: 'device_add',
-      component: DeviceAdd,
-      passProps: {
-        onRefresh: () => { }
-      }
-    })
-  }
 
   //新增盘盈
   _addNewInventory = () => {
@@ -645,7 +637,10 @@ export default class TicketDetail extends Component {
       id: 'device_add',
       component: DeviceAdd,
       passProps: {
-        onRefresh: () => { }
+        ticketId: this.state.rowData.id,
+        onRefresh: () => {
+          this._loadTicketDetail()
+        }
       }
     })
   }
