@@ -125,6 +125,7 @@ export let prod = null;
 export let userId = 90;
 export let userName = '1';
 export let customerId = null;
+export let ossPath = '';
 let token = '';
 let tokenKey = '';
 let hierarchyId = 0;
@@ -240,7 +241,6 @@ export async function configCookie(data) {
   //   body:body
   // })
 }
-
 //获取工单详情
 export async function apiTicketDetail(tid) {
   return await defaultFetch({
@@ -291,6 +291,14 @@ export async function apiLoadDevicePointCheckStatus(data) {
 export async function apiRemoveTicketInitAsset(data) {
   return await defaultFetch({
     url: `/bff/comp-ticket/rest/ticket/removeDeviceInitData`,
+    verb: 'post',
+    body: data
+  })
+}
+
+export async function apiGetOssPath(data) {
+  return await defaultFetch({
+    url: `/bff/eh/rest/common/oss/path`,
     verb: 'post',
     body: data
   })
