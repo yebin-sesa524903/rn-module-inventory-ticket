@@ -1066,9 +1066,12 @@ export default class TicketDetail extends Component {
       }
       return (
         <TouchFeedback
+          disabled={!canCheck}
           //style={{flex:1,backgroundColor:'transparent'}}
           key={String(index)}
-          onLongPress={() => this._deleteDevice(item, index)}>
+          onPress={() => this._showInventoryMenu(item, index)}
+          onLongPress={() => this._deleteDevice(item, index)}
+        >
           <View key={index} style={{
             flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: '#f5f5f5',
             borderTopWidth: 1, paddingTop: 10
@@ -1080,7 +1083,7 @@ export default class TicketDetail extends Component {
             </View>
             {
               this.state.rowData.ticketState === STATE_NOT_START ? null :
-                <TouchableOpacity disabled={!canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
+                <TouchFeedback disabled={!canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
                   {
                     // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
                     // || (!item.status && item.status !== 0)) ?
@@ -1088,7 +1091,7 @@ export default class TicketDetail extends Component {
                       <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
                       <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
                   }
-                </TouchableOpacity>
+                </TouchFeedback>
             }
           </View>
         </TouchFeedback>
