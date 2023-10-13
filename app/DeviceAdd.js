@@ -21,7 +21,7 @@ import { isPhoneX } from './utils';
 import Icon from './components/Icon';
 import SingleSelect from './components/assets/AssetInfoSingleSelect';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { apiAddDeviceInitData, apiHierarchyTpl, apiTplTree, apiUploadFile, userId, userName } from './middleware/bff';
+import { apiAddDeviceInitData, apiGetOssPath, apiHierarchyTpl, apiTplTree, apiUploadFile, userId, userName } from './middleware/bff';
 import TouchFeedback from './components/TouchFeedback';
 import ImagePicker from './components/ImagePicker';
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
@@ -91,6 +91,9 @@ export default class extends Component {
   }
 
   componentDidMount() {
+    apiGetOssPath().then(ret => {
+      console.log('oss path', ret);
+    })
     //spid固定70
     apiTplTree('70').then((data) => {
       if (isCodeOk(data.Code)) {
@@ -158,6 +161,7 @@ export default class extends Component {
             color: '#595959',
             marginRight: 6,
           }}
+          textAlign='right'
           value={value}
           placeholder={'请输入'}
           editable={!row.readOnly}
@@ -610,7 +614,7 @@ export default class extends Component {
     let createData = {
       id: this.props.ticketId,//这里补上的是对应的盘点工单id
       assetName: this.state.data.productName,//这里补上的是用户输入的名称
-      assetType: 25,
+      assetType: this.tplH.id,
       extensionProperties: {
         assetCode: this.state.data.ProductNum,//这里补上的是用户输入的编码
         assetLogo: JSON.stringify([{
@@ -620,9 +624,9 @@ export default class extends Component {
         assetPointCheckstate: 2,
         assetInitData: submitData
       },
-      locationId: 52,
+      locationId: this.props.objectId,
       locationName: '',
-      locationType: 25,
+      locationType: this.props.objectType,
       userId: userId,
       userName: userName
     }

@@ -57,49 +57,56 @@ let defaultFetch = async function (options) {
     method: options.verb,
     headers,
     body: body,
+  }).then((response) => {
+    console.log('<<<<response', body, response.status, response, url)
+    if (response.status === 204) {
+      return new Promise((resolve) => {
+        resolve({ code: response.status, msg: localStr('lang_server_error') });
+      })
+    } else if (response.status === 401) {
+      return new Promise((resolve) => {
+        resolve({ code: response.status, msg: localStr('lang_http_401') });
+      })
+    } else if (response.status === 403) {
+      return new Promise((resolve) => {
+        resolve({ code: response.status, msg: localStr('lang_server_error') });
+      })
+    } else if (response.status === 404) {
+      return new Promise((resolve) => {
+        resolve({ code: response.status, msg: localStr('lang_server_error') });
+      })
+    } else if (response.status >= 500) {
+      return new Promise((resolve) => {
+        resolve({ code: response.status, msg: localStr('lang_server_error') });
+      })
+    }
+
+    if (options.url === 'getCookie') {
+      //设置cookie
+      setCookie = response.headers.map['set-cookie'];
+      setCookie = setCookie.split(';')[0]
+      setCookie = setCookie + ','//+setCookie;
+      //初始化成功了，发个通知
+      DeviceEventEmitter.emit('TICKET_INIT_OK');
+    }
+
+    if (options.url === 'document/get' || options.debug) {
+      let reader = new FileReader();
+      //console.log('ddd',response.data())
+      return response.blob()//reader.result;
+    }
+    return response.json()
   })
-    .then((response) => {
-      console.log('<<<<response', body, response.status, response, url)
-      if (response.status === 204) {
-        return new Promise((resolve) => {
-          resolve({ code: response.status, msg: localStr('lang_server_error') });
-        })
-      } else if (response.status === 401) {
-        return new Promise((resolve) => {
-          resolve({ code: response.status, msg: localStr('lang_http_401') });
-        })
-      } else if (response.status === 403) {
-        return new Promise((resolve) => {
-          resolve({ code: response.status, msg: localStr('lang_server_error') });
-        })
-      } else if (response.status === 404) {
-        return new Promise((resolve) => {
-          resolve({ code: response.status, msg: localStr('lang_server_error') });
-        })
-      } else if (response.status >= 500) {
-        return new Promise((resolve) => {
-          resolve({ code: response.status, msg: localStr('lang_server_error') });
-        })
-      }
-
-      if (options.url === 'getCookie') {
-        //设置cookie
-        setCookie = response.headers.map['set-cookie'];
-        setCookie = setCookie.split(';')[0]
-        setCookie = setCookie + ','//+setCookie;
-        //初始化成功了，发个通知
-        DeviceEventEmitter.emit('TICKET_INIT_OK');
-      }
-
-      if (options.url === 'document/get' || options.debug) {
-        let reader = new FileReader();
-        //console.log('ddd',response.data())
-        return response.blob()//reader.result;
-      }
-
-      return response.json()
-    })
     .then((data) => {
+      if (options.url === '/bff/eh/rest/common/oss/path') {
+        //这里设置oss path
+        if (data.code === '0' && data.data) {
+          ossPath = data.data;
+        }
+      } else {
+        //这里判断是否设置过oss path,没有就调用接口设置，防止初始化oss接口失败，一直不显示的问题
+        apiGetOssPath();
+      }
       // if(options.url === 'document/get' || options.debug) {
       //   let reader =  new FileReader();
       //   reader.onloadend = function (e) {
@@ -240,6 +247,8 @@ export async function configCookie(data) {
   //   verb:'post',
   //   body:body
   // })
+  //这里调用oss获取
+  apiGetOssPath();
 }
 //获取工单详情
 export async function apiTicketDetail(tid) {
@@ -329,11 +338,11 @@ export async function apiRemoveTicketInitAsset(data) {
   })
 }
 
-export async function apiGetOssPath(data) {
+export async function apiGetOssPath() {
   return await defaultFetch({
     url: `/bff/eh/rest/common/oss/path`,
     verb: 'post',
-    body: data
+    body: {}
   })
 }
 
@@ -341,7 +350,7 @@ export async function apiSubmitPointCheckResult(data) {
   return await defaultFetch({
     url: `/bff/comp-ticket/rest/ticket/changePointCheckState`,
     verb: 'post',
-    body: data
+    //body: data
   })
 }
 
