@@ -29,9 +29,24 @@ const StatusTags = ['在用', '缺失', '闲置', '调拨中', '维修中', '报
 export default class extends Component {
   constructor(props) {
     super(props);
+    //这里根据device进行初始化
+    let info = props.device.extensionProperties;
+    let inventoryType = 1;
+    let tags = [{ tag: '故障资产', sel: false }, { tag: '待清理资产', sel: false }];
+    let remark = '';
+    if (info) {
+      if (info.assetPointCheckState === 3) {
+        inventoryType = 2;
+      }
+      if (info.assetRemark) remark = info.assetRemark;
+      if (Array.isArray(info.assetTags) && info.assetTags.length > 0) {
+        tags.forEach(tag => {
+          if (info.assetTags.includes(tag.tag)) tag.sel = true;
+        })
+      }
+    }
     this.state = {
-      tags: [{ tag: '故障资产', sel: false }, { tag: '待清理资产', sel: false }],
-      remark: '', inventoryType: 1, statusType: 0, deviceStatus: 0, isRequestStatus: true,
+      tags, remark, inventoryType, statusType: 0, deviceStatus: 0, isRequestStatus: true,
     }
   }
 
@@ -76,13 +91,14 @@ export default class extends Component {
       "id": this.props.tid,
       "assetId": this.props.device.assetId,
       "assetPointCheckState": this.state.inventoryType === 1 ? 2 : 3,
-      "assetRemark": this.state.inventoryType === 1 ? this.state.remark : '',
-      "assetTags": arrTags,
+      "assetRemark": this.state.remark,
+      "assetTags": this.state.inventoryType === 1 ? arrTags : [],
       "userId": userId,
       "userName": userName,
     }
     apiSubmitPointCheckResult(data).then(data => {
       if (data.code === '0' && data.data === true) {
+        this.props.onRefresh && this.props.onRefresh();
         // console.warn('----', data);
         Toast.show('盘点结果提交成功！', {
           duration: 1000,
@@ -190,7 +206,7 @@ export default class extends Component {
       color = StatusColors[this.state.deviceStatus];
     }
     return (
-      <TouchableOpacity disabled={this.state.statusType === 4} onPress={this._showStatusTagsDialog}>
+      <TouchableOpacity disabled={true || this.state.statusType === 4} onPress={this._showStatusTagsDialog}>
         <View style={{
           borderRadius: 2, paddingHorizontal: 6, marginLeft: 6,
           borderWidth: 1, borderColor: color, paddingVertical: 2, justifyContent: 'center', alignItems: 'center'

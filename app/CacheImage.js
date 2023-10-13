@@ -68,7 +68,7 @@ export default class CacheImage extends Component {
               this._stopDownload();
             }
 
-            let downUrl = getBaseUri() + ossPath + '/' + cacheKey;
+            let downUrl = getBaseUri() + ossPath + cacheKey;
             // var headers={};
             // headers[TOKENHEADER]=token;
             // headers[HEADERDEVICEID]=deviceid;

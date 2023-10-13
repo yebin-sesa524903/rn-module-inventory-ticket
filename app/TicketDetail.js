@@ -542,6 +542,10 @@ export default class TicketDetail extends Component {
     })
   }
 
+  _canExecute = () => {
+    return privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) && this.state.isExecutor;
+  }
+
   _getButton(isScollView) {
     let status = this.state.rowData.ticketState;
     // status = STATE_NOT_START
@@ -597,15 +601,19 @@ export default class TicketDetail extends Component {
               {logButton}
             </View>
           </View> */}
-          <View style={{ flex: 3, alignItems: 'center', marginHorizontal: 16, flexDirection: 'row', height: 34, borderRadius: 8, backgroundColor: GREEN, }}>
+          <View style={{ flex: 3, alignItems: 'center', marginHorizontal: 16, flexDirection: 'row', height: 40, borderRadius: 8, backgroundColor: GREEN, }}>
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._addNewInventory}>
               <Text style={{ color: '#fff', fontSize: 14 }}>{'新增盘盈'}</Text>
             </TouchableOpacity>
             <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
-            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
-              <Text style={{ color: '#fff', fontSize: 14 }}>{'扫描盘点'}</Text>
-            </TouchableOpacity>
-            <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
+            {!this.state.canScan ? null :
+              <>
+                <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
+                  <Text style={{ color: '#fff', fontSize: 14 }}>{'扫描盘点'}</Text>
+                </TouchableOpacity>
+                <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
+              </>
+            }
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={() => this._submitTicket()}>
               <Text style={{ color: '#fff', fontSize: 14 }}>{'提交审批'}</Text>
             </TouchableOpacity>
@@ -640,6 +648,7 @@ export default class TicketDetail extends Component {
         ticketId: this.state.rowData.id,
         objectId: this.state.rowData.objectId,
         objectType: this.state.rowData.objectType,
+        placeAt: this.state.rowData.extensionProperties?.objectName,
         onRefresh: () => {
           this._loadTicketDetail()
         }
@@ -654,8 +663,8 @@ export default class TicketDetail extends Component {
       id: 'scan_device',
       component: Scan,
       passProps: {
-        onRefresh: () => { },
-        scanResult: (result, type) => {
+        onRefresh: () => this._loadTicketDetail(),
+        scanResult: (result, type, onReset) => {
           if (type == 'device') {
             let device = this.state.rowData.assets.find((item) => item.assetId === result.DeviceId);
             if (!device) {
@@ -663,6 +672,7 @@ export default class TicketDetail extends Component {
                 [
                   {
                     text: '知道了', onPress: () => {
+                      onReset();
                       return;
                     }
                   }
@@ -935,13 +945,29 @@ export default class TicketDetail extends Component {
             .sort((a, b) => {
               return moment(b.createTime).toDate().getTime() - moment(a.createTime).toDate().getTime()
             })[0];
+        };
+        let canManual = false;
+        let canScan = false;
+        let mode = data.data.extensionProperties?.mode
+        if (Array.isArray(mode) && mode.length > 0) {
+          mode.forEach(m => {
+            switch (m.value) {
+              case 0:
+                canScan = true;
+                break;
+              case 1:
+                canManual = true;
+                break;
+            }
+          })
         }
         this.setState({
           rowData: data.data,
           isCreateUser,
           rejectData,
           isFetching: false,
-          isExecutor
+          isExecutor,
+          canManual, canScan
         })
       } else {
         this.setState({
@@ -987,8 +1013,8 @@ export default class TicketDetail extends Component {
   _renderRejection() {
     //只有驳回状态，才显示驳回原因，驳回状态是23
     let status = this.state.rowData.ticketState;
-    if (status !== STATE_REJECTED) return null;
-    let reason = this.state.rejectData.content
+    if (status !== STATE_REJECTED || this.state.rejectData) return null;
+    let reason = this.state.rejectData?.content || '';
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
@@ -1027,6 +1053,7 @@ export default class TicketDetail extends Component {
         title: '',
         tid: this.state.rowData.id,
         device: device,
+        onRefresh: () => this._loadTicketDetail(),
         callBack: () => {
           // this.props.navigator.pop();
           // this._loadTicketDetail();
@@ -1050,14 +1077,24 @@ export default class TicketDetail extends Component {
   _renderInventoryDeviceList() {
     let status = this.state.rowData.ticketState;
     let arrStatus = new Array(5).fill(0);
+    let canCheck = (this.state.rowData.ticketState === STATE_REJECTED || this.state.rowData.ticketState === STATE_STARTING)
+      && this._canExecute() && this.state.canManual;
+
     const devices = this.state.rowData.assets.map((item, index) => {
-      let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
+      // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
       let defaultImg = require('./images/building_default/building.png');
       if (item.extensionProperties && item.extensionProperties?.assetLogo) {
         let jsonLogo = JSON.parse(item.extensionProperties.assetLogo);
         imgUrl = jsonLogo[0].key;
         // imgUrl = "668673300442906624";
+      }
+      //这里给出
+      if (!item.extensionProperties || !item.extensionProperties.assetPointCheckState) {
+        item.extensionProperties = {
+          ...item.extensionProperties,
+          assetPointCheckState: 1
+        }
       }
       if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
         arrStatus[item.extensionProperties.assetPointCheckState] += 1;
@@ -1068,7 +1105,7 @@ export default class TicketDetail extends Component {
       }
       return (
         <TouchFeedback
-          disabled={!canCheck}
+          disabled={!canCheck}// 执行中和已驳回状态，可以重复盘点
           //style={{flex:1,backgroundColor:'transparent'}}
           key={String(index)}
           onPress={() => this._showInventoryMenu(item, index)}
@@ -1081,7 +1118,7 @@ export default class TicketDetail extends Component {
             <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
             <View style={{ marginLeft: 16, flex: 1 }}>
               <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
-              <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || ''}`}</Text>
+              <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
             </View>
             {
               this.state.rowData.ticketState === STATE_NOT_START ? null :
@@ -1090,7 +1127,7 @@ export default class TicketDetail extends Component {
                     // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
                     // || (!item.status && item.status !== 0)) ?
                     (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
-                      <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>盘点</Text> :
+                      <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>{this.state.canManual && this._canExecute() ? '盘点' : ''}</Text> :
                       <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
                   }
                 </TouchFeedback>

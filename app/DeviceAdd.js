@@ -59,7 +59,7 @@ function getData() {
   return {
     productName: '',
     ProductNum: '',
-    placeAt: '这里是门店位置',
+    placeAt: '',
     // manufacturer:'',
     // buyDate:'',
     // buyAmount:'',
@@ -87,6 +87,7 @@ export default class extends Component {
       data: getData(),
       groupData: DataGroup(),
     };
+    if (props.placeAt) this.state.data.placeAt = props.placeAt;
     this.tplData = [];
   }
 
@@ -548,7 +549,7 @@ export default class extends Component {
     //这里组装需要提交的数据
     let submitData = {
       'nodeType': '设备',
-      'parentId': 52,//web端创建设备时的一个值
+      'parentId': this.props.objectId,//web端创建设备时的一个值
       'templateId': this.tplH.id,
       'createBy': userName,
       'updateBy': userName,
@@ -559,7 +560,6 @@ export default class extends Component {
       'isNew': true,
       'children': [],
       'numberOfLevel': 5,
-
       'fieldGroupEntityList': [
         {
           'fieldGroupId': this.tplH.id,
@@ -614,6 +614,7 @@ export default class extends Component {
     let createData = {
       id: this.props.ticketId,//这里补上的是对应的盘点工单id
       assetName: this.state.data.productName,//这里补上的是用户输入的名称
+      code: this.state.data.ProductNum,
       assetType: this.tplH.id,
       extensionProperties: {
         assetCode: this.state.data.ProductNum,//这里补上的是用户输入的编码
@@ -621,11 +622,11 @@ export default class extends Component {
           "key": this.state.logo.key,
           "name": this.state.logo.name
         }]),//这里使用用户上传的图片key
-        assetPointCheckstate: 2,
+        assetPointCheckstate: 4,
         assetInitData: submitData
       },
       locationId: this.props.objectId,
-      locationName: '',
+      locationName: this.state.data.placeAt || '',
       locationType: this.props.objectType,
       userId: userId,
       userName: userName

@@ -1,17 +1,27 @@
 'use strict';
 
-import React,{Component} from 'react';
+import React, { Component } from 'react';
 import {
-  View,Text,
+  View, Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import ViewFinder from './ViewFinder.js';
-import {RNCamera} from 'react-native-camera';
+import { RNCamera } from 'react-native-camera';
 
-export default class Scanner extends Component{
-  constructor(props){
+export default class Scanner extends Component {
+  constructor(props) {
     super(props);
-    this.state={zoom:0}
+    this.state = { zoom: 0 }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.openCamera !== this.props.openCamera) {
+      if (nextProps.openCamera) {
+        this.refs.rncamera.resumePreview();
+      } else {
+        this.refs.rncamera.pausePreview();
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -19,32 +29,32 @@ export default class Scanner extends Component{
   }
   render() {
     return (
-      <RNCamera
-        style={{flex:1,}}
+      <RNCamera ref={'rncamera'}
+        style={{ flex: 1, }}
         zoom={this.props.zoom}
         flashMode={this.props.flashMode === 'on' ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
         onBarCodeRead={this.props.onBarCodeRead}
-         >
-        <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,}}>
+      >
+        <View style={{ flex: 1, backgroundColor: '#000000', opacity: 0.6, }}>
 
         </View>
-        <View style={{flexDirection:'row',height:200}}>
-          <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,}}>
+        <View style={{ flexDirection: 'row', height: 200 }}>
+          <View style={{ flex: 1, backgroundColor: '#000000', opacity: 0.6, }}>
 
           </View>
           <View style={{
-              width:200,
-            }} >
+            width: 200,
+          }} >
             <ViewFinder />
           </View>
-            <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,}}>
+          <View style={{ flex: 1, backgroundColor: '#000000', opacity: 0.6, }}>
 
-            </View>
+          </View>
         </View>
 
-          <View style={{flex:1,backgroundColor:'#000000',opacity:0.6,alignItems:'center',paddingTop:12}}>
-            <Text style={{fontSize:16,color:'#bfbfbf'}}>对准设备上的二维码</Text>
-          </View>
+        <View style={{ flex: 1, backgroundColor: '#000000', opacity: 0.6, alignItems: 'center', paddingTop: 12 }}>
+          <Text style={{ fontSize: 16, color: '#bfbfbf' }}>对准设备上的二维码</Text>
+        </View>
       </RNCamera>
     );
   }
@@ -52,6 +62,6 @@ export default class Scanner extends Component{
 
 
 Scanner.propTypes = {
-  onBarCodeRead:PropTypes.func.isRequired,
-    flashMode: PropTypes.string,
+  onBarCodeRead: PropTypes.func.isRequired,
+  flashMode: PropTypes.string,
 }

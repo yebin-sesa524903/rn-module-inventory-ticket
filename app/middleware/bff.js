@@ -105,7 +105,7 @@ let defaultFetch = async function (options) {
         }
       } else {
         //这里判断是否设置过oss path,没有就调用接口设置，防止初始化oss接口失败，一直不显示的问题
-        apiGetOssPath();
+        if (!ossPath) apiGetOssPath();
       }
       // if(options.url === 'document/get' || options.debug) {
       //   let reader =  new FileReader();
@@ -350,7 +350,7 @@ export async function apiSubmitPointCheckResult(data) {
   return await defaultFetch({
     url: `/bff/comp-ticket/rest/ticket/changePointCheckState`,
     verb: 'post',
-    //body: data
+    body: data
   })
 }
 

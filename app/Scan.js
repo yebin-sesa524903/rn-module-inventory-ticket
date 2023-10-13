@@ -13,6 +13,7 @@ import ScanView from './components/Scanner';
 
 import Permissions, { PERMISSIONS, RESULTS, request, check } from 'react-native-permissions';
 import ScanResult from "./ScanResult";
+import { openCamera } from 'react-native-image-crop-picker';
 
 
 export default class Scan extends Component {
@@ -23,8 +24,19 @@ export default class Scan extends Component {
   }
   _getScanData(data) {
     this._clearZoom();
-
+    console.warn('scan result', data);
+    if (!this.state.openCamera) return;//如果状态不对，不处理
     //处理扫描结果，是跳转到页面还是提示错误
+    //如果两次扫描结果一样，增加延迟处理
+    if (data === this._preData) {
+      let lastTime = this._lastTime || 0;
+      //相同结果，两次扫描结果1秒内，不重复处理
+      if (Date.now() - lastTime < 1000) return;
+      this._lastTime = Date.now();
+    } else {
+      this._preData = data;
+      this._lastTime = Date.now();
+    }
 
     try {
       let dataLower = data.toLowerCase();
@@ -57,14 +69,16 @@ export default class Scan extends Component {
       } else if ('DeviceId' in data) {
         this.setState({ openCamera: false, deviceId: data.DeviceId });
         if (data.DeviceId) {
-          this.props.scanResult(data, 'device');
+          this.props.scanResult(data, 'device', () => this.setState({ openCamera: true }));
           // this.props.updateScanDeviceData({ DeviceId: data.DeviceId, DeviceName: data.DeviceName });
         }
       } else {
+        this.setState({ openCamera: false });
         Alert.alert('识别失败', '非系统可识别的二维码',
           [
             {
               text: '知道了', onPress: () => {
+                this.setState({ openCamera: true });
                 return;
               }
             }
@@ -107,9 +121,10 @@ export default class Scan extends Component {
   }
 
   componentDidMount() {
-    // setTimeout(() => {
-    //   this._getScanData('{"DeviceId":123,"DeviceName":"制冰机"}');
-    // }, 1000);
+    console.warn('scan load')
+    setTimeout(() => {
+      this._getScanData('{"DeviceId":192,"DeviceName":"制冰机"}');
+    }, 1000);
 
     InteractionManager.runAfterInteractions(() => {
       let cameraPermission = Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
@@ -144,13 +159,21 @@ export default class Scan extends Component {
           })
         }
       });
-
+      let that = this;
       var navigator = this.props.navigator;
       if (navigator) {
         let callback = (event) => {
           if (event.data.route && event.data.route.id && event.data.route.id === this.props.route.id) {
             InteractionManager.runAfterInteractions(() => {
               this._mounted(true);
+            })
+          }
+          if (event.data.route && event.data.route.id && event.data.route.id !== this.props.route.id) {
+            //导航切换到其他页面，关闭
+            InteractionManager.runAfterInteractions(() => {
+              that.setState({
+                openCamera: false, flashMode: 'off'
+              })
             })
           }
         };
@@ -163,6 +186,8 @@ export default class Scan extends Component {
 
 
   componentWillUnmount() {
+    this._lastTime = null;
+    this._preData = null;
     this._listener && this._listener.remove();
     this._clearZoom();
   }
@@ -202,13 +227,18 @@ export default class Scan extends Component {
               this.props.navigator.pop()
             })
           }}
-          barCodeComplete={(data) => this._getScanData(data)} />
+          onBarCodeRead={(data) => this._getScanData(data?.data)} />
         <View style={{ height: 160, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
           <TouchableOpacity onPress={() => this._didSwitchLight()}>
-            <Image style={{ width: 56, height: 56 }} source={this.state.flashMode != 'on' ? require('./images/scan_light/light_on.png') : require('./images/scan_light/light_off.png')} />
+            <Image style={{ width: 56, height: 56 }} source={this.state.flashMode != 'on' ? require('./images/scan_light/light_off.png') : require('./images/scan_light/light_on.png')} />
           </TouchableOpacity>
-          <Text style={{ color: '#595959', fontSize: 16, marginTop: 12 }}>{`${this.state.flashMode === 'on' ? '打开' : '关闭'}手电筒`}</Text>
+          <Text style={{ color: '#595959', fontSize: 16, marginTop: 12 }}>{`${this.state.flashMode === 'on' ? '关闭' : '打开'}手电筒`}</Text>
         </View>
+        <TouchableOpacity style={{ position: 'absolute', left: 22, top: 44 }}
+          onPress={() => this.props.navigator.pop()}
+        >
+          <Image source={require('./images/close/close.png')} style={{ width: 28, height: 28, }} />
+        </TouchableOpacity>
       </View>
 
     );
