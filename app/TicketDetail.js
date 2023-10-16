@@ -641,6 +641,10 @@ export default class TicketDetail extends Component {
   //新增盘盈
   _addNewInventory = () => {
     console.log('add inventory')
+    if (!this.state.rowData.extensionProperties?.objectName) {
+      this.showToast('当前工单异常，无法创建盘盈设备');
+      return;
+    }
     this.props.navigator.push({
       id: 'device_add',
       component: DeviceAdd,
