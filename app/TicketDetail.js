@@ -1079,7 +1079,6 @@ export default class TicketDetail extends Component {
     let arrStatus = new Array(5).fill(0);
     let canCheck = (this.state.rowData.ticketState === STATE_REJECTED || this.state.rowData.ticketState === STATE_STARTING)
       && this._canExecute() && this.state.canManual;
-
     const devices = this.state.rowData.assets.map((item, index) => {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
@@ -1105,7 +1104,7 @@ export default class TicketDetail extends Component {
       }
       return (
         <TouchFeedback
-          disabled={!canCheck}// 执行中和已驳回状态，可以重复盘点
+          enabled={canCheck}// 执行中和已驳回状态，可以重复盘点
           //style={{flex:1,backgroundColor:'transparent'}}
           key={String(index)}
           onPress={() => this._showInventoryMenu(item, index)}
@@ -1122,7 +1121,7 @@ export default class TicketDetail extends Component {
             </View>
             {
               this.state.rowData.ticketState === STATE_NOT_START ? null :
-                <TouchFeedback disabled={!canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
+                <TouchFeedback enabled={canCheck} style={{ height: 50, width: 60, alignItems: 'center' }} onPress={() => this._showInventoryMenu(item)}>
                   {
                     // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
                     // || (!item.status && item.status !== 0)) ?
