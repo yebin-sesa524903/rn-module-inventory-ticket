@@ -609,7 +609,7 @@ export default class TicketDetail extends Component {
             {!this.state.canScan ? null :
               <>
                 <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
-                  <Text style={{ color: '#fff', fontSize: 14 }}>{'扫描盘点'}</Text>
+                  <Text style={{ color: '#fff', fontSize: 14 }}>{'扫码盘点'}</Text>
                 </TouchableOpacity>
                 <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
               </>
@@ -641,6 +641,10 @@ export default class TicketDetail extends Component {
   //新增盘盈
   _addNewInventory = () => {
     console.log('add inventory')
+    if (!this.state.rowData.extensionProperties?.objectName) {
+      this.showToast('当前工单异常，无法创建盘盈设备');
+      return;
+    }
     this.props.navigator.push({
       id: 'device_add',
       component: DeviceAdd,
