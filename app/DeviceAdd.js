@@ -30,8 +30,8 @@ const DataGroup = () => [
   {
     groupName: '基本信息',
     items: [
-      { key: 'productName', name: '产品名称', input: true },
-      { key: 'ProductNum', name: '产品编号', input: true },
+      { key: 'productName', name: '资产名称', input: true },
+      { key: 'ProductNum', name: '资产编号', input: true },
       { key: 'placeAt', name: '所在门店', onRead: true },
       // {key:'manufacturer',name:'生产厂商',input:true,option:true},
       // {key:'buyDate',name:'采购日期',date:true,option:true},

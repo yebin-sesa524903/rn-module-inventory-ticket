@@ -609,7 +609,7 @@ export default class TicketDetail extends Component {
             {!this.state.canScan ? null :
               <>
                 <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
-                  <Text style={{ color: '#fff', fontSize: 14 }}>{'扫描盘点'}</Text>
+                  <Text style={{ color: '#fff', fontSize: 14 }}>{'扫码盘点'}</Text>
                 </TouchableOpacity>
                 <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
               </>
