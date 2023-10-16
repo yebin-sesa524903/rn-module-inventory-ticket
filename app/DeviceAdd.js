@@ -26,6 +26,7 @@ import TouchFeedback from './components/TouchFeedback';
 import ImagePicker from './components/ImagePicker';
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
+import CacheImage from "./CacheImage";
 const DataGroup = () => [
   {
     groupName: '基本信息',
@@ -88,17 +89,61 @@ export default class extends Component {
       groupData: DataGroup(),
     };
     if (props.placeAt) this.state.data.placeAt = props.placeAt;
+    if (props.device) this._processEditData(props.device)
     this.tplData = [];
   }
 
-  componentDidMount() {
-    apiGetOssPath().then(ret => {
-      console.log('oss path', ret);
+  _processEditData(device) {
+    let basicData = this.state.data;
+    let initData = device.extensionProperties.assetInitData;
+    basicData.productName = initData.name;
+    basicData.ProductNum = initData.code;
+    basicData.deviceClass = initData.paramsDetail.Class;
+    basicData.deviceType = initData.paramsDetail.Type;
+    basicData.deviceModel = initData.paramsDetail.Specification;
+    //还有logo
+    let findLogo = initData?.fieldGroupEntityList[0]?.fieldValueEntityList?.find(f => f.code === 'logo');
+    if (findLogo) {
+      this.state.logo = JSON.parse(findLogo.value)[0];
+    }
+
+    let options = initData.paramsDetail.LedgerParameters.map(v => {
+      return {
+        isOptions: true,
+        key: v.ValueName,
+        name: v.ValueName,
+        option: true,
+        Value: v.ValueText.join(','),
+        inputType: v.InputType,
+        date: v.ValueName.includes('日期'), //,
+        select: v.InputType !== 0,
+        multi: v.InputType === 1,
+        data: null//v.ValueText,
+      };
     })
+    this.state.groupData[1].options = options;
+  }
+
+  _setParamMenu() {
+    let values = this.tplData
+      .find((item) => item.Class === this.state.data[DeviceTplKey[0]])
+      .Children.find((item) => item.Type === this.state.data[DeviceTplKey[1]])
+      .Children.find((item) => item.Specification === this.state.data[DeviceTplKey[2]]).Values;
+    let options = this.state.groupData[1].options;
+    options.forEach(op => {
+      let find = values.find(v => op.name === v.ValueName);
+      if (find) op.data = find.ValueText;
+    });
+    this.setState({});
+  }
+
+  componentDidMount() {
     //spid固定70
     apiTplTree('70').then((data) => {
       if (isCodeOk(data.Code)) {
         this.tplData = data.Data;
+        //这里给赋值
+        if (this.props.device) this._setParamMenu(this.tplData)
       } else {
         Alert.alert('', data.Msg || '获取模板数据失败！', [
           { text: '确定', onPress: () => { } },
@@ -145,8 +190,7 @@ export default class extends Component {
           paddingVertical: 12,
           borderTopWidth: 1,
           borderTopColor: '#f0f0f0',
-        }}
-      >
+        }}>
         <Text style={{ color: '#595959', fontSize: 15 }}>{row.name}</Text>
         {!row.option ? null : (
           <Text style={{ color: '#BFBFBF', fontSize: 15, marginLeft: 6 }}>
@@ -430,10 +474,13 @@ export default class extends Component {
     let child = null;
     if (this.state.logo && !this.state.logo.error) {
       child = (
-        <Image
-          source={{ uri: this.state.logo.uri }}
-          style={{ width: 78, height: 78 }}
-        />
+        // <Image
+        //   source={{ uri: this.state.logo.uri }}
+        //   style={{ width: 78, height: 78 }}
+        // />
+        <CacheImage borderWidth={1} imageKey={this.state.logo.key}
+          defaultImgPath={{ uri: this.state.logo.uri }}
+          width={78} height={78} />
       );
     }
     let childLoading = null;
@@ -631,10 +678,14 @@ export default class extends Component {
       userId: userId,
       userName: userName
     }
+    if (this.props.device) {
+      //如果是编辑，那么传递assetId参数，避免当做新增处理
+      createData.assetId = this.props.device.assetId;
+      submitData.isNew = false;
+    }
 
     console.log('submitData', submitData, createData, this.tplH);
     apiAddDeviceInitData(createData).then(ret => {
-      console.log('create ret ', ret);
       if (isCodeOk(ret.code)) {
         //返回上层，调用提供的刷新
         this.props.onRefresh && this.props.onRefresh();

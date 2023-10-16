@@ -1018,7 +1018,7 @@ export default class TicketDetail extends Component {
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{ backgroundColor: '#fff', padding: 16, margin: 16, marginTop: 0, borderRadius: 12 }}>
+      <View style={{ backgroundColor: '#fff', padding: 16, margin: 16, marginBottom: 0, borderRadius: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ fontSize: 17, color: '#333', fontWeight: '500' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
         </View>
@@ -1046,13 +1046,22 @@ export default class TicketDetail extends Component {
 
 
   _showInventoryMenu = (device) => {
+    let Cmp = ScanResult;
+    //如果是盘盈设备，跳转到盘盈的新增页面
+    if (device.extensionProperties?.assetPointCheckState === 4) {
+      Cmp = DeviceAdd;
+    }
     this.props.navigator.push({
       id: 'ticket_pd',
-      component: ScanResult,
+      component: Cmp,
       passProps: {
         title: '',
         tid: this.state.rowData.id,
         device: device,
+        placeAt: this.state.rowData.extensionProperties?.objectName,
+        ticketId: this.state.rowData.id,
+        objectId: this.state.rowData.objectId,
+        objectType: this.state.rowData.objectType,
         onRefresh: () => this._loadTicketDetail(),
         callBack: () => {
           // this.props.navigator.pop();
@@ -1192,10 +1201,11 @@ export default class TicketDetail extends Component {
   }
 
   _showSubmitDialog() {
-    this.setState({
-      submitModalVisible: true,
-      submitMenus: this._makeMenus()
-    })
+    // this.setState({
+    //   submitModalVisible: true,
+    //   submitMenus: this._makeMenus()
+    // })
+    this._approveTicket();
   }
 
   _renderSubmitDialog() {
