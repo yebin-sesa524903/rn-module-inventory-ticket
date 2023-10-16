@@ -622,7 +622,7 @@ export default class extends Component {
           "key": this.state.logo.key,
           "name": this.state.logo.name
         }]),//这里使用用户上传的图片key
-        assetPointCheckstate: 4,
+        assetPointCheckState: 4,
         assetInitData: submitData
       },
       locationId: this.props.objectId,

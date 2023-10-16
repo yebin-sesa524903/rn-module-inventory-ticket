@@ -12,6 +12,7 @@ import { GRAY, GREEN } from "./styles/color";
 import { localStr } from "./utils/Localizations/localization";
 import { isPhoneX } from "./utils";
 import SchActionSheet from "./components/actionsheet/SchActionSheet";
+import CacheImage from "./CacheImage";
 import {
   apiLoadDevicePointCheckStatus,
   apiSubmitPointCheckResult,
@@ -34,6 +35,7 @@ export default class extends Component {
     let inventoryType = 1;
     let tags = [{ tag: '故障资产', sel: false }, { tag: '待清理资产', sel: false }];
     let remark = '';
+    let imgUrl = null;
     if (info) {
       if (info.assetPointCheckState === 3) {
         inventoryType = 2;
@@ -44,9 +46,16 @@ export default class extends Component {
           if (info.assetTags.includes(tag.tag)) tag.sel = true;
         })
       }
+
+      if (info?.assetLogo) {
+        let jsonLogo = JSON.parse(info.assetLogo);
+        imgUrl = jsonLogo[0].key;
+        // imgUrl = "668673300442906624";
+      }
     }
+    console.log('imgurl', imgUrl);
     this.state = {
-      tags, remark, inventoryType, statusType: 0, deviceStatus: 0, isRequestStatus: true,
+      tags, remark, inventoryType, statusType: 0, deviceStatus: 0, isRequestStatus: true, imgUrl,
     }
   }
 
@@ -162,7 +171,7 @@ export default class extends Component {
     return (
       <TouchableOpacity style={{ marginLeft: 12, flexDirection: 'row', alignItems: 'center', paddingVertical: 6 }} onPress={cb}>
         <View style={{ width: 16, height: 16, alignItems: 'center', justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: sel ? GREEN : '#D9D9D9' }}>
-          <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: sel ? GREEN : undefined }} />
+          <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: sel ? GREEN : '#fff' }} />
         </View>
         <Text style={{ fontSize: 15, color: '#1f1f1f', marginLeft: 6 }}>{name}</Text>
       </TouchableOpacity>
@@ -260,9 +269,7 @@ export default class extends Component {
           flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 16, borderTopColor: '#f5f5f5',
           borderTopWidth: 1, paddingTop: 10
         }}>
-          <Image resizeMode={'cover'} style={{ width: 70, height: 50, borderRadius: 8, backgroundColor: '#f5f5f5' }}
-            defaultSource={require('./images/building_default/building.png')}
-            source={''} />
+          <CacheImage borderWidth={1} imageKey={this.state.imgUrl} defaultImgPath={require('./images/building_default/building.png')} width={70} height={50} />
           <View style={{ marginLeft: 16, flex: 1 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ color: '#333', fontSize: 14, flex: 1 }}>{this.props.device.assetName}</Text>
