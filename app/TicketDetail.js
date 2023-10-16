@@ -458,7 +458,7 @@ export default class TicketDetail extends Component {
     apiTicketExecute(this.state.rowData.id).then(ret => {
       if (ret.code === CODE_OK) {
         this.props.ticketChanged && this.props.ticketChanged();
-        this.showToast(localStr('lang_ticket_execute_toast'))
+        // this.showToast(localStr('lang_ticket_execute_toast'))
         this._loadTicketDetail();
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
@@ -1013,7 +1013,7 @@ export default class TicketDetail extends Component {
   _renderRejection() {
     //只有驳回状态，才显示驳回原因，驳回状态是23
     let status = this.state.rowData.ticketState;
-    if (status !== STATE_REJECTED || this.state.rejectData) return null;
+    if (status !== STATE_REJECTED || !this.state.rejectData) return null;
     let reason = this.state.rejectData?.content || '';
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');

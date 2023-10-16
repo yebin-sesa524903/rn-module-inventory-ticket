@@ -17,9 +17,9 @@ export default class Scanner extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.openCamera !== this.props.openCamera) {
       if (nextProps.openCamera) {
-        this.refs.rncamera.resumePreview();
+        this.refs.rncamera.resumePreview && this.refs.rncamera.resumePreview();
       } else {
-        this.refs.rncamera.pausePreview();
+        this.refs.rncamera.pausePreview && this.refs.rncamera.pausePreview();
       }
     }
   }
@@ -28,8 +28,12 @@ export default class Scanner extends Component {
     // console.warn('unmount Scanner');
   }
   render() {
+    let Cmp = View;
+    if (!this.props.hidden) {
+      Cmp = RNCamera;
+    }
     return (
-      <RNCamera ref={'rncamera'}
+      <Cmp ref={'rncamera'}
         style={{ flex: 1, }}
         zoom={this.props.zoom}
         flashMode={this.props.flashMode === 'on' ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
@@ -55,7 +59,7 @@ export default class Scanner extends Component {
         <View style={{ flex: 1, backgroundColor: '#000000', opacity: 0.6, alignItems: 'center', paddingTop: 12 }}>
           <Text style={{ fontSize: 16, color: '#bfbfbf' }}>对准设备上的二维码</Text>
         </View>
-      </RNCamera>
+      </Cmp>
     );
   }
 }

@@ -121,10 +121,10 @@ export default class Scan extends Component {
   }
 
   componentDidMount() {
-    console.warn('scan load')
-    setTimeout(() => {
-      this._getScanData('{"DeviceId":192,"DeviceName":"制冰机"}');
-    }, 1000);
+    // console.warn('scan load')
+    // setTimeout(() => {
+    //   this._getScanData('{"DeviceId":192,"DeviceName":"制冰机"}');
+    // }, 1000);
 
     InteractionManager.runAfterInteractions(() => {
       let cameraPermission = Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
@@ -165,14 +165,14 @@ export default class Scan extends Component {
         let callback = (event) => {
           if (event.data.route && event.data.route.id && event.data.route.id === this.props.route.id) {
             InteractionManager.runAfterInteractions(() => {
-              this._mounted(true);
+              this._mounted(true, () => this.setState({ hidden: false }));
             })
           }
           if (event.data.route && event.data.route.id && event.data.route.id !== this.props.route.id) {
             //导航切换到其他页面，关闭
             InteractionManager.runAfterInteractions(() => {
               that.setState({
-                openCamera: false, flashMode: 'off'
+                openCamera: false, flashMode: 'off', hidden: true,
               })
             })
           }
@@ -210,6 +210,7 @@ export default class Scan extends Component {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <ScanView
           isFetching={this.props.isFetching}
+          hidden={this.state.hidden}
           hasCameraAuth={this.state.hasCameraAuth}
           openCamera={this.state.openCamera}
           scanText={this.props.scanText}
