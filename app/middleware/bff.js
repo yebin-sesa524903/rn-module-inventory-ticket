@@ -303,9 +303,10 @@ export async function apiHierarchyTpl() {
 }
 
 //获取层级台账模板
-export async function apiAddDeviceInitData(data) {
+export async function apiAddDeviceInitData(data, isEdit) {
   return await defaultFetch({
-    url: `/bff/comp-ticket/rest/ticket/addDeviceInitData`,
+    url: isEdit ? `/bff/comp-ticket/rest/ticket/editDeviceInitData`
+      : `/bff/comp-ticket/rest/ticket/addDeviceInitData`,
     verb: 'post',
     body: data
   })

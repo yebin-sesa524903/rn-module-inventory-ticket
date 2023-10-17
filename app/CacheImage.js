@@ -125,6 +125,12 @@ export default class CacheImage extends Component {
     this.checkImageCache(this.props.imageKey).then();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.imageKey !== this.props.imageKey && nextProps.imageKey) {
+      this.checkImageCache(nextProps.imageKey).then();
+    }
+  }
+
   componentWillUnmount() {
 
   }

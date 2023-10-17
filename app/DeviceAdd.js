@@ -678,14 +678,16 @@ export default class extends Component {
       userId: userId,
       userName: userName
     }
+    let isEdit = false;
     if (this.props.device) {
       //如果是编辑，那么传递assetId参数，避免当做新增处理
       createData.assetId = this.props.device.assetId;
-      submitData.isNew = false;
+      isEdit = true;
+      // submitData.isNew = false;
     }
 
     console.log('submitData', submitData, createData, this.tplH);
-    apiAddDeviceInitData(createData).then(ret => {
+    apiAddDeviceInitData(createData, isEdit).then(ret => {
       if (isCodeOk(ret.code)) {
         //返回上层，调用提供的刷新
         this.props.onRefresh && this.props.onRefresh();
