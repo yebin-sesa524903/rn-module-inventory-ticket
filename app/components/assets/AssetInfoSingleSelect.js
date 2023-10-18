@@ -16,6 +16,7 @@ import SearchBar from "../SearchBar";
 import { isPhoneX } from "../../utils";
 import backHelper from "../../utils/backHelper";
 import Icon from "../Icon";
+import { localStr } from '../../utils/Localizations/localization';
 
 
 class InputView extends Component {
@@ -51,7 +52,7 @@ class InputView extends Component {
           title={this.props.title}
           navIcon="back"
           noShadow={true}
-          actions={[{ title: '完成', show: 'always', disable: !this._enableSubmit() }]}
+          actions={[{ title: localStr('lang_toolbar_ok'), show: 'always', disable: !this._enableSubmit() }]}
           onActionSelected={[() => this._doSubmit()]}
           onIconClicked={() => this.props.onBack()}
         />
@@ -62,7 +63,7 @@ class InputView extends Component {
             onChangeText={text => {
               this.setState({ value: text })
             }}
-            value={this.state.value} placeholder={this.props.hint || '请输入'}
+            value={this.state.value} placeholder={this.props.hint || localStr('lang_ticket_filter_input')}
           />
         </View>
       </View>
@@ -137,7 +138,7 @@ export default class SingleSelect extends Component {
   _renderList() {
     let empty = (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 14, color: '#888' }}>搜索无结果</Text>
+        <Text style={{ fontSize: 14, color: '#888' }}>{localStr('lang_single_select_search_no_result')}</Text>
       </View>
     )
 
@@ -170,7 +171,7 @@ export default class SingleSelect extends Component {
         <View style={{ height: 10, backgroundColor: LIST_BG }} />
         <TouchFeedback onPress={() => this._toEdit()}>
           <View style={{ height: 56, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-            <Text style={{ fontSize: 17, color: GREEN }}>手动输入</Text>
+            <Text style={{ fontSize: 17, color: GREEN }}>{localStr('lang_single_select_manual_input')}</Text>
           </View>
         </TouchFeedback>
       </>
@@ -242,7 +243,7 @@ export default class SingleSelect extends Component {
       <SearchBar
         style={{ marginTop: -1, backgroundColor: '#fff', borderColor: '#f2f2f2', borderBottomWidth: 1 }}
         value={this.state.value}
-        hint={this.props.searchHint || '输入关键字'}
+        hint={this.props.searchHint || localStr('lang_single_select_input_keyword')}
         showCancel={this.state.showKeyboard || this.state.value.length > 0}
         onCancel={() => this._clear(true)}
         onClear={() => this._clear(false)}
@@ -260,7 +261,7 @@ export default class SingleSelect extends Component {
     let actions = [];
     let actionsClick = [this._multiSubmit];
     if (this.props.multi) {
-      actions = [{ title: '完成' }]
+      actions = [{ title: localStr('lang_toolbar_ok') }]
     }
     return (
       <View style={{ flex: 1, backgroundColor: LIST_BG }}>

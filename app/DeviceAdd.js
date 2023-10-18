@@ -27,32 +27,24 @@ import ImagePicker from './components/ImagePicker';
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
 import CacheImage from "./CacheImage";
+import { getLanguage, localStr } from "./utils/Localizations/localization";
 const DataGroup = () => [
   {
-    groupName: '基本信息',
+    groupName: localStr('lang_add_device_group_basic'),
     items: [
-      { key: 'productName', name: '资产名称', input: true },
-      { key: 'ProductNum', name: '资产编号', input: true },
-      { key: 'placeAt', name: '所在门店', onRead: true },
-      // {key:'manufacturer',name:'生产厂商',input:true,option:true},
-      // {key:'buyDate',name:'采购日期',date:true,option:true},
-      // {key:'buyAmount',name:'采购金额',option:true,input:true},
-      // {key:'installDate',name:'安装日期',date:true,option:true,select:true},
-      // {key:'description',name:'产品描述',option:true,input:true}
+      { key: 'productName', name: localStr('lang_add_device_basic_name'), input: true },
+      { key: 'ProductNum', name: localStr('lang_add_device_basic_num'), input: true },
+      { key: 'placeAt', name: localStr('lang_add_device_basic_place'), onRead: true },
     ],
   },
   {
-    groupName: '参数配置',
+    groupName: localStr('lang_add_device_group_params'),
     items: [
-      { key: 'deviceClass', name: '设备总称', select: true },
-      { key: 'deviceType', name: '设备类型', select: true },
-      { key: 'deviceModel', name: '设备型号', select: true },
-      // {key:'poleNum',name:'极数',option:true,select:true},
-      // {key:'manufactureDate',name:'生产日期',option:true,date:true,select:true},
-      // {key:'incoming',name:'进线方式',option:true,select:true},
-      // {key:'voltage',name:'额定电压',option:true,select:true},
+      { key: 'deviceClass', name: localStr('lang_add_device_params_class'), select: true },
+      { key: 'deviceType', name: localStr('lang_add_device_params_type'), select: true },
+      { key: 'deviceModel', name: localStr('lang_add_device_params_model'), select: true },
     ],
-    options: [], //这里是根据选择的总称类型型号里的参数动态变化的
+    options: [],
   },
 ];
 
@@ -145,8 +137,8 @@ export default class extends Component {
         //这里给赋值
         if (this.props.device) this._setParamMenu(this.tplData)
       } else {
-        Alert.alert('', data.Msg || '获取模板数据失败！', [
-          { text: '确定', onPress: () => { } },
+        Alert.alert('', data.Msg || localStr('lang_add_device_api_tpl_error'), [
+          { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
       console.log('tpl tree', data);
@@ -157,8 +149,8 @@ export default class extends Component {
       if (isCodeOk(data.Code)) {
         this.tplH = data.Data.datas.find(item => item.name === '设备');
       } else {
-        Alert.alert('', data.Msg || '获取层级模板数据失败！', [
-          { text: '确定', onPress: () => { } },
+        Alert.alert('', data.Msg || localStr('lang_add_device_api2_tpl_error'), [
+          { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
     })
@@ -194,7 +186,7 @@ export default class extends Component {
         <Text style={{ color: '#595959', fontSize: 15 }}>{row.name}</Text>
         {!row.option ? null : (
           <Text style={{ color: '#BFBFBF', fontSize: 15, marginLeft: 6 }}>
-            {'(选填)'}
+            {localStr('lang_add_device_options')}
           </Text>
         )}
         <View style={{ flex: 1 }} />
@@ -208,7 +200,7 @@ export default class extends Component {
           }}
           textAlign='right'
           value={value}
-          placeholder={'请输入'}
+          placeholder={localStr('lang_ticket_filter_input')}
           editable={!row.readOnly}
           placeholderTextColor={'#BFBFBF'}
           underlineColorAndroid="transparent"
@@ -290,7 +282,7 @@ export default class extends Component {
       id: 'device_add',
       component: SingleSelect,
       passProps: {
-        title: `请选择${row.name}`,
+        title: `${localStr('lang_add_device_row_select')}${row.name}`,
         dataList: data,
         multi: row.multi,
         value: row.Value,
@@ -321,14 +313,14 @@ export default class extends Component {
       if (value) {
         color = '#595959';
       } else {
-        value = '请选择';
+        value = localStr('lang_add_device_row_select');
       }
     } else {
       value = this.state.data[row.key];
       if (value) {
         color = '#595959';
       } else {
-        value = '请选择';
+        value = localStr('lang_add_device_row_select');
       }
     }
     return (
@@ -345,7 +337,7 @@ export default class extends Component {
         <Text style={{ color: '#595959', fontSize: 15 }}>{row.name}</Text>
         {!row.option ? null : (
           <Text style={{ color: '#BFBFBF', fontSize: 15, marginLeft: 6 }}>
-            {'(选填)'}
+            {localStr('lang_add_device_options')}
           </Text>
         )}
         {/*<View style={{flex:1}}/>*/}
@@ -376,11 +368,11 @@ export default class extends Component {
     return (
       <DateTimePicker
         is24Hour={true}
-        titleIOS={'选择日期'}
-        headerTextIOS={'选择日期'}
+        titleIOS={localStr('lang_ticket_filter_select_date')}
+        headerTextIOS={localStr('lang_ticket_filter_select_date')}
         titleStyle={{ fontSize: 17, color: '#333' }}
-        cancelTextIOS={'取消'}
-        confirmTextIOS={'确定'}
+        cancelTextIOS={localStr("lang_ticket_filter_cancel")}
+        confirmTextIOS={localStr('lang_ticket_filter_ok')}
         mode={'date'}
         datePickerModeAndroid={'spinner'}
         date={this._getDateTime()}
@@ -511,10 +503,7 @@ export default class extends Component {
             borderBottomColor: '#f0f0f0',
           }}
         >
-          <Text style={{ fontSize: 15, color: '#1f1f1f' }}>{'照片'}</Text>
-          {/* <Text style={{ color: '#BFBFBF', fontSize: 15, marginLeft: 6 }}>
-            {'(选填)'}
-          </Text> */}
+          <Text style={{ fontSize: 15, color: '#1f1f1f' }}>{localStr('lang_add_device_group_photo')}</Text>
         </View>
         <TouchableOpacity
           style={{
@@ -579,16 +568,16 @@ export default class extends Component {
       if (!value) return true;
     });
     if (find || !this.state.logo) {
-      Alert.alert('', '资产名称、编号、总称、类型、型号、图片都不能为空', [
-        { text: '确定', onPress: () => { } },
+      Alert.alert('', localStr('lang_add_device_submit_valid'), [
+        { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
       ]);
       return;
     }
 
     //如果图片没有上传成功，给出提示
     if (this.state.logo.loading || this.state.logo.error) {
-      Alert.alert('', '图片上传中，请稍后...', [
-        { text: '确定', onPress: () => { } },
+      Alert.alert('', localStr('lang_add_device_image_uploading'), [
+        { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
       ]);
       return;
     }
@@ -694,8 +683,8 @@ export default class extends Component {
         this._doBack();
       } else {
         //给出报错提示
-        Alert.alert('', ret.msg || '报错失败！', [
-          { text: '确定', onPress: () => { } },
+        Alert.alert('', ret.msg || localStr("lang_add_device_api_submit_error"), [
+          { text: localStr("lang_ticket_filter_ok"), onPress: () => { } },
         ]);
       }
     })
@@ -705,7 +694,7 @@ export default class extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#F4F6F8' }}>
         <Toolbar
-          title={'盘盈'}
+          title={localStr('lang_add_device_title')}
           navIcon="back"
           onIconClicked={this._doBack}
           actions={[]}
@@ -728,7 +717,7 @@ export default class extends Component {
           }}
           onPress={this._doSubmit}
         >
-          <Text style={{ fontSize: 17, color: '#fff' }}>{'保存'}</Text>
+          <Text style={{ fontSize: 17, color: '#fff' }}>{localStr("lang_add_device_submit_button")}</Text>
         </TouchableOpacity>
         {this._renderPickerDate()}
       </View>

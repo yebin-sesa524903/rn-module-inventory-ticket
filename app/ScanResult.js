@@ -23,9 +23,16 @@ import {
 import { forEach } from 'lodash';
 // import { Toast } from '@ant-design/react-native';
 import Toast from 'react-native-root-toast';
-
 const StatusColors = ['#3DCD58', '#F53F3F', '#1F1F1F', '#3491FA', '#FAAD14', '#F53F3F', 'red']
-const StatusTags = ['在用', '缺失', '闲置', '调拨中', '维修中', '报废', '清理中'];
+const StatusTags = [
+  localStr('lang_scan_result_page_status_tag1'),
+  localStr('lang_scan_result_page_status_tag2'),
+  localStr('lang_scan_result_page_status_tag3'),
+  localStr('lang_scan_result_page_status_tag4'),
+  localStr('lang_scan_result_page_status_tag5'),
+  localStr('lang_scan_result_page_status_tag6'),
+  localStr('lang_scan_result_page_status_tag7'),
+];
 
 export default class extends Component {
   constructor(props) {
@@ -33,7 +40,7 @@ export default class extends Component {
     //这里根据device进行初始化
     let info = props.device.extensionProperties;
     let inventoryType = 1;
-    let tags = [{ tag: '故障资产', sel: false }, { tag: '待清理资产', sel: false }];
+    let tags = [{ tag: localStr('lang_scan_result_page_tag1'), sel: false }, { tag: localStr('lang_scan_result_page_tag2'), sel: false }];
     let remark = '';
     let imgUrl = null;
     if (info) {
@@ -109,13 +116,13 @@ export default class extends Component {
       if (data.code === '0' && data.data === true) {
         this.props.onRefresh && this.props.onRefresh();
         // console.warn('----', data);
-        Toast.show('盘点结果提交成功！', {
+        Toast.show(localStr('lang_scan_result_submit_success_tip'), {
           duration: 1000,
           position: -80,
         });
         this.props.navigator.pop()
       } else {
-        Toast.show('盘点失败，请检查参数！', {
+        Toast.show(localStr('lang_scan_result_submit_error_tip'), {
           duration: 1000,
           position: -80,
         });
@@ -126,7 +133,7 @@ export default class extends Component {
     return (
       <View style={{ backgroundColor: '#fff', borderRadius: 12, margin: 16, padding: 16 }}>
         <View style={{ borderBottomColor: '#F0F0F0', borderBottomWidth: 1, paddingBottom: 16 }}>
-          <Text style={{ color: '#1F1F1F', fontSize: 15, fontWeight: '500' }}>盘点结果</Text>
+          <Text style={{ color: '#1F1F1F', fontSize: 15, fontWeight: '500' }}>{localStr('lang_scan_result_label1')}</Text>
         </View>
 
         <View style={{
@@ -134,21 +141,21 @@ export default class extends Component {
           borderBottomWidth: 1
         }}>
           <Text style={{ color: '#1F1F1F', fontSize: 15 }}>
-            {'盘点结果'}
+            {localStr('lang_scan_result_label1')}
           </Text>
           <View style={{ flex: 1 }} />
-          {this._renderRadio('已盘', this.state.inventoryType === 1, () => this.setState({ inventoryType: 1, statusType: 0 }))}
-          {this._renderRadio('盘亏', this.state.inventoryType === 2, () => this.setState({ inventoryType: 2, statusType: 4 }))}
+          {this._renderRadio(localStr('lang_scan_result_label2'), this.state.inventoryType === 1, () => this.setState({ inventoryType: 1, statusType: 0 }))}
+          {this._renderRadio(localStr('lang_scan_result_label3'), this.state.inventoryType === 2, () => this.setState({ inventoryType: 2, statusType: 4 }))}
         </View>
         {this.state.inventoryType === 1 && (<View style={{
           flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomColor: '#F0F0F0',
           borderBottomWidth: 1
         }}>
           <Text style={{ color: '#1F1F1F', fontSize: 15 }}>
-            {'标签'}
+            {localStr('lang_scan_result_label4')}
           </Text>
           <Text style={{ color: '#BFBFBF', fontSize: 15 }}>
-            {'(选填)'}
+            {localStr('lang_scan_result_label5')}
           </Text>
           <View style={{ flex: 1 }} />
           {this.state.tags.map(item => this._renderTag(item))}
@@ -160,7 +167,7 @@ export default class extends Component {
           multiline={true}
           placeholderTextColor={'#BFBFBF'}
           textAlignVertical={'top'}
-          placeholder={'请输入备注（选填）'}
+          placeholder={localStr('lang_scan_result_label6')}
           onChangeText={(text) => this.setState({ remark: text })}
           value={this.state.remark} />
       </View>
@@ -209,7 +216,7 @@ export default class extends Component {
 
   _renderStatusTag() {
     let color = 'gray';
-    let tag = '查询中';
+    let tag = localStr('lang_scan_result_label7');
     if (!this.state.isRequestStatus) {
       tag = StatusTags[this.state.deviceStatus];
       color = StatusColors[this.state.deviceStatus];
@@ -257,7 +264,7 @@ export default class extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#F4F6F8' }}>
         <Toolbar
-          title={'盘点结果'}
+          title={localStr('lang_scan_result_label8')}
           navIcon="back"
           onIconClicked={() => {
             this.props.navigator.pop()
@@ -276,7 +283,7 @@ export default class extends Component {
               {this._renderStatusTag()}
             </View>
 
-            <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${assetCode}`}</Text>
+            <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`${localStr("lang_scan_result_label10")}：${assetCode}`}</Text>
           </View>
         </View>
         {this._renderResult()}
@@ -284,7 +291,7 @@ export default class extends Component {
           position: 'absolute', left: 16, right: 16, bottom: isPhoneX() ? 32 : 16, height: 44,
           backgroundColor: GREEN, borderRadius: 8, alignItems: 'center', justifyContent: 'center'
         }} onPress={this._submitResult}>
-          <Text style={{ fontSize: 17, color: '#fff' }}>{'确认盘点'}</Text>
+          <Text style={{ fontSize: 17, color: '#fff' }}>{localStr('lang_scan_result_label9')}</Text>
         </TouchableOpacity>
         {this._renderActionSheet()}
       </View>

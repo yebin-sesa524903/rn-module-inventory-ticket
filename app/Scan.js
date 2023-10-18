@@ -6,7 +6,7 @@ import {
   Alert, View,
   PermissionsAndroid, Platform, TouchableOpacity, Image, Text
 } from 'react-native';
-
+import { getLanguage, localStr } from "./utils/Localizations/localization";
 
 
 import ScanView from './components/Scanner';
@@ -74,10 +74,10 @@ export default class Scan extends Component {
         }
       } else {
         this.setState({ openCamera: false });
-        Alert.alert('识别失败', '非系统可识别的二维码',
+        Alert.alert(localStr("lang_scan_page_alert_error_title"), localStr('lang_scan_page_alert_error_content'),
           [
             {
-              text: '知道了', onPress: () => {
+              text: localStr('lang_scan_page_alert_error_button'), onPress: () => {
                 this.setState({ openCamera: true });
                 return;
               }
@@ -141,11 +141,11 @@ export default class Scan extends Component {
               this.setState({ hasCameraAuth: false });
               Alert.alert(
                 '',
-                '请在手机的' + '"' + '设置' + '"' + '中，允许当前应用访问您的摄像头',
+                localStr('lang_image_picker_accept_msg'),
                 [
-                  { text: '取消', onPress: () => { } },
+                  { text: localStr('lang_image_picker_cancel'), onPress: () => { } },
                   {
-                    text: '允许', onPress: () => {
+                    text: localStr('lang_image_picker_accept'), onPress: () => {
                       if (Permissions.openSettings()) {
                         Permissions.openSettings();
                       }
@@ -233,7 +233,8 @@ export default class Scan extends Component {
           <TouchableOpacity onPress={() => this._didSwitchLight()}>
             <Image style={{ width: 56, height: 56 }} source={this.state.flashMode != 'on' ? require('./images/scan_light/light_off.png') : require('./images/scan_light/light_on.png')} />
           </TouchableOpacity>
-          <Text style={{ color: '#595959', fontSize: 16, marginTop: 12 }}>{`${this.state.flashMode === 'on' ? '关闭' : '打开'}手电筒`}</Text>
+          <Text style={{ color: '#595959', fontSize: 16, marginTop: 12 }}>
+            {`${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')}`}</Text>
         </View>
         <TouchableOpacity style={{ position: 'absolute', left: 22, top: 44 }}
           onPress={() => this.props.navigator.pop()}

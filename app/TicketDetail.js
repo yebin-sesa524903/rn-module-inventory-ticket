@@ -70,13 +70,6 @@ import DeviceAdd from "./DeviceAdd";
 import { Toast } from '@ant-design/react-native';
 // import Share from "react-native-share";
 
-const DEVICE_STATUS = [
-  // { name: '在用', type: 0, icon: require('./images/device_status/device_new.png') },
-  // { name: '缺失', type: 1, icon: require('./images/device_status/device_new.png') },
-  { name: '已盘', type: 2, icon: require('./images/device_status/device_already_pd.png') },
-  { name: '盘亏', type: 3, icon: require('./images/device_status/device_loss.png') },
-  { name: '盘盈', type: 4, icon: require('./images/device_status/device_new.png') },
-]
 
 const DEVICE_STATUS_ICON = {
   0: require('./images/device_status/device_new.png'),
@@ -84,15 +77,6 @@ const DEVICE_STATUS_ICON = {
   2: require('./images/device_status/device_already_pd.png'),
   3: require('./images/device_status/device_loss.png'),
   4: require('./images/device_status/device_new.png'),
-}
-
-function makeTestDevices() {
-  return [
-    { name: '空调', code: 'FCCD-77498489489' },
-    { name: '冰箱', code: 'FCCD-77498489481' },
-    { name: '净水器', code: 'FCCD-77498489482' },
-    { name: '洗碗机', code: 'FCCD-77498489483' }
-  ]
 }
 
 class Avatar extends Component {
@@ -141,9 +125,9 @@ export default class TicketDetail extends Component {
       <View style={{ margin: 16, padding: 16, backgroundColor: "#fff", borderRadius: 12 }}>
         <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{this.state.rowData.title}</Text>
         <Text style={{ fontSize: 12, color: '#666', marginVertical: 8 }}>
-          {`执行时间：${moment(this.state.rowData.startTime).format('YYYY年MM月DD日')} - ${moment(this.state.rowData.endTime).format('YYYY年MM月DD日')}`}
+          {`${localStr('lang_ticket_detail_execute_time')}：${moment(this.state.rowData.startTime).format('YYYY-MM-DD')} ~ ${moment(this.state.rowData.endTime).format('YYYY-MM-DD')}`}
         </Text>
-        <Text style={{ fontSize: 12, lineHeight: 20, color: '#666', }}>{`执行人：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
+        <Text style={{ fontSize: 12, lineHeight: 20, color: '#666', }}>{`${localStr('lang_ticket_detail_execute_person')}：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
       </View>
     )
   }
@@ -234,44 +218,7 @@ export default class TicketDetail extends Component {
       </View>
     );
   }
-  // _getDocumentsView(){
-  //   var {rowData} = this.props;
-  //   var startTime = moment(rowData.get('StartTime')).format('YYYY-MM-DD'),
-  //     endTime = moment(rowData.get('EndTime')).format('YYYY-MM-DD');
-  //   var executor = rowData.get('ExecutorNames').join('、');
-  //   var documents = rowData.get('Documents').map((item)=> {return {name:item.get('DocumentName'),id:item.get('DocumentId'),size:item.get('Size')}}).toArray();
-  //   var content = [
-  //     // {label:'执行时间',value:`${startTime} 至 ${endTime}`},
-  //     // {label:'执行人',value:executor},
-  //     {label:'作业文档',value:documents}
-  //   ];
-  //   var style={marginHorizontal:16,marginBottom:16};
-  //   if (Platform.OS === 'ios') {
-  //     style={marginHorizontal:16,marginBottom:8,marginTop:8};
-  //   }
-  //   if (!documents||documents.length===0) {
-  //     return ;
-  //   }
-  //   return (
-  //     <View style={{backgroundColor:'white'}}>
-  //       <View style={{paddingBottom:15,paddingHorizontal:16,}}>
-  //         <View style={{paddingTop:16,paddingBottom:11,
-  //           flexDirection:'row',alignItems:'center',
-  //         }}>
-  //           <Text style={{fontSize:17,color:'black',fontWeight:'bold'}}>{'作业文档'}</Text>
-  //         </View>
-  //         {
-  //           content.map((item,index) => {
-  //             return (
-  //               <LabelValue key={index} style={{marginBottom:0,}} label={item.label} value={item.value} forceStoped={this.state.forceStoped}/>
-  //             )
-  //           })
-  //         }
-  //       </View>
-  //       <ListSeperator marginWithLeft={16}/>
-  //     </View>
-  //   )
-  // }
+
   _getIDView() {
     let rowData = this.state.rowData;
     let strId = rowData.ticketCode || '';
@@ -426,17 +373,6 @@ export default class TicketDetail extends Component {
   _renderSubmittedButton() {
     return (
       <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
-
-        {/*<Button*/}
-        {/*  style={[styles.button,{borderWidth:1,borderColor:'#888',*/}
-        {/*    backgroundColor:'#fff',marginLeft:16,flex:1,marginRight:0*/}
-        {/*  }]}*/}
-        {/*  textStyle={{*/}
-        {/*    fontSize:16,*/}
-        {/*    color:'#888'*/}
-        {/*  }}*/}
-        {/*  text={'驳回'}*/}
-        {/*  onClick={() => this._rejectTicket()} />*/}
         <Button
           style={[styles.button, {
             backgroundColor: GREEN,
@@ -511,31 +447,12 @@ export default class TicketDetail extends Component {
       // Alert.alert(localStr('lang_alert_title'), localStr('lang_ticket_submit_invalid'));
       // return;
     }
-    //还要判断盘点设备是否有设置了状态
-    // let devices = this.state.rowData.assets || []
-    // if (devices.find(d => {
-    //   if (this.state.localDeviceState) {
-    //     return !this.state.localDeviceState[d.assetId] && this.state.localDeviceState[d.assetId] !== 0
-    //   } else {
-    //     return !d.status && d.status !== 0
-    //   }
-
-    // })) {
-    //   this.showToast('请为所有设备填写盘点结果')
-    //   return;
-    // }
-
 
     apiSubmitTicket({ id: this.state.rowData.id }).then(ret => {
       if (ret.code === CODE_OK) {
         this.props.ticketChanged && this.props.ticketChanged();
-        // Alert.alert(localStr('lang_alert_title'), '工单提交后，状态为闲置和缺失的设备将被停用自动盘点的监测规则');
         this._loadTicketDetail();
-        // //接口异步更新，重新获取详情可能状态还没变，这里手动更新状态
-        // let rowData = this.state.rowData;
-        // rowData.ticketState = STATE_PENDING_AUDIT;
-        // this.setState({rowData})
-        this.showToast("提交成功");
+        this.showToast(localStr('lang_ticket_detail_submit_success'));
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
       }
@@ -603,19 +520,19 @@ export default class TicketDetail extends Component {
           </View> */}
           <View style={{ flex: 3, alignItems: 'center', marginHorizontal: 16, flexDirection: 'row', height: 40, borderRadius: 8, backgroundColor: GREEN, }}>
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._addNewInventory}>
-              <Text style={{ color: '#fff', fontSize: 14 }}>{'新增盘盈'}</Text>
+              <Text style={{ color: '#fff', fontSize: 14 }}>{localStr('lang_ticket_detail_add_device')}</Text>
             </TouchableOpacity>
             <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
             {!this.state.canScan ? null :
               <>
                 <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
-                  <Text style={{ color: '#fff', fontSize: 14 }}>{'扫码盘点'}</Text>
+                  <Text style={{ color: '#fff', fontSize: 14 }}>{localStr('lang_ticket_detail_scan_device')}</Text>
                 </TouchableOpacity>
                 <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
               </>
             }
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={() => this._submitTicket()}>
-              <Text style={{ color: '#fff', fontSize: 14 }}>{'提交审批'}</Text>
+              <Text style={{ color: '#fff', fontSize: 14 }}>{localStr('lang_ticket_detail_submit_ticket')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -642,7 +559,7 @@ export default class TicketDetail extends Component {
   _addNewInventory = () => {
     console.log('add inventory')
     if (!this.state.rowData.extensionProperties?.objectName) {
-      this.showToast('当前工单异常，无法创建盘盈设备');
+      this.showToast(localStr('lang_ticekt_detail_info_exception'));
       return;
     }
     this.props.navigator.push({
@@ -672,10 +589,10 @@ export default class TicketDetail extends Component {
           if (type == 'device') {
             let device = this.state.rowData.assets.find((item) => item.assetId === result.DeviceId);
             if (!device) {
-              Alert.alert('该资产不在本次盘点范围内', null,
+              Alert.alert(localStr('lang_ticket_detail_not_include_device'), null,
                 [
                   {
-                    text: '知道了', onPress: () => {
+                    text: localStr('lang_scan_page_alert_error_button'), onPress: () => {
                       onReset();
                       return;
                     }
@@ -698,7 +615,7 @@ export default class TicketDetail extends Component {
     }
     Alert.alert(
       '',
-      localStr('确定删除这个盘盈设备吗？'),
+      localStr(localStr('lang_ticket_detail_delete_device_confirm')),
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -881,8 +798,8 @@ export default class TicketDetail extends Component {
         this._loadTicketDetail();
       } else {
         //给出提示
-        Alert.alert("", data.msg || '设置状态失败！', [
-          { text: '确定', onPress: () => { } }
+        Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
+          { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
         ]);
       }
     })
@@ -1074,17 +991,6 @@ export default class TicketDetail extends Component {
         onBack: () => this.props.navigator.pop()
       }
     })
-    // this.setState({
-    //   arrActions: DEVICE_STATUS.map(item => {
-    //     return {
-    //       title: item.name,
-    //       click: () => {
-    //         this._checkDeviceStatus(device, item.type)
-    //       }
-    //     }
-    //   }),
-    //   modalVisible: true
-    // })
   }
 
   _renderInventoryDeviceList() {
@@ -1130,7 +1036,7 @@ export default class TicketDetail extends Component {
             <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
             <View style={{ marginLeft: 16, flex: 1 }}>
               <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
-              <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`编号：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
+              <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`${localStr('lang_scan_result_label10')}：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
             </View>
             {
               this.state.rowData.ticketState === STATE_NOT_START ? null :
@@ -1139,7 +1045,7 @@ export default class TicketDetail extends Component {
                     // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
                     // || (!item.status && item.status !== 0)) ?
                     (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
-                      <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>{this.state.canManual && this._canExecute() ? '盘点' : ''}</Text> :
+                      <Text style={{ fontSize: 12, color: GREEN, marginTop: 8 }}>{this.state.canManual && this._canExecute() ? localStr('lang_ticket_detail_device_check') : ''}</Text> :
                       <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
                   }
                 </TouchFeedback>
@@ -1159,7 +1065,13 @@ export default class TicketDetail extends Component {
   }
 
   _renderInventoryTabs(arrStatus) {
-    let tabs = [`全部(${arrStatus[0]})`, `未盘(${arrStatus[1]})`, `已盘(${arrStatus[2]})`, `盘亏(${arrStatus[3]})`, `盘盈(${arrStatus[4]})`];
+    let tabs = [
+      `${localStr('lang_ticket_detail_device_tab1')}(${arrStatus[0]})`,
+      `${localStr('lang_ticket_detail_device_tab2')}(${arrStatus[1]})`,
+      `${localStr('lang_ticket_detail_device_tab3')}(${arrStatus[2]})`,
+      `${localStr('lang_ticket_detail_device_tab4')}(${arrStatus[3]})`,
+      `${localStr('lang_ticket_detail_device_tab5')}(${arrStatus[4]})`
+    ];
     return (
       <View style={{ marginBottom: -10, flexDirection: 'row', justifyContent: 'space-between' }}>
         {
@@ -1196,11 +1108,11 @@ export default class TicketDetail extends Component {
 
   _makeMenus() {
     return [
-      { title: '盘盈资产自动新增入库', sel: false },
-      { title: '未盘资产自动盘亏处理并创建清理报废单', sel: false },
-      { title: '盘亏资产自动创建清理报废单', sel: false },
-      { title: '标记为故障的资产自动创建报修单', sel: false },
-      { title: '标记为待清理的资产自动创建清理报废单', sel: false },
+      { title: localStr('lang_ticket_detail_submit_check1'), sel: false },
+      { title: localStr("lang_ticket_detail_submit_check2"), sel: false },
+      { title: localStr('lang_ticket_detail_submit_check3'), sel: false },
+      { title: localStr('lang_ticket_detail_submit_check4'), sel: false },
+      { title: localStr('lang_ticket_detail_submit_check5'), sel: false },
     ]
   }
 
@@ -1236,9 +1148,9 @@ export default class TicketDetail extends Component {
       )
     })
     return (
-      <CommonDialog modalVisible={this.state.submitModalVisible} title={'审批通过'}>
+      <CommonDialog modalVisible={this.state.submitModalVisible} title={localStr('lang_ticket_detail_approved')}>
         <View style={{ padding: 16, borderRadius: 12, backgroundColor: '#fff', marginHorizontal: 32 }}>
-          <Text style={{ fontSize: 17, color: '#1f1f1f', fontWeight: '600', alignSelf: 'center' }}>{'审批通过'}</Text>
+          <Text style={{ fontSize: 17, color: '#1f1f1f', fontWeight: '600', alignSelf: 'center' }}>{localStr('lang_ticket_detail_approved')}</Text>
           {menus}
           <View style={{
             borderTopColor: '#bfbfbf', flexDirection: 'row', height: 40, borderTopWidth: 1, marginHorizontal: -16,
@@ -1246,12 +1158,12 @@ export default class TicketDetail extends Component {
           }}>
             <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => this.setState({ submitModalVisible: false })}>
-              <Text style={{ color: '#3491FA', fontSize: 17 }}>{'取消'}</Text>
+              <Text style={{ color: '#3491FA', fontSize: 17 }}>{localStr('lang_ticket_filter_cancel')}</Text>
             </TouchableOpacity>
             <View style={{ width: 1, backgroundColor: '#bfbfbf' }} />
             <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => this._approveTicket()}>
-              <Text style={{ color: '#3491FA', fontSize: 17 }}>{'确定'}</Text>
+              <Text style={{ color: '#3491FA', fontSize: 17 }}>{localStr("lang_ticket_filter_ok")}</Text>
             </TouchableOpacity>
           </View>
         </View>

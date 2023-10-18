@@ -7,6 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import ViewFinder from './ViewFinder.js';
 import { RNCamera } from 'react-native-camera';
+import { localStr } from '../utils/Localizations/localization.js'
 
 export default class Scanner extends Component {
   constructor(props) {
@@ -57,7 +58,7 @@ export default class Scanner extends Component {
         </View>
 
         <View style={{ flex: 1, backgroundColor: '#000000', opacity: 0.6, alignItems: 'center', paddingTop: 12 }}>
-          <Text style={{ fontSize: 16, color: '#bfbfbf' }}>对准设备上的二维码</Text>
+          <Text style={{ fontSize: 16, color: '#bfbfbf' }}>{localStr('lang_scan_tip')}</Text>
         </View>
       </Cmp>
     );
