@@ -372,13 +372,13 @@ export default class TicketDetail extends Component {
 
   _renderSubmittedButton() {
     return (
-      <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+      <Bottom borderColor={'#f2f2f2'} style={{ paddingTop: 12 }} backgroundColor={'#fff'}>
         <Button
           style={[styles.button, {
             backgroundColor: GREEN,
             marginLeft: 16,
             flex: 1,
-            borderRadius: 2,
+            borderRadius: 8,
           }]}
           textStyle={{
             fontSize: 16,
@@ -481,7 +481,7 @@ export default class TicketDetail extends Component {
       let btnLabel = localStr('lang_ticket_detail_begin_execute');
       //还需要判断是否是创建者和有工单执行权限
       return (
-        <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+        <Bottom borderColor={'#f2f2f2'} style={{ paddingTop: 12 }} backgroundColor={'#fff'}>
           <Button
             style={[styles.button, {
               borderWidth: 1, borderColor: '#888', display: 'none',
@@ -512,7 +512,7 @@ export default class TicketDetail extends Component {
     //执行中和已驳回操作一样
     if (this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) && !isScollView) {
       return (
-        <Bottom borderColor={'#f2f2f2'} height={54} backgroundColor={'#fff'}>
+        <Bottom borderColor={'#f2f2f2'} style={{ paddingTop: 12 }} backgroundColor={'#fff'}>
           {/* <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flex: 1 }}>
               {logButton}

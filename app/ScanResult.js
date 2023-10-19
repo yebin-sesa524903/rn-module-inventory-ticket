@@ -140,7 +140,7 @@ export default class extends Component {
           flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomColor: '#F0F0F0',
           borderBottomWidth: 1
         }}>
-          <Text style={{ color: '#1F1F1F', fontSize: 15 }}>
+          <Text style={{ color: '#595959', fontSize: 15 }}>
             {localStr('lang_scan_result_label1')}
           </Text>
           <View style={{ flex: 1 }} />
@@ -151,7 +151,7 @@ export default class extends Component {
           flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomColor: '#F0F0F0',
           borderBottomWidth: 1
         }}>
-          <Text style={{ color: '#1F1F1F', fontSize: 15 }}>
+          <Text style={{ color: '#595959', fontSize: 15 }}>
             {localStr('lang_scan_result_label4')}
           </Text>
           <Text style={{ color: '#BFBFBF', fontSize: 15 }}>
@@ -274,7 +274,7 @@ export default class extends Component {
         />
         <View style={{
           flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 16, borderTopColor: '#f5f5f5',
-          borderTopWidth: 1, paddingTop: 10
+          borderTopWidth: 1, paddingTop: 10, backgroundColor: '#fff', borderRadius: 12, margin: 16, padding: 16, marginBottom: 0,
         }}>
           <CacheImage borderWidth={1} imageKey={this.state.imgUrl} defaultImgPath={require('./images/building_default/building.png')} width={70} height={50} />
           <View style={{ marginLeft: 16, flex: 1 }}>
