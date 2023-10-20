@@ -704,21 +704,21 @@ export default class extends Component {
           {this.state.groupData.map((group) => this._renderGroup(group))}
           {this._renderImage()}
         </ScrollView>
-        <TouchableOpacity
-          style={{
-            marginHorizontal: 16,
-            marginTop: 10,
-            marginBottom: isPhoneX() ? 32 : 16,
-            height: 44,
-            backgroundColor: GREEN,
-            borderRadius: 8,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onPress={this._doSubmit}
-        >
-          <Text style={{ fontSize: 17, color: '#fff' }}>{localStr("lang_add_device_submit_button")}</Text>
-        </TouchableOpacity>
+        <View style={{ backgroundColor: '#fff', padding: 16, paddingTop: 12, paddingBottom: isPhoneX() ? 32 : 16, }}>
+          <TouchableOpacity
+            style={{
+              height: 40,
+              backgroundColor: GREEN,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={this._doSubmit}
+          >
+            <Text style={{ fontSize: 17, color: '#fff' }}>{localStr("lang_add_device_submit_button")}</Text>
+          </TouchableOpacity>
+        </View>
+
         {this._renderPickerDate()}
       </View>
     );

@@ -1205,14 +1205,14 @@ export default class TicketDetail extends Component {
       if (Platform.OS === 'ios') {
         bottomButton = (
           <View style={{ backgroundColor: '#fff' }}>
-            <View style={{ marginBottom: (isPhoneX() ? 34 : 0) }}>
+            <View style={{ marginBottom: (isPhoneX() ? 32 : 16) }}>
               {bottomButton}
             </View>
           </View>
         );
       } else {
         bottomButton = (
-          <View style={{ marginBottom: (isPhoneX() ? 34 : 0) }}>
+          <View style={{ marginBottom: (isPhoneX() ? 32 : 16) }}>
             {bottomButton}
           </View>
         );
