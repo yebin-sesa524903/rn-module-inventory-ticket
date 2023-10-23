@@ -449,7 +449,7 @@ export default class TicketList extends Component {
           weekStartsOn={1} // 0,1,2,3,4,5,6 for S M T W T F S, defaults to 0
         />
         {this._renderRightButton()}
-        <View style={{ position: 'absolute', left: 16, top: 0 }}>
+        <View style={{ position: 'absolute', left: 16, top: Platform.OS === 'ios' ? 0 : 4 }}>
           <TouchFeedback onPress={this._goBack}>
             <Image style={{ tintColor: '#333', width: 20, height: 20 }} source={require('./images/back_arrow/back_arrow.png')} />
           </TouchFeedback>

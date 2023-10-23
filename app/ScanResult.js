@@ -287,12 +287,15 @@ export default class extends Component {
           </View>
         </View>
         {this._renderResult()}
-        <TouchableOpacity style={{
-          position: 'absolute', left: 16, right: 16, bottom: isPhoneX() ? 32 : 16, height: 44,
-          backgroundColor: GREEN, borderRadius: 8, alignItems: 'center', justifyContent: 'center'
-        }} onPress={this._submitResult}>
-          <Text style={{ fontSize: 17, color: '#fff' }}>{localStr('lang_scan_result_label9')}</Text>
-        </TouchableOpacity>
+        <View style={{ backgroundColor: '#fff', position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingTop: 12, paddingBottom: isPhoneX() ? 32 : 16, }}>
+          <TouchableOpacity style={{
+            height: 40,
+            backgroundColor: GREEN, borderRadius: 8, alignItems: 'center', justifyContent: 'center'
+          }} onPress={this._submitResult}>
+            <Text style={{ fontSize: 17, color: '#fff' }}>{localStr('lang_scan_result_label9')}</Text>
+          </TouchableOpacity>
+        </View>
+
         {this._renderActionSheet()}
       </View>
     )
