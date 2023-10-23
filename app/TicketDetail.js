@@ -941,7 +941,7 @@ export default class TicketDetail extends Component {
     return (
       <View style={{ backgroundColor: '#fff', padding: 16, margin: 16, marginBottom: 0, borderRadius: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontSize: 17, color: '#333', fontWeight: '500' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+          <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
         </View>
         <View style={{ height: 1, backgroundColor: '#f2f2f2', marginRight: -16, marginTop: 16, marginBottom: 12 }} />
         <Text style={{ fontSize: 17, color: '#333', lineHeight: 28 }}>{reason}</Text>
@@ -1033,7 +1033,10 @@ export default class TicketDetail extends Component {
             flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: '#f5f5f5',
             borderTopWidth: 1, paddingTop: 10
           }}>
-            <CacheImage borderWidth={1} space={10} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
+            <View style={{ borderRadius: 8, overflow: 'hidden', }}>
+              <CacheImage borderWidth={0} space={0} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
+            </View>
+
             <View style={{ marginLeft: 16, flex: 1 }}>
               <Text style={{ color: '#333', fontSize: 14 }}>{item.assetName}</Text>
               <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>{`${localStr('lang_scan_result_label10')}：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
