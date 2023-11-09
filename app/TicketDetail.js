@@ -48,13 +48,16 @@ import NetworkImage from './components/NetworkImage'
 import {
   apiCheckDeviceStatus,
   apiCloseTicket,
+  apiCreateScrapTicket,
   apiCreateTicket,
   apiDelTicketLog,
   apiEditTicket,
   apiGetTicketExecutors, apiIgnoreTicket, apiRejectTicket, apiSubmitTicket,
   apiTicketDetail, apiTicketDeviceStatus, apiRemoveTicketInitAsset,
   apiTicketExecute, apiTicketLostDevices, customerId, getBaseUri,
-  userId
+  userId,
+  userName,
+  apiSubmitPointCheckResult,
 } from "./middleware/bff";
 import ImagePicker from "./components/ImagePicker";
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
@@ -353,21 +356,110 @@ export default class TicketDetail extends Component {
       </View>
     )
   }
-
+  _createScrapTicket(arrScrapDevices) {
+    let createDate = moment().format('YYYY-MM-DD HH:mm:ss');
+    let body = {
+      title: '',
+      startTime: createDate,
+      endTime: createDate,
+      executors: [{
+        userId: userId,
+        userName: userName,
+      }],
+      ticketType: 14,
+      content: '',
+      sysId: 1,
+      sysClass: 1,
+      userId: userId,
+      userName: userName,
+      scrapTime: createDate,
+      objectId: this.state.rowData.objectId,
+      objectType: this.state.rowData.objectType,
+      assets: arrScrapDevices,
+    }
+    console.warn('------_createScrapTicket:', arrScrapDevices);
+    // apiCreateScrapTicket(body).then(ret => {
+    //   if (ret.code === CODE_OK) {
+    //     console.warn('------', body, ret);
+    //     // this.props.ticketChanged && this.props.ticketChanged();
+    //     // this.showToast(localStr('lang_ticket_close_toast'))
+    //     // this._loadTicketDetail();
+    //   } else {
+    //     Alert.alert(localStr('lang_alert_title'), ret.msg);
+    //   }
+    // })
+  }
+  _changeNonePandianToPankuiState(device) {
+    let data = {
+      tid: this.state.rowData.id,
+      "assetId": device.assetId,
+      "assetPointCheckState": 3,
+      "assetRemark": "",
+      "assetTags": "",
+      "userId": userId,
+      "userName": userName,
+    }
+    console.warn('未盘资产自动盘亏处理：', data);
+    apiSubmitPointCheckResult(data).then(data => {
+      if (data.code === '0' && data.data === true) {
+        // console.warn('----', data);
+        // Toast.show(localStr('lang_scan_result_submit_success_tip'), {
+        //   duration: 1000,
+        //   position: -80,
+        // });
+      } else {
+        Toast.show(localStr('lang_scan_result_submit_error_tip'), {
+          duration: 1000,
+          position: -80,
+        });
+      }
+    })
+  }
   _approveTicket() {
     this.setState({
       submitModalVisible: false,
     })
     //审批通过
-    apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
-      if (ret.code === CODE_OK) {
-        this.props.ticketChanged && this.props.ticketChanged();
-        this.showToast(localStr('lang_ticket_close_toast'))
-        this._loadTicketDetail();
-      } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+    // apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
+    //   if (ret.code === CODE_OK) {
+    //     this.props.ticketChanged && this.props.ticketChanged();
+    //     this.showToast(localStr('lang_ticket_close_toast'))
+    //     this._loadTicketDetail();
+    //   } else {
+    //     Alert.alert(localStr('lang_alert_title'), ret.msg);
+    //   }
+    // })
+
+
+
+    let isPanyingCheck = this.state.submitMenus[0].sel;
+    let isNotPandianCheck = this.state.submitMenus[1].sel;
+    let isPankuiCheck = this.state.submitMenus[2].sel;
+    let isWillClearCheck = this.state.submitMenus[3].sel;
+    const arrScrapDevices = this.state.rowData.assets.map((item, index) => {
+      // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
+      let state = item.extensionProperties?.assetPointCheckState;
+      if (state === 4 && isPanyingCheck) {//盘盈资产----自动入库
+        console.warn('盘盈资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
+        this._changeNonePandianToPankuiState(item);
+        // return item;
+      } else if (state === 1 && isNotPandianCheck) {//未盘----自动盘亏
+        console.warn('未盘资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
+        this._changeNonePandianToPankuiState(item);
+        return item;
+      } else if (state === 3 && isPankuiCheck) {//盘亏
+        console.warn('盘亏资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
+        return item;
       }
-    })
+      let arrTags = item.extensionProperties?.assetTags;
+      // console.warn("=========", index, arrTags, item.assetName);
+      //待清理资产
+      if (arrTags && arrTags.includes(localStr('lang_scan_result_page_tag2')) && isWillClearCheck) {
+        console.warn('待清理资产:', item.assetName);
+        return item;
+      }
+    });
+    this._createScrapTicket(arrScrapDevices);
   }
 
   _renderSubmittedButton() {
@@ -1114,28 +1206,29 @@ export default class TicketDetail extends Component {
       { title: localStr('lang_ticket_detail_submit_check1'), sel: false },
       { title: localStr("lang_ticket_detail_submit_check2"), sel: false },
       { title: localStr('lang_ticket_detail_submit_check3'), sel: false },
-      { title: localStr('lang_ticket_detail_submit_check4'), sel: false },
+      // { title: localStr('lang_ticket_detail_submit_check4'), sel: false },
       { title: localStr('lang_ticket_detail_submit_check5'), sel: false },
     ]
   }
 
   _showSubmitDialog() {
-    // this.setState({
-    //   submitModalVisible: true,
-    //   submitMenus: this._makeMenus()
-    // })
-    this._approveTicket();
+    this.setState({
+      submitModalVisible: true,
+      submitMenus: this._makeMenus()
+    })
+    // this._approveTicket();
   }
 
   _renderSubmitDialog() {
     if (!this.state.submitModalVisible) return;
     //icon 161
-    let menus = this.state.submitMenus.map(m => {
+    let arrMenus = this.state.submitMenus;
+    let menus = this.state.submitMenus.map((m, index) => {
       return (
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}
           onPress={() => {
             m.sel = !m.sel;
-            this.setState({})
+            this.setState({});
           }}
         >
           <View style={{

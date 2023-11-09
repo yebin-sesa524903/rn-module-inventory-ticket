@@ -475,3 +475,11 @@ export async function apiCloseTicket(data) {
     body: data
   })
 }
+
+export async function apiCreateScrapTicket(data) {
+  return await defaultFetch({
+    url: `scrapTicket/create`,
+    verb: 'post',
+    body: data
+  })
+}
