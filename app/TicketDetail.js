@@ -49,6 +49,7 @@ import {
   apiCheckDeviceStatus,
   apiCloseTicket,
   apiCreateScrapTicket,
+  apiCreateNewAsset,
   apiCreateTicket,
   apiDelTicketLog,
   apiEditTicket,
@@ -57,6 +58,7 @@ import {
   apiTicketExecute, apiTicketLostDevices, customerId, getBaseUri,
   userId,
   userName,
+  spId,
   apiSubmitPointCheckResult,
 } from "./middleware/bff";
 import ImagePicker from "./components/ImagePicker";
@@ -356,7 +358,38 @@ export default class TicketDetail extends Component {
       </View>
     )
   }
+  _createNewAsset(arrNewAssets) {
+    if (arrNewAssets.length === 0) {
+      return;
+    }
+
+    let body = {
+      spId: 70,
+      customerId: customerId,
+      userId: userId,
+      userName: userName,
+      objectId: this.state.rowData.objectId,
+      objectType: this.state.rowData.objectType,
+      initAssets: arrNewAssets,
+    };
+    console.warn('------_createNewAsset:', body);
+    // return;
+    apiCreateNewAsset(body).then(ret => {
+      if (ret.code === CODE_OK) {
+        console.warn('------', body, ret);
+        // this.props.ticketChanged && this.props.ticketChanged();
+        this.showToast(localStr('创建盘盈设备成功!'))
+        // this._loadTicketDetail();
+      } else {
+        Alert.alert(localStr('lang_alert_title'), ret.msg);
+      }
+    })
+  }
   _createScrapTicket(arrScrapDevices) {
+    console.warn('------_createScrapTicket:', arrScrapDevices.length);
+    if (arrScrapDevices.length === 0) {
+      return;
+    }
     let createDate = moment().format('YYYY-MM-DD HH:mm:ss');
     let body = {
       title: '',
@@ -377,32 +410,32 @@ export default class TicketDetail extends Component {
       objectType: this.state.rowData.objectType,
       assets: arrScrapDevices,
     }
-    console.warn('------_createScrapTicket:', arrScrapDevices);
-    // apiCreateScrapTicket(body).then(ret => {
-    //   if (ret.code === CODE_OK) {
-    //     console.warn('------', body, ret);
-    //     // this.props.ticketChanged && this.props.ticketChanged();
-    //     // this.showToast(localStr('lang_ticket_close_toast'))
-    //     // this._loadTicketDetail();
-    //   } else {
-    //     Alert.alert(localStr('lang_alert_title'), ret.msg);
-    //   }
-    // })
+    // console.warn('------_createScrapTicket333:', localStr('创建报修单成功!'));
+    apiCreateScrapTicket(body).then(ret => {
+      if (ret.code === CODE_OK) {
+        console.warn('------', body, ret);
+        // this.props.ticketChanged && this.props.ticketChanged();
+        this.showToast(localStr('创建报修单成功!'))
+        // this._loadTicketDetail();
+      } else {
+        Alert.alert(localStr('lang_alert_title'), ret.msg);
+      }
+    })
   }
   _changeNonePandianToPankuiState(device) {
     let data = {
-      tid: this.state.rowData.id,
+      "id": this.state.rowData.id,
       "assetId": device.assetId,
       "assetPointCheckState": 3,
       "assetRemark": "",
-      "assetTags": "",
+      "assetTags": [],
       "userId": userId,
       "userName": userName,
     }
     console.warn('未盘资产自动盘亏处理：', data);
     apiSubmitPointCheckResult(data).then(data => {
       if (data.code === '0' && data.data === true) {
-        // console.warn('----', data);
+        console.warn('----未盘资产自动盘亏处理结果：', data);
         // Toast.show(localStr('lang_scan_result_submit_success_tip'), {
         //   duration: 1000,
         //   position: -80,
@@ -420,46 +453,52 @@ export default class TicketDetail extends Component {
       submitModalVisible: false,
     })
     //审批通过
-    // apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
-    //   if (ret.code === CODE_OK) {
-    //     this.props.ticketChanged && this.props.ticketChanged();
-    //     this.showToast(localStr('lang_ticket_close_toast'))
-    //     this._loadTicketDetail();
-    //   } else {
-    //     Alert.alert(localStr('lang_alert_title'), ret.msg);
-    //   }
-    // })
+    apiCloseTicket({ id: this.state.rowData.id }).then(ret => {
+      if (ret.code === CODE_OK) {
+        this.props.ticketChanged && this.props.ticketChanged();
+        this.showToast(localStr('lang_ticket_close_toast'))
+        this._loadTicketDetail();
+      } else {
+        Alert.alert(localStr('lang_alert_title'), ret.msg);
+      }
+    })
 
-
+    console.warn('-------', this.state.rowData.id);
 
     let isPanyingCheck = this.state.submitMenus[0].sel;
     let isNotPandianCheck = this.state.submitMenus[1].sel;
     let isPankuiCheck = this.state.submitMenus[2].sel;
     let isWillClearCheck = this.state.submitMenus[3].sel;
-    const arrScrapDevices = this.state.rowData.assets.map((item, index) => {
+    let arrScrapDevices = [];
+    let arrNewAssets = [];
+    this.state.rowData.assets.forEach((item, index) => {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let state = item.extensionProperties?.assetPointCheckState;
       if (state === 4 && isPanyingCheck) {//盘盈资产----自动入库
         console.warn('盘盈资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
-        this._changeNonePandianToPankuiState(item);
+        arrNewAssets.push(item.extensionProperties.assetInitData);
         // return item;
       } else if (state === 1 && isNotPandianCheck) {//未盘----自动盘亏
         console.warn('未盘资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
         this._changeNonePandianToPankuiState(item);
-        return item;
+        if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
+          item.extensionProperties.assetPointCheckState = 3;
+        }
+        arrScrapDevices.push(item);
       } else if (state === 3 && isPankuiCheck) {//盘亏
         console.warn('盘亏资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
-        return item;
+        arrScrapDevices.push(item);
       }
       let arrTags = item.extensionProperties?.assetTags;
       // console.warn("=========", index, arrTags, item.assetName);
       //待清理资产
       if (arrTags && arrTags.includes(localStr('lang_scan_result_page_tag2')) && isWillClearCheck) {
         console.warn('待清理资产:', item.assetName);
-        return item;
+        arrScrapDevices.push(item);
       }
     });
     this._createScrapTicket(arrScrapDevices);
+    this._createNewAsset(arrNewAssets);
   }
 
   _renderSubmittedButton() {
@@ -1053,10 +1092,8 @@ export default class TicketDetail extends Component {
         showToast: false,
         toastMessage: ''
       });
-    }, 1500);
+    }, 3500);
   }
-
-
 
   _showInventoryMenu = (device) => {
     let Cmp = ScanResult;

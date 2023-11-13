@@ -133,6 +133,7 @@ export let userId = 90;
 export let userName = '1';
 export let customerId = null;
 export let ossPath = '';
+export let spId = 70;
 let token = '';
 let tokenKey = '';
 let hierarchyId = 0;
@@ -229,6 +230,7 @@ export async function configCookie(data) {
   sysId = data.sysId;
   userId = data.userId;
   customerId = data.customerId;
+  spId = data.SpId;
   userName = data.userName
   token = data.token;
   setCookie = data.token;
@@ -479,6 +481,14 @@ export async function apiCloseTicket(data) {
 export async function apiCreateScrapTicket(data) {
   return await defaultFetch({
     url: `scrapTicket/create`,
+    verb: 'post',
+    body: data
+  })
+}
+
+export async function apiCreateNewAsset(data) {
+  return await defaultFetch({
+    url: `/bff/eh/rest/common/createDevice`,
     verb: 'post',
     body: data
   })
