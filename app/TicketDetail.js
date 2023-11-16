@@ -410,12 +410,12 @@ export default class TicketDetail extends Component {
       objectType: this.state.rowData.objectType,
       assets: arrScrapDevices,
     }
-    // console.warn('------_createScrapTicket333:', localStr('创建报修单成功!'));
+    // console.warn('------_createScrapTicket333:', localStr('创建报废单成功!'));
     apiCreateScrapTicket(body).then(ret => {
       if (ret.code === CODE_OK) {
         console.warn('------', body, ret);
         // this.props.ticketChanged && this.props.ticketChanged();
-        this.showToast(localStr('创建报修单成功!'))
+        this.showToast(localStr('创建报废单成功！'))
         // this._loadTicketDetail();
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
