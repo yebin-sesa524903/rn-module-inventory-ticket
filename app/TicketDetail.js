@@ -60,6 +60,7 @@ import {
   userName,
   spId,
   apiSubmitPointCheckResult,
+  apiUpdateDevicePointCheckStatus
 } from "./middleware/bff";
 import ImagePicker from "./components/ImagePicker";
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
@@ -448,6 +449,21 @@ export default class TicketDetail extends Component {
       }
     })
   }
+  _updateDevicePandianStatus(device) {
+    let data = {
+      deviceId: device.assetId,
+      deviceStatus: 5,//报废状态
+    };
+    apiUpdateDevicePointCheckStatus(data).then(data => {
+      if (data.code === '0' && data.data === true) {
+      } else {
+        Toast.show(localStr('lang_scan_result_submit_error_tip'), {
+          duration: 1000,
+          position: -80,
+        });
+      }
+    })
+  }
   _approveTicket() {
     this.setState({
       submitModalVisible: false,
@@ -477,9 +493,9 @@ export default class TicketDetail extends Component {
       if (state === 4 && isPanyingCheck) {//盘盈资产----自动入库
         console.warn('盘盈资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
         arrNewAssets.push(item.extensionProperties.assetInitData);
-        // return item;
       } else if (state === 1 && isNotPandianCheck) {//未盘----自动盘亏
         console.warn('未盘资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
+        this._updateDevicePandianStatus(item);
         this._changeNonePandianToPankuiState(item);
         if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
           item.extensionProperties.assetPointCheckState = 3;
@@ -487,6 +503,7 @@ export default class TicketDetail extends Component {
         arrScrapDevices.push(item);
       } else if (state === 3 && isPankuiCheck) {//盘亏
         console.warn('盘亏资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
+        this._updateDevicePandianStatus(item);
         arrScrapDevices.push(item);
       }
       let arrTags = item.extensionProperties?.assetTags;
@@ -1132,8 +1149,13 @@ export default class TicketDetail extends Component {
       let imgUrl = null;
       let defaultImg = require('./images/building_default/building.png');
       if (item.extensionProperties && item.extensionProperties?.assetLogo) {
-        let jsonLogo = JSON.parse(item.extensionProperties.assetLogo);
-        imgUrl = jsonLogo[0].key;
+        try {
+          let jsonLogo = JSON.parse(item.extensionProperties?.assetLogo);
+          imgUrl = jsonLogo[0].key;
+        } catch (error) {
+          imgUrl = null;
+        }
+
         // imgUrl = "668673300442906624";
       }
       //这里给出

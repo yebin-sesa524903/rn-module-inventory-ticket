@@ -333,6 +333,15 @@ export async function apiLoadDevicePointCheckStatus(data) {
   })
 }
 
+//更新盘点设备状态
+export async function apiUpdateDevicePointCheckStatus(data) {
+  return await defaultFetch({
+    url: `/bff/eh/rest/hierarchyInstantiation/updateAssetStatus`,
+    verb: 'post',
+    body: data
+  })
+}
+
 export async function apiRemoveTicketInitAsset(data) {
   return await defaultFetch({
     url: `/bff/comp-ticket/rest/ticket/removeDeviceInitData`,
