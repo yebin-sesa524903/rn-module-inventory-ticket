@@ -18,7 +18,7 @@ import {
   apiSubmitPointCheckResult,
   userId,
   userName,
-
+  apiUpdateDevicePointCheckStatus,
 } from "./middleware/bff";
 import { forEach } from 'lodash';
 // import { Toast } from '@ant-design/react-native';
@@ -90,18 +90,34 @@ export default class extends Component {
     })
   }
   _submitResult = () => {
-    // let arrTags = this.state.tags.map(item => {
-    //   if (item.sel === true) {
-    //     return item.tag;
-    //   } else
-    //     return;
-    // })
     let arrTags = [];
     this.state.tags.map(item => {
       if (item.sel === true) {
         arrTags.push(item.tag);
       }
     })
+    if (this.state.inventoryType === 2) {//已盘----盘亏
+      let data = {
+        deviceId: this.props.device.assetId,
+        deviceStatus: 1,//疑似缺失
+      };
+      apiUpdateDevicePointCheckStatus(data).then(data => {
+        if (data.code === '0' && data.data === true) {
+          // this.props.onRefresh && this.props.onRefresh();
+          // console.warn('----', data);
+          // Toast.show(localStr('lang_scan_result_submit_success_tip'), {
+          //   duration: 1000,
+          //   position: -80,
+          // });
+          // this.props.navigator.pop()
+        } else {
+          Toast.show(localStr('lang_scan_result_submit_error_tip'), {
+            duration: 1000,
+            position: -80,
+          });
+        }
+      })
+    }
     //这里转换提交参数格式
     let data = {
       "id": this.props.tid,
