@@ -50,6 +50,7 @@ import {
   apiCloseTicket,
   apiCreateScrapTicket,
   apiCreateNewAsset,
+  apiUpdateAssetId,
   apiCreateTicket,
   apiDelTicketLog,
   apiEditTicket,
@@ -359,6 +360,16 @@ export default class TicketDetail extends Component {
       </View>
     )
   }
+  _updateTicketAssetId(body) {
+    apiUpdateAssetId(body).then(ret => {
+      if (ret.code === CODE_OK) {
+        // this.props.ticketChanged && this.props.ticketChanged();
+        console.warn('------更新AssetID成功:', body, ret);
+      } else {
+        Alert.alert(localStr('lang_alert_title'), ret.msg);
+      }
+    })
+  }
   _createNewAsset(arrNewAssets) {
     if (arrNewAssets.length === 0) {
       return;
@@ -373,14 +384,33 @@ export default class TicketDetail extends Component {
       objectType: this.state.rowData.objectType,
       initAssets: arrNewAssets,
     };
-    console.warn('------_createNewAsset:', body);
+    // console.warn('------_createNewAsset:', body);
     // return;
     apiCreateNewAsset(body).then(ret => {
       if (ret.code === CODE_OK) {
-        console.warn('------', body, ret);
         // this.props.ticketChanged && this.props.ticketChanged();
         this.showToast(localStr('创建盘盈设备成功!'))
-        // this._loadTicketDetail();
+        console.warn('------创建盘盈设备成功:', ret, ret.data?.newAssetId);
+        if (ret.data) {
+          let reqArrs = [];
+          ret.data.forEach(item => {
+            if (item.newAssetId && item.currentAssetId) {
+              let reqparam = {
+                currentAssetId: item.currentAssetId,
+                newAssetId: item.newAssetId,
+                userId: userId,
+                userName: userName,
+              }
+              reqArrs.push(reqparam);
+            }
+          })
+          console.warn('------_updateTicketAssetId:', reqArrs);
+          this._updateTicketAssetId({
+            id: this.state.rowData.id,
+            params: reqArrs,
+          });
+        }
+
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
       }
@@ -491,7 +521,8 @@ export default class TicketDetail extends Component {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let state = item.extensionProperties?.assetPointCheckState;
       if (state === 4 && isPanyingCheck) {//盘盈资产----自动入库
-        console.warn('盘盈资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
+        console.warn('盘盈资产:', index, item.assetId, item.extensionProperties?.assetPointCheckState);
+        item.extensionProperties.assetInitData.id = item.assetId;
         arrNewAssets.push(item.extensionProperties.assetInitData);
       } else if (state === 1 && isNotPandianCheck) {//未盘----自动盘亏
         console.warn('未盘资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
