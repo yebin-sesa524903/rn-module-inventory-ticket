@@ -82,7 +82,7 @@ export default class CacheImage extends Component {
             };
             RNFS.downloadFile(downloadOptions).promise
               .then((res) => {
-                console.log('res', res, downloadOptions)
+                // console.log('res', res, downloadOptions)
                 // the temp file path
                 if (res.statusCode === 200) {
                   //成功了

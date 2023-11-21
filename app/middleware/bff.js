@@ -58,7 +58,7 @@ let defaultFetch = async function (options) {
     headers,
     body: body,
   }).then((response) => {
-    console.log('<<<<response', body, response.status, response, url)
+    // console.log('<<<<response', body, response.status, response, url)
     if (response.status === 204) {
       return new Promise((resolve) => {
         resolve({ code: response.status, msg: localStr('lang_server_error') });
@@ -87,7 +87,7 @@ let defaultFetch = async function (options) {
       setCookie = setCookie.split(';')[0]
       setCookie = setCookie + ','//+setCookie;
       //初始化成功了，发个通知
-      DeviceEventEmitter.emit('TICKET_INIT_OK');
+      DeviceEventEmitter.emit('TICKET_INVENTORY_INIT_OK');
     }
 
     if (options.url === 'document/get' || options.debug) {
@@ -118,7 +118,8 @@ let defaultFetch = async function (options) {
       //   console.log('data',data)
       //   return data//reader.result;
       // }
-      console.log(options.url, body, data)
+      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:', headers, data);
+
       return data;
     }).catch(err => {
       return new Promise((resolve) => {

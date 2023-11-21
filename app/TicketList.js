@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  DeviceEventEmitter,
+  DeviceEventEmitter, Dimensions,
   Image, InteractionManager,
   Modal,
-  Platform,
+  Platform, Pressable,
   RefreshControl,
   SafeAreaView,
   SectionList,
@@ -52,7 +52,8 @@ export default class TicketList extends Component {
     super(props);
     this.state = {
       refreshing: false,
-      hasPermission: privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW)
+      hasPermission: privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW),
+      selectedIndex: 0,
     }
   }
 
@@ -66,7 +67,7 @@ export default class TicketList extends Component {
       } else {
         this.setState({ refreshing: true, hasPermission: true })
       }
-      this._initListener = DeviceEventEmitter.addListener('TICKET_INIT_OK', () => {
+      this._initListener = DeviceEventEmitter.addListener('TICKET_INVENTORY_INIT_OK', () => {
         this.setState({ hasPermission: privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW) })
         this.loadTicketList(new Date(), 1);
       })
@@ -109,7 +110,7 @@ export default class TicketList extends Component {
     }
     if (this.state.refreshing) return null;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f2f2f2' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: (Dimensions.get('window').height - 220)}}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
         <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
       </View>
@@ -317,10 +318,31 @@ export default class TicketList extends Component {
     }
   }
 
+  _configSectionData(){
+    let unDoneTicket = [], doneTicket = [];
+    let ticketData = this.state.ticketData;
+    if (ticketData && ticketData.length > 0){
+      for (let data of ticketData) {
+        if (data.state !== 50){
+          ///未完成
+          unDoneTicket.push(data);
+        }else {
+          ///已完成
+          doneTicket.push(data);
+        }
+      }
+    }
+    if (this.state.selectedIndex === 0){
+      return unDoneTicket;
+    }else {
+      return doneTicket;
+    }
+  }
+
   _getView() {
     if (this.state.showEmpty) return this._renderEmpty();
     return (
-      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: LIST_BG }} sections={this.state.ticketData}
+      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: 'white' }} sections={this._configSectionData()}
         contentContainerStyle={{ flex: (this.state.ticketData && this.state.ticketData.length > 0) ? undefined : 1 }}
         refreshControl={
           <RefreshControl
@@ -333,7 +355,6 @@ export default class TicketList extends Component {
           />
         }
         stickySectionHeadersEnabled={true}
-        renderSectionHeader={this._renderSection}
         renderItem={this._renderRow}
         ListEmptyComponent={() => this._renderEmpty()}
         refreshing={this.state.refreshing}
@@ -468,6 +489,62 @@ export default class TicketList extends Component {
     );
   }
 
+  _renderSectionHeader(){
+    let ticketData = this.state.ticketData;
+    let unDone = 0, done = 0;
+    if (ticketData && ticketData.length > 0){
+      for (let data of ticketData) {
+        if (data.state !== 50){
+          ///未完成
+          unDone += data.data.length;
+        }else {
+          ///已完成
+          done += data.data.length;
+        }
+      }
+    }
+    return (
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: 54,
+          borderTopRightRadius: 8,
+          borderTopLeftRadius: 8,
+          overflow: 'hidden',
+          backgroundColor: 'white'
+        }}>
+          <View style={{flexDirection: 'row'}}>
+            <Pressable onPress={()=>{
+                this.setState({
+                  selectedIndex: 0
+                })
+            }}
+                       style={{paddingLeft: 12, paddingRight: 12}}>
+              <Text style={{
+                fontSize: 14,
+                fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
+                color: this.state.selectedIndex === 0 ? '#3dcd58' : '#666'
+              }}>{`未完成(${unDone})`}</Text>
+            </Pressable>
+            <Pressable onPress={()=>{
+              this.setState({
+                selectedIndex: 1
+              })
+            }}
+                       style={{paddingLeft: 12, paddingRight: 12}}>
+              <Text style={{
+                fontSize: 14,
+                fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
+                color: this.state.selectedIndex === 1 ? '#3dcd58' : '#666'
+              }}>{`已完成(${done})`}</Text>
+            </Pressable>
+          </View>
+          <View style={{position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: "#eee", height: 1}}/>
+        </View>
+    )
+  }
+
   render() {
     if (!this.state.hasPermission) {
       return this._renderNoPermission()
@@ -475,8 +552,9 @@ export default class TicketList extends Component {
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <View style={{ flex: 1 }}>
-          {this._renderTop()}
+        <View style={{ flex: 1, backgroundColor:'#3DCD58' }}>
+          {/*{this._renderTop()}*/}
+          {this._renderSectionHeader()}
           {this._getView()}
         </View>
         {this._renderFilter()}
