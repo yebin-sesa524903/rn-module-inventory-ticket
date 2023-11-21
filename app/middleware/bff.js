@@ -502,3 +502,11 @@ export async function apiCreateNewAsset(data) {
     body: data
   })
 }
+
+export async function apiUpdateAssetId(data) {
+  return await defaultFetch({
+    url: `/bff/eh/rest/ticket/updateAssetId`,
+    verb: 'post',
+    body: data
+  })
+}
