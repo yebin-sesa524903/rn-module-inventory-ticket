@@ -162,6 +162,9 @@ export default {
   lang_ticket_detail_submit_success: '提交成功',
   lang_ticket_detail_device_check: '盘点',
 
+  lang_ticket_execute_time:'建议执行时间',
+  lang_ticket_location:'位置',
+
   lang_single_select_search_no_result: '搜索无结果',
   lang_single_select_manual_input: '手动输入',
   lang_single_select_input_keyword: '输入关键字',
