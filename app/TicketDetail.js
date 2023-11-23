@@ -1189,6 +1189,15 @@ export default class TicketDetail extends Component {
 
         // imgUrl = "668673300442906624";
       }
+      //数据好像变化了，这个给出兼容显示
+      if (!imgUrl && item.logo) {
+        try {
+          let jsonLogo = JSON.parse(item.logo);
+          imgUrl = jsonLogo[0].key;
+        } catch (error) {
+          imgUrl = null;
+        }
+      }
       //这里给出
       if (!item.extensionProperties || !item.extensionProperties.assetPointCheckState) {
         item.extensionProperties = {
