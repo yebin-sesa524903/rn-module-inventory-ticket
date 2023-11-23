@@ -639,7 +639,7 @@ export default class TicketDetail extends Component {
   }
 
   _canExecute = () => {
-    return privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) && this.state.isExecutor;
+    return privilegeHelper.hasAuth(CodeMap.AssetTicketExecute) && this.state.isExecutor;
   }
 
   _getButton(isScollView) {
