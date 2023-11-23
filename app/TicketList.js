@@ -52,7 +52,9 @@ export default class TicketList extends Component {
     super(props);
     this.state = {
       refreshing: false,
-      hasPermission: privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW),
+      hasPermission: (privilegeHelper.hasAuth(CodeMap.AssetTicketExecute) ||
+        privilegeHelper.hasAuth(CodeMap.AssetTicketFull) ||
+        privilegeHelper.hasAuth(CodeMap.AssetTicketRead)),
       selectedIndex: 0,
     }
   }
@@ -68,7 +70,11 @@ export default class TicketList extends Component {
         this.setState({ refreshing: true, hasPermission: true })
       }
       this._initListener = DeviceEventEmitter.addListener('TICKET_INVENTORY_INIT_OK', () => {
-        this.setState({ hasPermission: privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL) || privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_VIEW) })
+        this.setState({
+          hasPermission: (privilegeHelper.hasAuth(CodeMap.AssetTicketExecute) ||
+            privilegeHelper.hasAuth(CodeMap.AssetTicketFull) ||
+            privilegeHelper.hasAuth(CodeMap.AssetTicketRead))
+        })
         this.loadTicketList(new Date(), 1);
       })
     })
@@ -110,7 +116,7 @@ export default class TicketList extends Component {
     }
     if (this.state.refreshing) return null;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: (Dimensions.get('window').height - 220)}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: (Dimensions.get('window').height - 220) }}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
         <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
       </View>
@@ -318,23 +324,23 @@ export default class TicketList extends Component {
     }
   }
 
-  _configSectionData(){
+  _configSectionData() {
     let unDoneTicket = [], doneTicket = [];
     let ticketData = this.state.ticketData;
-    if (ticketData && ticketData.length > 0){
+    if (ticketData && ticketData.length > 0) {
       for (let data of ticketData) {
-        if (data.state !== 50){
+        if (data.state !== 50) {
           ///未完成
           unDoneTicket.push(data);
-        }else {
+        } else {
           ///已完成
           doneTicket.push(data);
         }
       }
     }
-    if (this.state.selectedIndex === 0){
+    if (this.state.selectedIndex === 0) {
       return unDoneTicket;
-    }else {
+    } else {
       return doneTicket;
     }
   }
@@ -489,59 +495,59 @@ export default class TicketList extends Component {
     );
   }
 
-  _renderSectionHeader(){
+  _renderSectionHeader() {
     let ticketData = this.state.ticketData;
     let unDone = 0, done = 0;
-    if (ticketData && ticketData.length > 0){
+    if (ticketData && ticketData.length > 0) {
       for (let data of ticketData) {
-        if (data.state !== 50){
+        if (data.state !== 50) {
           ///未完成
           unDone += data.data.length;
-        }else {
+        } else {
           ///已完成
           done += data.data.length;
         }
       }
     }
     return (
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: 54,
-          borderTopRightRadius: 8,
-          borderTopLeftRadius: 8,
-          overflow: 'hidden',
-          backgroundColor: 'white'
-        }}>
-          <View style={{flexDirection: 'row'}}>
-            <Pressable onPress={()=>{
-                this.setState({
-                  selectedIndex: 0
-                })
-            }}
-                       style={{paddingLeft: 12, paddingRight: 12}}>
-              <Text style={{
-                fontSize: 14,
-                fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
-                color: this.state.selectedIndex === 0 ? '#3dcd58' : '#666'
-              }}>{`未完成(${unDone})`}</Text>
-            </Pressable>
-            <Pressable onPress={()=>{
-              this.setState({
-                selectedIndex: 1
-              })
-            }}
-                       style={{paddingLeft: 12, paddingRight: 12}}>
-              <Text style={{
-                fontSize: 14,
-                fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
-                color: this.state.selectedIndex === 1 ? '#3dcd58' : '#666'
-              }}>{`已完成(${done})`}</Text>
-            </Pressable>
-          </View>
-          <View style={{position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: "#eee", height: 1}}/>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: 54,
+        borderTopRightRadius: 8,
+        borderTopLeftRadius: 8,
+        overflow: 'hidden',
+        backgroundColor: 'white'
+      }}>
+        <View style={{ flexDirection: 'row' }}>
+          <Pressable onPress={() => {
+            this.setState({
+              selectedIndex: 0
+            })
+          }}
+            style={{ paddingLeft: 12, paddingRight: 12 }}>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
+              color: this.state.selectedIndex === 0 ? '#3dcd58' : '#666'
+            }}>{`未完成(${unDone})`}</Text>
+          </Pressable>
+          <Pressable onPress={() => {
+            this.setState({
+              selectedIndex: 1
+            })
+          }}
+            style={{ paddingLeft: 12, paddingRight: 12 }}>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
+              color: this.state.selectedIndex === 1 ? '#3dcd58' : '#666'
+            }}>{`已完成(${done})`}</Text>
+          </Pressable>
         </View>
+        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: "#eee", height: 1 }} />
+      </View>
     )
   }
 
@@ -552,7 +558,7 @@ export default class TicketList extends Component {
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <View style={{ flex: 1, backgroundColor:'#3DCD58' }}>
+        <View style={{ flex: 1, backgroundColor: '#3DCD58' }}>
           {/*{this._renderTop()}*/}
           {this._renderSectionHeader()}
           {this._getView()}
