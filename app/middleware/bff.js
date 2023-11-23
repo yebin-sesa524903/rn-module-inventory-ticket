@@ -31,7 +31,7 @@ let defaultFetch = async function (options) {
   if (options.url.includes('/bff/')) {
     url = baseUrl + options.url
   } else {
-    url = `${baseUrl}/bff/comp-ticket/rest/${options.url}`
+    url = `${baseUrl}/bff/eh/rest/${options.url}`
   }
   if (options.url.includes('http')) url = options.url;
   let body = null;
@@ -308,8 +308,8 @@ export async function apiHierarchyTpl() {
 //获取层级台账模板
 export async function apiAddDeviceInitData(data, isEdit) {
   return await defaultFetch({
-    url: isEdit ? `/bff/comp-ticket/rest/ticket/editDeviceInitData`
-      : `/bff/comp-ticket/rest/ticket/addDeviceInitData`,
+    url: isEdit ? `/bff/eh/rest/ticket/editDeviceInitData`
+      : `/bff/eh/rest/ticket/addDeviceInitData`,
     verb: 'post',
     body: data
   })
@@ -345,7 +345,7 @@ export async function apiUpdateDevicePointCheckStatus(data) {
 
 export async function apiRemoveTicketInitAsset(data) {
   return await defaultFetch({
-    url: `/bff/comp-ticket/rest/ticket/removeDeviceInitData`,
+    url: `/bff/eh/rest/ticket/removeDeviceInitData`,
     verb: 'post',
     body: data
   })
@@ -361,7 +361,7 @@ export async function apiGetOssPath() {
 
 export async function apiSubmitPointCheckResult(data) {
   return await defaultFetch({
-    url: `/bff/comp-ticket/rest/ticket/changePointCheckState`,
+    url: `/bff/eh/rest/ticket/changePointCheckState`,
     verb: 'post',
     body: data
   })
