@@ -447,7 +447,14 @@ export default class TicketDetail extends Component {
         console.warn('------', body, ret);
         // this.props.ticketChanged && this.props.ticketChanged();
         this.showToast(localStr('创建报废单成功！'))
-        // this._loadTicketDetail();
+
+        ///报废成功之后 还需要更新一下状态
+        let deviceIds = arrScrapDevices.map((item)=>item.assetId).join(',');
+        let params = {
+          deviceId: deviceIds,
+          deviceStatus: 5,//报废
+        };
+        apiUpdateDevicePointCheckStatus(params).then();
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
       }
@@ -1179,9 +1186,9 @@ export default class TicketDetail extends Component {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
       let defaultImg = require('./images/building_default/building.png');
-      if (item.extensionProperties && item?.logo) {
+      if (item.extensionProperties && item.extensionProperties?.assetLogo) {
         try {
-          let jsonLogo = JSON.parse(item?.logo);
+          let jsonLogo = JSON.parse(item.extensionProperties?.assetLogo);
           imgUrl = jsonLogo[0].key;
         } catch (error) {
           imgUrl = null;

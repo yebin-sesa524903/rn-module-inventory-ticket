@@ -89,6 +89,12 @@ export default class TicketRow extends Component {
         ret.borderColor = '#3DCD58';
         ret.bgColor = '#F0FFF0';
         break;
+      case 40:
+        ///驳回
+        ret.textColor = '#F5222D';
+        ret.borderColor = '#FFA39E';
+        ret.bgColor = '#FFF1F0';
+        break;
     }
     return ret;
   }
