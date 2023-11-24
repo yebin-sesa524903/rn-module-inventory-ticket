@@ -124,7 +124,7 @@ export default class TicketDetail extends Component {
     super(props);
     let { width } = Dimensions.get('window');
     this.picWid = parseInt((width - 46 - 40) / 4.0);
-    this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, deviceList: null, deviceTab: 0 };
+    this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, deviceList: null, deviceTab: props.deviceTab };
   }
 
   _renderInventoryTicketInfo() {
@@ -1179,9 +1179,9 @@ export default class TicketDetail extends Component {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
       let defaultImg = require('./images/building_default/building.png');
-      if (item.extensionProperties && item.extensionProperties?.assetLogo) {
+      if (item.extensionProperties && item?.logo) {
         try {
-          let jsonLogo = JSON.parse(item.extensionProperties?.assetLogo);
+          let jsonLogo = JSON.parse(item?.logo);
           imgUrl = jsonLogo[0].key;
         } catch (error) {
           imgUrl = null;

@@ -26,7 +26,9 @@ import TicketDetail from "./TicketDetail";
 import {
   apiQueryTicketList,
   apiTicketCount,
+  apiTicketDeviceStatus,
   apiTicketList,
+  getBaseUri,
 } from "./middleware/bff";
 import moment from "moment";
 
@@ -273,11 +275,11 @@ export default class TicketList extends Component {
   _renderRow = (info) => {
     let rowData = info.item;
     return (
-      <TicketRow rowData={rowData} onRowClick={this._gotoDetail} />
+      <TicketRow rowData={rowData} onRowClick={this._gotoDetail} onInventoryItemClick={this._gotoDetail} />
     );
   }
 
-  _gotoDetail = (rowData) => {
+  _gotoDetail = (rowData, selectIndex = 0) => {
     console.log('rowData', rowData)
     this.props.navigator.push({
       id: 'service_ticket_detail',
@@ -288,6 +290,7 @@ export default class TicketList extends Component {
         // ticketId: "674485547392303104",
         // ticketId: "668712877574324224",
         ticketId: rowData.id,
+        deviceTab: selectIndex,
         ticketChanged: () => this._onRefresh()
       }
     })

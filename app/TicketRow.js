@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import {
   View,
-  StyleSheet, Image,
+  StyleSheet, Image, Pressable,
 } from 'react-native';
 
 import Text from './components/Text';
@@ -112,6 +112,12 @@ export default class TicketRow extends Component {
   _configAssetCounts(status, rowData) {
     let count = 0;
     for (const asset of rowData.assets) {
+      if (!asset.extensionProperties || !asset.extensionProperties.assetPointCheckState) {
+        asset.extensionProperties = {
+          ...asset.extensionProperties,
+          assetPointCheckState: 1
+        }
+      }
       if (asset.extensionProperties && asset.extensionProperties.assetPointCheckState) {
         if (status === asset.extensionProperties.assetPointCheckState) {
           count++;
@@ -149,7 +155,7 @@ export default class TicketRow extends Component {
         {
           infos.map((item, index) => {
             return (
-              <View style={{
+              <Pressable style={{
                 flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
@@ -159,7 +165,7 @@ export default class TicketRow extends Component {
                 backgroundColor: '#f8f8f8',
                 borderRadius: 8,
                 marginLeft: index > 0 ? 12 : 0,
-              }}>
+              }} onPress={()=>this.props.onInventoryItemClick(rowData, index + 1)}>
                 <View style={{
                   backgroundColor: item.color,
                   borderTopRightRadius: 3,
@@ -176,7 +182,7 @@ export default class TicketRow extends Component {
                   }}>{item.count}</Text>
                 </View>
                 <Image source={require('../app/images/login_arrow/arrow.png')} />
-              </View>
+              </Pressable>
             )
           })
         }
