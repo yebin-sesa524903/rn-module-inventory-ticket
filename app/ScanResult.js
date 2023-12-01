@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import {
   View, Text,
-  StyleSheet, Image, TouchableOpacity, Platform, TextInput, InteractionManager,
+  StyleSheet, Image, TouchableOpacity, Platform, TextInput, InteractionManager, Alert,
 } from 'react-native';
 
 import Toolbar from "./components/Toolbar";
@@ -18,7 +18,7 @@ import {
   apiSubmitPointCheckResult,
   userId,
   userName,
-  apiUpdateDevicePointCheckStatus,
+  apiUpdateDevicePointCheckStatus, customerId, apiCheckDeviceStatus,
 } from "./middleware/bff";
 import { forEach } from 'lodash';
 // import { Toast } from '@ant-design/react-native';
@@ -55,9 +55,14 @@ export default class extends Component {
       }
 
       if (info?.assetLogo) {
-        let jsonLogo = JSON.parse(info.assetLogo);
-        imgUrl = jsonLogo[0].key;
-        // imgUrl = "668673300442906624";
+        try {
+          let jsonLogo = JSON.parse(info.assetLogo);
+          if (jsonLogo) {
+            imgUrl = jsonLogo[0].key;
+          } else {
+            imgUrl = info?.assetLogo;
+          }
+        } catch (e) { }
       }
     }
     console.log('imgurl', imgUrl);
@@ -89,6 +94,38 @@ export default class extends Component {
       }
     })
   }
+
+  /**
+   * 修改设备状态
+   * @param device
+   * @param checkStatus 0 已盘 1 盘亏
+   * @private
+   */
+  _checkDeviceStatus = (device, checkStatus) => {
+    //这里转换提交参数格式
+    let data = {
+      "customerId": customerId,
+      "deviceIds": [
+        device.assetId
+      ],
+      "hierarchyId": device.locationId,
+      "pointCheckStatus": checkStatus,
+    }
+    apiCheckDeviceStatus(data).then(data => {
+      if (data.code === '0') {
+        Toast.show(localStr('lang_scan_result_submit_error_tip'), {
+          duration: 1000,
+          position: -80,
+        });
+      } else {
+        //给出提示
+        Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
+          { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
+        ]);
+      }
+    })
+  }
+
   _submitResult = () => {
     let arrTags = [];
     this.state.tags.map(item => {
@@ -96,28 +133,9 @@ export default class extends Component {
         arrTags.push(item.tag);
       }
     })
-    if (this.state.inventoryType === 2) {//已盘----盘亏
-      let data = {
-        deviceId: this.props.device.assetId,
-        deviceStatus: 1,//疑似缺失
-      };
-      apiUpdateDevicePointCheckStatus(data).then(data => {
-        if (data.code === '0' && data.data === true) {
-          // this.props.onRefresh && this.props.onRefresh();
-          // console.warn('----', data);
-          // Toast.show(localStr('lang_scan_result_submit_success_tip'), {
-          //   duration: 1000,
-          //   position: -80,
-          // });
-          // this.props.navigator.pop()
-        } else {
-          Toast.show(localStr('lang_scan_result_submit_error_tip'), {
-            duration: 1000,
-            position: -80,
-          });
-        }
-      })
-    }
+    ///修改设备状态
+    this._checkDeviceStatus(this.props.device, this.state.inventoryType === 2 ? 1 : 0);
+
     //这里转换提交参数格式
     let data = {
       "id": this.props.tid,

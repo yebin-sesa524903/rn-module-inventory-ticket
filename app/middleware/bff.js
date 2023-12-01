@@ -118,7 +118,7 @@ let defaultFetch = async function (options) {
       //   console.log('data',data)
       //   return data//reader.result;
       // }
-      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:', headers, data);
+      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:' + data + '\n\n' + JSON.stringify(data) + '\n\n');
 
       return data;
     }).catch(err => {
@@ -496,6 +496,7 @@ export async function apiCreateScrapTicket(data) {
   })
 }
 
+
 export async function apiCreateNewAsset(data) {
   return await defaultFetch({
     url: `/bff/eh/rest/common/createDevice`,
@@ -507,6 +508,27 @@ export async function apiCreateNewAsset(data) {
 export async function apiUpdateAssetId(data) {
   return await defaultFetch({
     url: `/bff/eh/rest/ticket/updateAssetId`,
+    verb: 'post',
+    body: data
+  })
+}
+
+export async function apiHierarchyList(data) {
+  return await defaultFetch({
+    url: '/bff/eh/rest/common/hierarchyList',
+    verb: 'post',
+    body: data
+  })
+}
+
+/**
+ * 工单列表
+ * @param data
+ * @returns {Promise<unknown>}
+ */
+export async function apiAppTicketList(data){
+  return await defaultFetch({
+    url: '/bff/eh/rest/ticket/appTicketList',
     verb: 'post',
     body: data
   })
