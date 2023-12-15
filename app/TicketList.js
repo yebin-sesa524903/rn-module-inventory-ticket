@@ -75,7 +75,7 @@ export default class TicketList extends Component {
     }
     if (this.state.refreshing) return null;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: (Dimensions.get('window').height - 220) }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:'#fff', height: (Dimensions.get('window').height - 220) }}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
         <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
       </View>
@@ -184,7 +184,7 @@ export default class TicketList extends Component {
         let responseObj = data.data;
         ///处理空数据
         if (!responseObj || responseObj.list?.length === 0) {
-          this.setState({ showEmpty: true })
+          this.setState({ showEmpty: true, refreshing: false })
           return;
         }
         ///处理分页逻辑
@@ -221,7 +221,7 @@ export default class TicketList extends Component {
         }
       } else {
         //请求失败
-        let update = { ticketData: [], error: data.msg, }
+        let update = { ticketData: [],refreshing: false, error: data.msg, showEmpty: true }
         if (data.code === '401') update.hasPermission = false;
         this.setState(update)
       }

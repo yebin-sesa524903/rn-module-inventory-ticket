@@ -113,10 +113,10 @@ export default class extends Component {
     }
     apiCheckDeviceStatus(data).then(data => {
       if (data.code === '0') {
-        Toast.show(localStr('lang_scan_result_submit_error_tip'), {
-          duration: 1000,
-          position: -80,
-        });
+        // Toast.show(localStr('lang_scan_result_submit_error_tip'), {
+        //   duration: 1000,
+        //   position: -80,
+        // });
       } else {
         //给出提示
         Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
