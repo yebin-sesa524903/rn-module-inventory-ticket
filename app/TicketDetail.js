@@ -61,7 +61,7 @@ import {
   userName,
   spId,
   apiSubmitPointCheckResult,
-  apiUpdateDevicePointCheckStatus
+  apiUpdateDevicePointCheckStatus,
 } from "./middleware/bff";
 import ImagePicker from "./components/ImagePicker";
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
@@ -124,7 +124,7 @@ export default class TicketDetail extends Component {
     super(props);
     let { width } = Dimensions.get('window');
     this.picWid = parseInt((width - 46 - 40) / 4.0);
-    this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, deviceList: null, deviceTab: 0 };
+    this.state = { toolbarOpacity: 0, showToolbar: false, forceStoped: false, deviceList: null, deviceTab: props.deviceTab };
   }
 
   _renderInventoryTicketInfo() {
@@ -447,7 +447,7 @@ export default class TicketDetail extends Component {
         console.warn('------', body, ret);
         // this.props.ticketChanged && this.props.ticketChanged();
         this.showToast(localStr('创建报废单成功！'))
-        // this._loadTicketDetail();
+
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
       }
@@ -479,6 +479,35 @@ export default class TicketDetail extends Component {
       }
     })
   }
+
+  /**
+   * 修改设备状态
+   * @param device
+   * @param checkStatus 0 已盘 1 盘亏
+   * @private
+   */
+  _checkDeviceStatus = (device, checkStatus) => {
+    //这里转换提交参数格式
+    let data = {
+      "customerId": customerId,
+      "deviceIds": [
+        device.assetId
+      ],
+      "hierarchyId": device.locationId,
+      "pointCheckStatus": checkStatus,
+    }
+    apiCheckDeviceStatus(data).then(data => {
+      if (data.code === '0') {
+
+      } else {
+        //给出提示
+        Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
+          { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
+        ]);
+      }
+    })
+  }
+
   _updateDevicePandianStatus(device) {
     let data = {
       deviceId: device.assetId,
@@ -528,6 +557,8 @@ export default class TicketDetail extends Component {
         console.warn('未盘资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
         this._updateDevicePandianStatus(item);
         this._changeNonePandianToPankuiState(item);
+        ///未盘资产自动盘亏处理,
+        this._checkDeviceStatus(item, 1);
         if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
           item.extensionProperties.assetPointCheckState = 3;
         }
@@ -542,6 +573,7 @@ export default class TicketDetail extends Component {
       //待清理资产
       if (arrTags && arrTags.includes(localStr('lang_scan_result_page_tag2')) && isWillClearCheck) {
         console.warn('待清理资产:', item.assetName);
+        this._updateDevicePandianStatus(item);
         arrScrapDevices.push(item);
       }
     });
@@ -956,6 +988,9 @@ export default class TicketDetail extends Component {
     })
 
   }
+
+
+
 
   _checkDeviceStatus = (device, checkStatus) => {
     //这里转换提交参数格式
