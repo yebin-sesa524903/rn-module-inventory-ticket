@@ -144,22 +144,22 @@ export default class TicketRow extends Component {
   _renderInventoryItems(rowData) {
     let infos = [
       {
-        title: '未盘',
+        title: localStr('lang_ticket_detail_device_tab2'),
         color: '#D9D9D9',
         count: this._configAssetCounts(1, rowData)
       },
       {
-        title: '已盘',
+        title: localStr('lang_ticket_detail_device_tab3'),
         color: '#3DCD58',
         count: this._configAssetCounts(2, rowData)
       },
       {
-        title: '盘亏',
+        title: localStr('lang_ticket_detail_device_tab4'),
         color: '#F53F3F',
         count: this._configAssetCounts(3, rowData)
       },
       {
-        title: '盘盈',
+        title: localStr('lang_ticket_detail_device_tab5'),
         color: '#FAAD14',
         count: this._configAssetCounts(4, rowData)
       },
