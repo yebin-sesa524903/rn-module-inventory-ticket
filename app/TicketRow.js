@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import {
   View,
-  StyleSheet, Image, Pressable,
+  StyleSheet, Image, Pressable, Appearance,
 } from 'react-native';
 
 import Text from './components/Text';
@@ -13,6 +13,7 @@ import { GRAY, BLACK, ALARM_RED } from './styles/color';
 import moment from 'moment';
 import TouchFeedback from "./components/TouchFeedback";
 import { localStr } from "./utils/Localizations/localization";
+import Colors from "../../../app/utils/const/Colors";
 
 export default class TicketRow extends Component {
   constructor(props) {
@@ -73,35 +74,36 @@ export default class TicketRow extends Component {
       bgColor: '',
       borderColor: '',
     };
+    let isDarkMode = Appearance.getColorScheme() === 'dark';
     switch (rowData.ticketState) {
       case 10:
         ///未开始/待执行
-        ret.textColor = '#1F1F1F';
-        ret.borderColor = '#D9D9D9';
-        ret.bgColor = '#f8f8f8';
+        ret.textColor = isDarkMode ? '#ffffffd9' : '#1F1F1F';
+        ret.borderColor = isDarkMode ? '#424242' : '#D9D9D9';
+        ret.bgColor = isDarkMode ? '#ffffff0d':'#f8f8f8';
         break;
       case 20:
-        ret.textColor = '#3491FA';
-        ret.borderColor = '#9FD4FD';
-        ret.bgColor = '#f8f8f8';
+        ret.textColor = isDarkMode ? '#1C508A' :'#3491FA';
+        ret.borderColor = isDarkMode ? '#1C508A' : '#9FD4FD';
+        ret.bgColor = isDarkMode ? '#0F2F58': '#f8f8f8';
         break;
       case 30:
         ///已提交
-        ret.textColor = '#FAAD14';
-        ret.borderColor = '#FFCF8B';
-        ret.bgColor = '#f8f8f8';
+        ret.textColor = isDarkMode ? '#D89614' : '#FAAD14';
+        ret.borderColor = isDarkMode ? '#594214' : '#FFCF8B';
+        ret.bgColor = isDarkMode ? '#2B2111' : '#f8f8f8';
         break;
       case 50:
         ///已完成
-        ret.textColor = '#3DCD58';
-        ret.borderColor = '#3DCD58';
-        ret.bgColor = '#F0FFF0';
+        ret.textColor = isDarkMode ? '#38B24F' : '#3DCD58';
+        ret.borderColor = isDarkMode ? '#38B24F' : '#3DCD58';
+        ret.bgColor = isDarkMode ? '#1C2B22' : '#F0FFF0';
         break;
       case 40:
         ///驳回
-        ret.textColor = '#F5222D';
-        ret.borderColor = '#FFA39E';
-        ret.bgColor = '#FFF1F0';
+        ret.textColor = isDarkMode ? '#D32029' : '#F5222D';
+        ret.borderColor = isDarkMode ? '#58181C' :'#FFA39E';
+        ret.bgColor = isDarkMode ? '#2A1215' :'#FFF1F0';
         break;
     }
     return ret;
@@ -142,15 +144,17 @@ export default class TicketRow extends Component {
   }
 
   _renderInventoryItems(rowData) {
+    let isDarkMode = Appearance.getColorScheme() === 'dark';
+
     let infos = [
       {
         title: '未盘',
-        color: '#D9D9D9',
+        color: isDarkMode ? '#424242':'#D9D9D9',
         count: this._configAssetCounts(1, rowData)
       },
       {
         title: '已盘',
-        color: '#3DCD58',
+        color: isDarkMode ? '#424242': '#3DCD58',
         count: this._configAssetCounts(2, rowData)
       },
       {
@@ -176,7 +180,7 @@ export default class TicketRow extends Component {
                 paddingTop: 12,
                 paddingBottom: 12,
                 paddingRight: 8,
-                backgroundColor: '#f8f8f8',
+                backgroundColor: Colors.background.fill,
                 borderRadius: 8,
                 marginLeft: index > 0 ? 12 : 0,
               }} onPress={() => this.props.onInventoryItemClick(rowData, index + 1)}>
@@ -188,11 +192,12 @@ export default class TicketRow extends Component {
                   borderBottomRightRadius: 2
                 }} />
                 <View style={{}}>
-                  <Text style={{ fontSize: 13, color: '#666' }}>{item.title}</Text>
+                  <Text style={{ fontSize: 13, color: Colors.text.sub }}>{item.title}</Text>
                   <Text style={{
                     fontSize: 22,
-                    backgroundColor: '#333',
-                    marginTop: 8
+                    color: Colors.text.sub,
+                    marginTop: 8,
+                    fontWeight:'bold'
                   }}>{item.count}</Text>
                 </View>
                 <Image source={require('../app/images/login_arrow/arrow.png')} />
@@ -232,26 +237,26 @@ export default class TicketRow extends Component {
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 12 }}>
                 <Text
-                  style={{ color: '#333', fontSize: 16, fontWeight: 'bold', flexShrink: 1, marginRight: 3 }}
+                  style={{ color: Colors.text.primary, fontSize: 16, fontWeight: 'bold', flexShrink: 1, marginRight: 3 }}
                   numberOfLines={1}>{title}</Text>
               </View>
               {this._renderTicketStatus(this._getStatusInfo(rowData))}
             </View>
-            <Text style={{ fontSize: 14, color: "#666", marginTop: 10, }}>
+            <Text style={{ fontSize: 14, color: Colors.text.sub, marginTop: 10, }}>
               {localStr('lang_ticket_execute_time') + ': '}
               <Text style={{
                 fontSize: 14,
-                color: (isExpire ? '#ff4d4d' : '#666'),
+                color: (isExpire ? '#ff4d4d' : Colors.text.primary),
               }}>{this._getDateDisplay()}</Text>
             </Text>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-              <Text style={{ marginLeft: 0, color: '#666', fontSize: 14 }} numberOfLines={1}
+              <Text style={{ marginLeft: 0, color: Colors.text.sub, fontSize: 14 }} numberOfLines={1}
                 lineBreakModel='charWrapping'>{localStr('lang_ticket_location') + ": " + locationPath}</Text>
             </View>
           </View>
           {this._renderInventoryItems(rowData)}
-          <View style={{ backgroundColor: '#eee', height: 1, marginTop: 15 }} />
+          <View style={{ backgroundColor: Colors.background.divider, height: 1, marginTop: 15 }} />
         </View>
       </TouchFeedback>
     );
