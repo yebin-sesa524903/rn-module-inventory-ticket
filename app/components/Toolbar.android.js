@@ -84,12 +84,12 @@ export default class Toolbar extends Component {
               <Image style={{ tintColor: '#fff', width: 18, height: 18 }} source={item.icon} />
           );
         } else if (item.isFontIcon) {
-          imageOrText = <Icon type={item.type} color={enabled ? '#fff' : '#33333380'} size={16} />
+          imageOrText = <Icon type={item.type} color={enabled ? Colors.seTextInverse : Colors.seTextPrimary} size={16} />
         }
         else {
           width = null;
           imageOrText = (
-              <Text style={{ color: enabled ? '#fff' : '#33333380', fontSize: 15, textAlign: 'right', marginRight: 8 }}>{item.title}</Text>
+              <Text style={{ color: enabled ? Colors.seTextInverse : Colors.seTextPrimary, fontSize: 15, textAlign: 'right', marginRight: 8 }}>{item.title}</Text>
           );
         }
         if (!enabled) {
@@ -137,15 +137,15 @@ export default class Toolbar extends Component {
       borderColor = 'transparent';
     } else {
       // color='#fff';
-      color = Colors.theme;
+      color = Colors.seBrandNomarl;
       if (!borderColor){
-        borderColor = Colors.background.divider;
+        borderColor = Colors.seBrandNomarl;
       }
     }
 
     return (
         <View style={[styles.navSty, { backgroundColor: color, borderColor: borderColor }]}>
-          <StatusBar barStyle={'light-content'} backgroundColor={Colors.theme} />
+          <StatusBar barStyle={'light-content'} backgroundColor={Colors.seBrandNomarl} />
           <View style={{
             flexDirection: 'row',
             flex: 1, alignItems: 'center',

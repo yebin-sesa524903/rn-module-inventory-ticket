@@ -282,7 +282,7 @@ export default class TicketList extends Component {
   _getView() {
     if (this.state.showEmpty) return this._renderEmpty();
     return (
-      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: Colors.background.white }}
+      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: Colors.seBgContainer }}
         sections={this.state.ticketData}
         refreshControl={
           <RefreshControl
@@ -324,7 +324,7 @@ export default class TicketList extends Component {
         borderTopRightRadius: 8,
         borderTopLeftRadius: 8,
         overflow: 'hidden',
-        backgroundColor: Colors.background.white
+        backgroundColor: Colors.seBgContainer
       }}>
         <View style={{ flexDirection: 'row' }}>
           <Pressable onPress={() => {
@@ -337,7 +337,7 @@ export default class TicketList extends Component {
             <Text style={{
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
-              color: this.state.selectedIndex === 0 ? Colors.theme : Colors.text.sub
+              color: this.state.selectedIndex === 0 ? Colors.seBrandNomarl : Colors.seTextPrimary
             }}>{`未完成(${this.state.unDoneCount})`}</Text>
           </Pressable>
           <Pressable onPress={() => {
@@ -350,11 +350,11 @@ export default class TicketList extends Component {
             <Text style={{
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
-              color: this.state.selectedIndex === 1 ? Colors.theme : Colors.text.sub
+              color: this.state.selectedIndex === 1 ? Colors.seBrandNomarl : Colors.seTextPrimary
             }}>{`已完成(${this.state.doneCount})`}</Text>
           </Pressable>
         </View>
-        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: Colors.background.divider, height: 1 }} />
+        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: Colors.seBorderSplit, height: 1 }} />
       </View>
     )
   }
@@ -365,8 +365,8 @@ export default class TicketList extends Component {
     }
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background.white }}>
-        <View style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
+        <View style={{ flex: 1 , backgroundColor: Colors.seBrandNomarl}}>
           {this._renderSectionHeader()}
           {this._getView()}
         </View>

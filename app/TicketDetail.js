@@ -130,12 +130,12 @@ export default class TicketDetail extends Component {
 
   _renderInventoryTicketInfo() {
     return (
-      <View style={{ margin: 16, padding: 16, backgroundColor: Colors.background.primary, borderRadius: 12 }}>
-        <Text style={{ fontSize: 16, color: Colors.text.primary, fontWeight: '600' }}>{this.state.rowData.title}</Text>
-        <Text style={{ fontSize: 12, color: Colors.text.sub, marginVertical: 8 }}>
+      <View style={{ margin: 16, padding: 16, backgroundColor: Colors.seBgContainer, borderRadius: 12 }}>
+        <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{this.state.rowData.title}</Text>
+        <Text style={{ fontSize: 12, color: Colors.seTextPrimary, marginVertical: 8 }}>
           {`${localStr('lang_ticket_detail_execute_time')}：${moment(this.state.rowData.startTime).format('YYYY-MM-DD')} ~ ${moment(this.state.rowData.endTime).format('YYYY-MM-DD')}`}
         </Text>
-        <Text style={{ fontSize: 12, lineHeight: 20, color: Colors.text.sub, }}>{`${localStr('lang_ticket_detail_execute_person')}：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
+        <Text style={{ fontSize: 12, lineHeight: 20, color: Colors.seTextPrimary, }}>{`${localStr('lang_ticket_detail_execute_person')}：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
       </View>
     )
   }
@@ -233,13 +233,13 @@ export default class TicketDetail extends Component {
     let createDate = moment(rowData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
       <View style={{
-        paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16, backgroundColor: Colors.background.white, marginTop: -2
+        paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16, backgroundColor: Colors.seBgLayout, marginTop: -2
         , alignItems: 'center'
       }}>
-        <Text numberOfLines={1} style={{ fontSize: 13, color: Colors.text.light }}>
+        <Text numberOfLines={1} style={{ fontSize: 13, color: Colors.seTextDisabled }}>
           {`${localStr('lang_ticket_detail_ticketId')}:${strId}`}
         </Text>
-        <Text numberOfLines={1} style={{ fontSize: 13, color: Colors.text.light, marginTop: 6 }}>
+        <Text numberOfLines={1} style={{ fontSize: 13, color: Colors.seTextDisabled, marginTop: 6 }}>
           {`${rowData.createUserName} ${localStr('lang_ticket_detail_create_time')}${createDate}`}
         </Text>
       </View>
@@ -584,17 +584,17 @@ export default class TicketDetail extends Component {
 
   _renderSubmittedButton() {
     return (
-      <Bottom borderColor={Colors.transparent} style={{ paddingTop: 12 }} backgroundColor={Colors.background.primary}>
+      <Bottom borderColor={Colors.transparent} backgroundColor={Colors.seBgContainer}>
         <Button
           style={[styles.button, {
-            backgroundColor: Colors.theme,
+            backgroundColor: Colors.seBrandNomarl,
             marginLeft: 16,
             flex: 1,
             borderRadius: 8,
           }]}
           textStyle={{
             fontSize: 16,
-            color: '#ffffff'
+            color: Colors.seTextInverse
           }}
           text={localStr('lang_ticket_detail_approved')}
           onClick={() => this._showSubmitDialog()} />
@@ -681,25 +681,15 @@ export default class TicketDetail extends Component {
       let btnLabel = localStr('lang_ticket_detail_begin_execute');
       //还需要判断是否是创建者和有工单执行权限
       return (
-        <Bottom borderColor={Colors.transparent} style={{ paddingTop: 12 }} backgroundColor={Colors.background.primary}>
+        <Bottom borderColor={Colors.transparent} backgroundColor={Colors.seBgContainer}>
+
           <Button
             style={[styles.button, {
-              borderWidth: 1, borderColor: Colors.background.divider, display: 'none',
-              backgroundColor: Colors.background.white, marginLeft: 16, flex: 1, marginRight: 0
+              backgroundColor: Colors.seBrandNomarl, marginLeft: 16, flex: 1, borderRadius: 8
             }]}
             textStyle={{
               fontSize: 16,
-              color: '#888'
-            }}
-            text={localStr('lang_ticket_detail_ignore')}
-            onClick={() => this._doIgnore()} />
-          <Button
-            style={[styles.button, {
-              backgroundColor: Colors.theme, marginLeft: 16, flex: 2, borderRadius: 8
-            }]}
-            textStyle={{
-              fontSize: 16,
-              color: '#ffffff'
+              color: Colors.seTextInverse
             }}
             text={btnLabel} onClick={this._executeTicket} />
         </Bottom>
@@ -712,27 +702,27 @@ export default class TicketDetail extends Component {
     //执行中和已驳回操作一样
     if (this.state.isExecutor && (status === STATE_STARTING || status === STATE_REJECTED) && privilegeHelper.hasAuth(CodeMap.AssetTicketExecute) && !isScollView) {
       return (
-        <Bottom borderColor={Colors.transparent} style={{ paddingTop: 12 }} backgroundColor={Colors.background.primary}>
+        <Bottom borderColor={Colors.transparent} backgroundColor={Colors.seBgContainer}>
           {/* <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flex: 1 }}>
               {logButton}
             </View>
           </View> */}
-          <View style={{ flex: 3, alignItems: 'center', marginHorizontal: 16, flexDirection: 'row', height: 40, borderRadius: 8, backgroundColor: Colors.theme, }}>
+          <View style={{ flex: 3, alignItems: 'center', marginHorizontal: 16, flexDirection: 'row', height: 40, borderRadius: 8, backgroundColor: Colors.seBrandNomarl, }}>
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._addNewInventory}>
-              <Text style={{ color: '#fff', fontSize: 14 }}>{localStr('lang_ticket_detail_add_device')}</Text>
+              <Text style={{ color: Colors.seTextInverse, fontSize: 14 }}>{localStr('lang_ticket_detail_add_device')}</Text>
             </TouchableOpacity>
-            <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
+            <View style={{ width: 1, height: 20, backgroundColor: Colors.seBrandHoverd }} />
             {!this.state.canScan ? null :
               <>
                 <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={this._scanInventory}>
-                  <Text style={{ color: '#fff', fontSize: 14 }}>{localStr('lang_ticket_detail_scan_device')}</Text>
+                  <Text style={{ color: Colors.seTextInverse, fontSize: 14 }}>{localStr('lang_ticket_detail_scan_device')}</Text>
                 </TouchableOpacity>
-                <View style={{ width: 1, height: 20, backgroundColor: '#64D975' }} />
+                <View style={{ width: 1, height: 20, backgroundColor: Colors.seBrandHoverd }} />
               </>
             }
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={() => this._submitTicket()}>
-              <Text style={{ color: '#fff', fontSize: 14 }}>{localStr('lang_ticket_detail_submit_ticket')}</Text>
+              <Text style={{ color: Colors.seTextInverse, fontSize: 14 }}>{localStr('lang_ticket_detail_submit_ticket')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -956,8 +946,8 @@ export default class TicketDetail extends Component {
       <Toolbar
         title={localStr('lang_ticket_detail')}
         navIcon="back"
-        color={Colors.theme}
-        borderColor={Colors.theme}
+        color={Colors.seBrandNomarl}
+        borderColor={Colors.seBrandNomarl}
         onIconClicked={() => {
           this.props.navigator.pop()
         }}
@@ -1144,13 +1134,13 @@ export default class TicketDetail extends Component {
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{ backgroundColor: Colors.warningBg, padding: 16, margin: 16, marginBottom: 0, borderRadius: 12 }}>
+      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, margin: 16, marginBottom: 0, borderRadius: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: Colors.text.primary, fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+          <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
         </View>
-        <View style={{ height: 1, backgroundColor: Colors.background.divider, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
-        <Text style={{ fontSize: 16, color: Colors.text.primary, lineHeight: 28 }}>{reason}</Text>
-        <Text style={{ fontSize: 12, color: Colors.text.sub, marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
+        <View style={{ height: 1, backgroundColor: Colors.seBorderBase, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
+        <Text style={{ fontSize: 16, color: Colors.seTextTitle, lineHeight: 28 }}>{reason}</Text>
+        <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
       </View>
     )
   }
@@ -1247,7 +1237,7 @@ export default class TicketDetail extends Component {
           onLongPress={() => this._deleteDevice(item, index)}
         >
           <View key={index} style={{
-            flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: Colors.background.divider,
+            flexDirection: 'row', alignItems: 'center', marginTop: 10, borderTopColor: Colors.seBgLayout,
             borderTopWidth: 1, paddingTop: 10
           }}>
             <View style={{ borderRadius: 8, overflow: 'hidden', }}>
@@ -1255,8 +1245,8 @@ export default class TicketDetail extends Component {
             </View>
 
             <View style={{ marginLeft: 16, flex: 1 }}>
-              <Text style={{ color: Colors.text.primary, fontSize: 14 }}>{item.assetName}</Text>
-              <Text style={{ color: Colors.text.sub, fontSize: 12, marginTop: 8 }}>{`${localStr('lang_scan_result_label10')}：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
+              <Text style={{ color: Colors.seTextTitle, fontSize: 14 }}>{item.assetName}</Text>
+              <Text style={{ color: Colors.seTextPrimary, fontSize: 12, marginTop: 8 }}>{`${localStr('lang_scan_result_label10')}：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
             </View>
             {
               this.state.rowData.ticketState === STATE_NOT_START ? null :
@@ -1265,7 +1255,7 @@ export default class TicketDetail extends Component {
                     // ((this.state.localDeviceState && !this.state.localDeviceState[item.assetId] && this.state.localDeviceState[item.assetId] !== 0)
                     // || (!item.status && item.status !== 0)) ?
                     (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
-                      <Text style={{ fontSize: 12, color: Colors.theme, marginTop: 8 }}>{this.state.canManual && this._canExecute() ? localStr('lang_ticket_detail_device_check') : ''}</Text> :
+                      <Text style={{ fontSize: 12, color: Colors.seBrandNomarl, marginTop: 8 }}>{this.state.canManual && this._canExecute() ? localStr('lang_ticket_detail_device_check') : ''}</Text> :
                       <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
                   }
                 </TouchFeedback>
@@ -1277,7 +1267,7 @@ export default class TicketDetail extends Component {
     })
     arrStatus[0] = this.state.rowData.assets.length;
     return (
-      <View style={{ margin: 16, marginTop: 0, borderRadius: 12, backgroundColor: Colors.background.primary, padding: 16 }}>
+      <View style={{ margin: 16, marginTop: 0, borderRadius: 12, backgroundColor: Colors.seBgContainer, padding: 16 }}>
         {this._renderInventoryTabs(arrStatus)}
         {devices}
       </View>
@@ -1299,8 +1289,8 @@ export default class TicketDetail extends Component {
             let isSel = index === this.state.deviceTab;
             return (
               <TouchableOpacity onPress={() => this.setState({ deviceTab: index })}>
-                <Text style={{ fontSize: 14, color: isSel ? Colors.theme : Colors.text.light }}>{item}</Text>
-                <View style={{ height: 1, marginTop: 12, backgroundColor: isSel ? Colors.theme : undefined }} />
+                <Text style={{ fontSize: 14, color: isSel ? Colors.seBrandNomarl : Colors.seTextSecondary }}>{item}</Text>
+                <View style={{ height: 1, marginTop: 12, backgroundColor: isSel ? Colors.seBrandNomarl : undefined }} />
               </TouchableOpacity>
             )
           })
@@ -1433,7 +1423,7 @@ export default class TicketDetail extends Component {
         );
       } else {
         bottomButton = (
-          <View style={{ marginBottom: (isPhoneX() ? 32 : 16) }}>
+          <View style={{ paddingBottom: 20, backgroundColor: Colors.seBgContainer , height: 84}}>
             {bottomButton}
           </View>
         );
@@ -1441,22 +1431,21 @@ export default class TicketDetail extends Component {
     }
 
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.background.white}}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout}}>
         {this._getToolbar(this.state.rowData)}
-        <ScrollView showsVerticalScrollIndicator={false} style={[styles.wrapper, marginBottom]}>
-          <ViewShot style={{ flex: 1, backgroundColor: Colors.background.white }} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
+        <ScrollView showsVerticalScrollIndicator={false} style={[styles.wrapper]}>
+          <ViewShot style={{ flex: 1, backgroundColor: Colors.seBgLayout}} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
             {/*{this._getAssetView()}*/}
             {this._renderRejection()}
             {this._renderInventoryTicketInfo()}
             {this._renderInventoryDeviceList()}
             {/* {this._renderRejection()} */}
-            <View style={{ height: 1, backgroundColor: Colors.background.divider, marginLeft: 16 }} />
+            <View style={{ height: 1, backgroundColor: Colors.seBorderSplit, marginLeft: 16 }} />
             {/*{this._getTaskView()}*/}
-            <View style={{ height: 1, backgroundColor: Colors.background.divider, marginLeft: 16 }} />
+            <View style={{ height: 1, backgroundColor: Colors.seBorderSplit, marginLeft: 16 }} />
             {/*{this._getDocumentsView()}*/}
             {/* {this._getLogMessage()} */}
             {this._getIDView()}
-            <View style={{ height: 10, flex: 1, backgroundColor: Colors.background.white }}/>
           </ViewShot>
         </ScrollView>
         {bottomButton}
