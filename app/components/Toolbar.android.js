@@ -130,7 +130,7 @@ export default class Toolbar extends Component {
     if (titleColor) {
       titleStyle.push({ color: titleColor });
     } else {
-      titleStyle.push({ color: '#fff' });
+      titleStyle.push({ color: Colors.seTextInverse });
     }
 
     if (color === 'transparent') {
