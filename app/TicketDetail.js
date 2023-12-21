@@ -1387,7 +1387,7 @@ export default class TicketDetail extends Component {
   render() {
     if (!this.state.isFetching && this.state.errorMessage) {
       return (
-        <View style={{ flex: 1, backgroundColor: Colors.background.white }}>
+        <View style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
           {this._getToolbar(this.props.rowData)}
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 17, color: Colors.text.sub }}>{this.state.errorMessage}</Text>
@@ -1397,7 +1397,7 @@ export default class TicketDetail extends Component {
     }
     if (this.state.isFetching || !this.state.rowData) {
       return (
-        <View style={{ flex: 1, backgroundColor: Colors.background.white }}>
+        <View style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
           {this._getToolbar(this.state.rowData)}
           <Loading />
         </View>
