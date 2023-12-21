@@ -1,37 +1,26 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import {
   DeviceEventEmitter, Dimensions,
   Image, InteractionManager,
-  Modal,
   Platform, Pressable,
   RefreshControl,
   SafeAreaView,
   SectionList,
   Text,
-  TouchableOpacity,
   View
 } from "react-native";
-import CalendarStrip from "./components/SlideableCalendar/CalendarStrip";
-import Icon2 from "./components/Icon";
-
-import { Icon } from '@ant-design/react-native';
-import { LIST_BG, CLEAN_FILTER_BG, CLEAN_FILTER_BORDER, GREEN } from "./styles/color";
-import TouchFeedback from "./components/TouchFeedback";
+import { GREEN } from "./styles/color";
 import TicketRow from "./TicketRow";
-import { getTicketFilter, getTicketList, setTicketFilter } from "./store";
-import { getLanguage, localStr } from "./utils/Localizations/localization";
-import TicketFilter from "./TicketFilter";
+import { localStr } from "./utils/Localizations/localization";
 import TicketDetail from "./TicketDetail";
 import {
-  apiQueryTicketList,
-  apiTicketCount,
-  apiTicketList,
+  apiAppTicketList,
+  apiHierarchyList,
 } from "./middleware/bff";
-import moment from "moment";
 
 import { isPhoneX } from "./utils";
 import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
+import Colors from "../../../app/utils/const/Colors";
 
 const MP = Platform.OS === 'ios' ? (isPhoneX() ? 0 : 10) : 36;
 const CODE_OK = '0';
@@ -55,246 +44,213 @@ export default class TicketList extends Component {
       hasPermission: (privilegeHelper.hasAuth(CodeMap.AssetTicketExecute) ||
         privilegeHelper.hasAuth(CodeMap.AssetTicketFull) ||
         privilegeHelper.hasAuth(CodeMap.AssetTicketRead)),
-      selectedIndex: 0,
+      selectedIndex: 0,///当前选择item  未完成/已完成
+      pageIndex: 1,///当前页
+      hasMore: false,///默认没有更多数据
+      unDoneCount: 0, ///未完成个数
+      doneCount: 0,///已完成个数
     }
   }
 
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       if (privilegeHelper.hasCodes()) {
-        this.loadTicketList(new Date(), 1);
-        let start = moment().add(-1, 'months').format(DAY_FORMAT);
-        let end = moment().add(1, 'months').format(DAY_FORMAT);
-        this.loadTicketCount(start, end);
+        this._loadApiHierarchyList();
       } else {
         this.setState({ refreshing: true, hasPermission: true })
       }
-      this._initListener = DeviceEventEmitter.addListener('TICKET_INVENTORY_INIT_OK', () => {
-        this.setState({
-          hasPermission: (privilegeHelper.hasAuth(CodeMap.AssetTicketExecute) ||
-            privilegeHelper.hasAuth(CodeMap.AssetTicketFull) ||
-            privilegeHelper.hasAuth(CodeMap.AssetTicketRead))
-        })
-        this.loadTicketList(new Date(), 1);
-      })
     })
-
   }
 
   componentWillUnmount() {
     this._initListener && this._initListener.remove();
   }
 
-  loadTicketCount(start, end) {
-    apiTicketCount(start, end).then(data => {
-      if (data.code === CODE_OK) {
-        //这里更新有点的日期
-        let markedDate = this.state.markedDate || [];
-        data.data.forEach(item => {
-          let date = moment(item.date).format(DAY_FORMAT);
-          let findIndex = markedDate.findIndex(sel => sel === date);
-          if (item.count === 0) {
-            //移除
-            if (findIndex >= 0) markedDate.splice(findIndex, 1);
-          } else {
-            //添加
-            if (findIndex < 0) markedDate.push(date);
-          }
-          this.setState({ markedDate })
-        });
-      }
-    });
-  }
-
   _renderEmpty() {
     if (!this.state.refreshing && this.state.error) {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f2f2f2' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background.primary }}>
           <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{this.state.error}</Text>
         </View>
       )
     }
     if (this.state.refreshing) return null;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: (Dimensions.get('window').height - 220) }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:Colors.background.white, height: (Dimensions.get('window').height - 220) }}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
         <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
       </View>
     )
   }
 
-  queryTicketList(filter) {
-    if (!filter.pageNo) filter.pageNo = 1;
-    this.setState({ refreshing: true, showEmpty: false, ticketData: [], error: null });
-    apiQueryTicketList(filter).then(data => {
-      this.setState({ refreshing: false })
-      if (data.code === CODE_OK) {
-        if (!data.data || data.data.length === 0) {
-          this.setState({ showEmpty: true })
-          return;
-        }
-        //组装数据
-        let section = [];
-        let hasMore = false;
-        //这里假设已经根据状态排序了
-        // if(data.pageTotal > filter.pageNo) {
-        //   //说明还有下一页
-        //   hasMore = true;
-        // }
-        if (filter.pageNo > 1) {
-          section = this.state.ticketData;
-        }
+  /**
+   * 获取层级结构
+   * @private
+   */
+  _loadApiHierarchyList() {
+    apiHierarchyList({
+      customerId: 1,
+      treeType: 'fmhc',
+      type: '1'
+    }).then((res) => {
+      this.setState({
+        locations: res.data
+      }, () => {
+        this._loadTicketList();
+        ///第一次进入需要获取一下已完成的个数
+        this._loadDoneCount();
+      })
+    }).catch((reason) => {
 
-        data.data.forEach(item => {
-          let group = section.find(g => g.state === item.ticketState);
-          if (group) {
-            group.data.push(item);
-          } else {
-            group = {
-              state: item.ticketState,
-              stateName: item.ticketStateLabel,
-              title: TICKET_TYPE_MAP[item.ticketState],//item.ticketStateLabel,
-              isFolder: false,
-              data: [item]
-            }
-            section.push(group);
-          }
-        })
-        this.setState({ ticketData: section, hasMore })
-
-      } else {
-        //请求失败
-        this.setState({ ticketData: [], error: data.msg })
-      }
     })
   }
 
-  loadTicketList(date, pageNo) {
-    this.setState({ refreshing: true, showEmpty: false, ticketData: [], error: null })
-    date = moment(date).format(DAY_FORMAT);
-    //处理加载中等。。。
-    apiTicketList(date, pageNo).then(data => {
-      this.setState({ refreshing: false })
+  /**
+   * 已完成的个数
+   * @private
+   */
+  _loadDoneCount() {
+    let locations = [];
+    for (const re of this.state.locations) {
+      locations.push({
+        locationId: re.id,
+        locationType: re.templateId,
+      });
+    }
+    let params = {
+      ticketTypes: [11, 12],
+      ticketStatus: [50],
+      locations: locations,
+      pageIndex: 1,
+      pageSize: 20,
+    };
+    apiAppTicketList(params).then((data) => {
       if (data.code === CODE_OK) {
-
-        if (!data.data || data.data.length === 0) {
-          this.setState({ showEmpty: true })
-          return;
-        }
-        let markedDate = this.state.markedDate || [];
-        markedDate.push(date);
-        markedDate = [].concat(markedDate);
-        //组装数据
-        let section = [];
-        //这里假设已经根据状态排序了
-        data.data.forEach(item => {
-          let group = section.find(g => g.state === item.ticketState);
-          if (group) {
-            group.data.push(item);
-          } else {
-            group = {
-              state: item.ticketState,
-              stateName: item.ticketStateLabel,
-              title: TICKET_TYPE_MAP[item.ticketState],//item.ticketStateLabel,
-              isFolder: false,
-              data: [item]
-            }
-            section.push(group);
-          }
+        this.setState({
+          doneCount: data.data.total,
         })
-        this.setState({ ticketData: section, markedDate, error: null })
-      } else {
-        //请求失败
-        let udpate = { ticketData: [], error: data.msg, }
-        if (data.code === '401') udpate.hasPermission = false;
-        this.setState(udpate)
       }
     });
   }
 
-  _clickFilter = () => {
-    this.setState({ openFilter: true })
-  }
-
-  _renderRightButton() {
-    return (
-      <View style={{ position: 'absolute', marginTop: -10, right: 14 + (this.props.paddingRight || 0), padding: 6, flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flexDirection: 'row', marginRight: -6 }}>
-          {
-            <TouchableOpacity style={{ padding: 6 }} onPress={this._clickFilter}>
-              <Icon name="filter" size={24} color={'#333'} />
-            </TouchableOpacity>
-          }
-
-          {false &&
-            <TouchableOpacity style={{ padding: 6 }} onPress={() => {
-              if (this.props.onCreateTicket) this.props.onCreateTicket();
-            }}>
-              <Icon name="plus" size='sm' color="#333" />
-            </TouchableOpacity>
-          }
-        </View>
-      </View>
-    );
-  }
-
-  _renderSection = (info) => {
-
-    let { title, isFold } = info.section;
-    let count = info.section.data.length;
-    if (isFold) {
-      count = info.section.data1.length;
+  _getLocationInfo(hierarchies, locationId) {
+    let locationMsg = '';
+    let parentName = '';
+    let parentParentName = '';
+    let parentId = 0;
+    for (let hierarchy of hierarchies) {
+      if (locationId == hierarchy.id) {
+        locationMsg = hierarchy.name;
+        parentId = hierarchy.parentId;
+        break;
+      }
     }
-    return (
-      <View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, backgroundColor: LIST_BG, }}>
-          <Text style={{ fontSize: 14, color: '#888', backgroundColor: LIST_BG, paddingVertical: 10, flex: 1 }}>
-            {`${title}  (${count})`}
-          </Text>
-          <TouchFeedback onPress={() => {
-            info.section.isFold = !isFold;
-            if (info.section.isFold) {
-              info.section.data1 = [...info.section.data];
-              info.section.data = [];
-            } else {
-              info.section.data = [...info.section.data1];
-              info.section.data1 = [];
-            }
-            this.setState({})
-          }}>
-            <View style={{ height: 30, width: 30, justifyContent: 'center', alignItems: 'center' }}>
-              <Icon2 type={isFold ? "icon_arrow_up" : 'icon_arrow_down'} color="#888" size={13} />
-            </View>
-          </TouchFeedback>
-        </View>
-      </View>
-    )
+    let parParentId = 0;
+    for (let hierarchy of hierarchies) {
+      if (parentId == hierarchy.id) {
+        parentName = hierarchy.name;
+        parParentId = hierarchy.parentId;
+        break;
+      }
+    }
+    for (let hierarchy of hierarchies) {
+      if (parParentId == hierarchy.id) {
+        parentParentName = hierarchy.name;
+        break;
+      }
+    }
+    return parentParentName + '/' + parentName + '/' + locationMsg;
   }
+
+
+  _loadTicketList() {
+    this.setState({ refreshing: true, showEmpty: false, ticketData: [], error: null })
+    //处理加载中等...
+    let locations = [];
+    for (const re of this.state.locations) {
+      locations.push({
+        locationId: re.id,
+        locationType: re.templateId,
+      });
+    }
+    let params = {
+      ticketTypes: [11, 12],
+      ticketStatus: this.state.selectedIndex === 0 ? [10, 20, 30, 40] : [50],
+      locations: locations,
+      pageIndex: this.state.pageIndex,
+      pageSize: 20,
+    };
+    apiAppTicketList(params).then((data) => {
+      if (data.code === CODE_OK) {
+        let responseObj = data.data;
+        ///处理空数据
+        if (!responseObj || responseObj.list?.length === 0) {
+          this.setState({ showEmpty: true, refreshing: false })
+          return;
+        }
+        ///处理分页逻辑
+        let tickets = [];
+        let hasMoreData = false;
+        if (this.state.pageIndex === 1) {
+          tickets = responseObj.list;
+          hasMoreData = !(responseObj.pageSize >= responseObj.list?.length);
+        } else {
+          tickets = this.state.ticketData[0].data.concat(responseObj.list);
+        }
+        ///位置信息 赋值
+        for (const dataObj of tickets) {
+          for (const location of this.state.locations) {
+            if (location.id == dataObj.objectId) {
+              dataObj.locationInfo = this._getLocationInfo(this.state.locations, location.id);
+            }
+          }
+        }
+        let stateTicket = tickets.length === 0 ? [] : [{ data: tickets }];
+        this.setState({ ticketData: stateTicket, hasMore: hasMoreData, refreshing: false })
+
+        ///未完成/已完成个数赋值
+        if (this.state.selectedIndex === 0) {
+          ///未完成
+          this.setState({
+            unDoneCount: responseObj.total
+          })
+        } else {
+          ///已完成
+          this.setState({
+            doneCount: responseObj.total
+          })
+        }
+      } else {
+        //请求失败
+        let update = { ticketData: [],refreshing: false, error: data.msg, showEmpty: true }
+        if (data.code === '401') update.hasPermission = false;
+        this.setState(update)
+      }
+    });
+  }
+
   _renderRow = (info) => {
     let rowData = info.item;
     return (
-      <TicketRow rowData={rowData} onRowClick={this._gotoDetail} />
+      <TicketRow rowData={rowData} onRowClick={this._gotoDetail} onInventoryItemClick={this._gotoDetail} />
     );
   }
 
-  _gotoDetail = (rowData) => {
+  _gotoDetail = (rowData, selectIndex = 0) => {
     console.log('rowData', rowData)
     this.props.navigator.push({
       id: 'service_ticket_detail',
       component: TicketDetail,
       passProps: {
-        // ticketId: "667867695152889856",//rowData.id,
-        // ticketId: "667851068998942720",//rowData.id,
-        // ticketId: "674485547392303104",
-        // ticketId: "668712877574324224",
         ticketId: rowData.id,
+        deviceTab: selectIndex,
         ticketChanged: () => this._onRefresh()
       }
     })
   }
 
   _renderFooterView = () => {
-    if (!this.state.showFilterResult || !this.state.hasMore) return null;
+    if (!this.state.hasMore) return null;
     return (
       <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ color: 'black' }}>{localStr('lang_load_more')}</Text>
@@ -305,60 +261,36 @@ export default class TicketList extends Component {
   _onRefresh = () => {
     if (!this.state.refreshing) {
       //没有刷新就做
-      if (this.state.showFilterResult) {
-        let filter = getTicketFilter().filter;
-        filter.pageNo = 1;
-        this.queryTicketList(filter)
-      } else {
-        this.loadTicketList(this.state.selectedDate, 1)
-      }
+      this.setState({
+        pageIndex: 1
+      }, () => this._loadTicketList())
     }
   }
 
   _loadMore = () => {
     if (!this.state.refreshing && this.state.hasMore) {
       //没有刷新就做
-      let filter = getTicketFilter().filter;
-      let pageNo = filter.pageNo || 1;
+      let pageNo = this.state.pageIndex || 1;
       pageNo++;
-      filter.pageNo = pageNo;
-      this.queryTicketList(filter);
+      this.setState({
+        pageIndex: pageNo,
+      }, () => this._loadTicketList());
     }
   }
 
-  _configSectionData() {
-    let unDoneTicket = [], doneTicket = [];
-    let ticketData = this.state.ticketData;
-    if (ticketData && ticketData.length > 0) {
-      for (let data of ticketData) {
-        if (data.state !== 50) {
-          ///未完成
-          unDoneTicket.push(data);
-        } else {
-          ///已完成
-          doneTicket.push(data);
-        }
-      }
-    }
-    if (this.state.selectedIndex === 0) {
-      return unDoneTicket;
-    } else {
-      return doneTicket;
-    }
-  }
 
   _getView() {
     if (this.state.showEmpty) return this._renderEmpty();
     return (
-      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: 'white' }} sections={this._configSectionData()}
-        contentContainerStyle={{ flex: (this.state.ticketData && this.state.ticketData.length > 0) ? undefined : 1 }}
+      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: Colors.seBgContainer }}
+        sections={this.state.ticketData}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
             onRefresh={this._onRefresh}
-            tintColor={GREEN}
+            tintColor={Colors.theme}
             title={localStr('lang_load_more')}
-            colors={[GREEN]}
+            colors={[Colors.theme]}
             progressBackgroundColor={'white'}
           />
         }
@@ -373,121 +305,6 @@ export default class TicketList extends Component {
       />
     )
   }
-
-  _closeFilter = () => {
-    this.setState({ openFilter: false })
-  }
-
-  _doReset = () => {
-
-  }
-
-  _doFilter = () => {
-    this.setState({
-      openFilter: false,
-      showFilterResult: true
-    })
-    this.queryTicketList(getTicketFilter().filter)
-  }
-
-  _clearFilter = () => {
-    this.setState({
-      showFilterResult: false
-    })
-    setTicketFilter({})
-    this.loadTicketList(this.state.selectedDate, 1)
-  }
-
-  _renderClearView() {
-    return (
-      <View style={{ alignItems: 'center', backgroundColor: LIST_BG, paddingTop: 20 }}>
-        <TouchFeedback onPress={this._clearFilter}>
-          <View style={{
-            paddingHorizontal: 12,
-            height: 31,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: CLEAN_FILTER_BG,
-            borderColor: CLEAN_FILTER_BORDER,
-            borderWidth: 1,
-            borderRadius: 14
-          }}>
-            <Text style={{ fontSize: 14, color: '#333' }}>{localStr('lang_ticket_clear_filter')}</Text>
-          </View>
-        </TouchFeedback>
-      </View>
-    )
-  }
-
-  _renderFilter() {
-    if (!this.state.openFilter) return null;
-    return (
-      <Modal style={{}} transparent={true} onRequestClose={this._closeFilter}>
-        <View style={{ backgroundColor: '#00000066', flex: 1, flexDirection: 'row' }}>
-          <TouchableOpacity style={{ width: '20%', height: '100%' }} onPress={this._closeFilter}></TouchableOpacity>
-          <View style={{ width: '80%', backgroundColor: '#fff', height: '100%' }}>
-            <SafeAreaView style={{ flex: 1 }}>
-              <TicketFilter doReset={this._doReset} doFilter={this._doFilter} />
-            </SafeAreaView>
-          </View>
-        </View>
-      </Modal>
-    )
-  }
-
-  _goBack = () => this.props.navigator.pop();
-
-  _renderTop() {
-    //如果是工单筛选，显示工单筛选，否则显示日历
-    if (this.state.showFilterResult) {
-      return (
-        <View style={{ marginTop: MP }}>
-          <View style={{ flexDirection: 'row', paddingTop: 4, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 17, color: '#333', fontWeight: '500' }}>{localStr('lang_ticket_filter')}</Text>
-            <View style={{ position: 'absolute', right: 16 + (this.props.paddingRight || 0) }}>
-              <TouchFeedback onPress={this._clickFilter}>
-                <Icon name="filter" size={24} color={'#333'} />
-              </TouchFeedback>
-            </View>
-          </View>
-          <View style={{ height: 10, backgroundColor: '#fff' }} />
-          {this._renderClearView()}
-        </View>
-      )
-    }
-    return (
-      <View style={{ marginTop: MP }}>
-        <CalendarStrip
-          isChinese={getLanguage() === 'zh'}
-          selectedDate={this.state.selectedDate || new Date()}
-          onPressDate={(date) => {
-            this.setState({
-              selectedDate: date
-            })
-            this.loadTicketList(date, 1);
-          }}
-          onPressGoToday={(today) => {
-            this.setState({
-              selectedDate: today
-            })
-            this.loadTicketList(today, 1);
-          }}
-          markedDate={this.state.markedDate || []}
-          loadTicketCount={(day1, day2) => {
-            this.loadTicketCount(day1, day2)
-          }}
-          weekStartsOn={1} // 0,1,2,3,4,5,6 for S M T W T F S, defaults to 0
-        />
-        {this._renderRightButton()}
-        <View style={{ position: 'absolute', left: 16, top: Platform.OS === 'ios' ? 0 : 4 }}>
-          <TouchFeedback onPress={this._goBack}>
-            <Image style={{ tintColor: '#333', width: 20, height: 20 }} source={require('./images/back_arrow/back_arrow.png')} />
-          </TouchFeedback>
-        </View>
-      </View>
-    )
-  }
-
   _renderNoPermission() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40 }}>
@@ -498,19 +315,6 @@ export default class TicketList extends Component {
   }
 
   _renderSectionHeader() {
-    let ticketData = this.state.ticketData;
-    let unDone = 0, done = 0;
-    if (ticketData && ticketData.length > 0) {
-      for (let data of ticketData) {
-        if (data.state !== 50) {
-          ///未完成
-          unDone += data.data.length;
-        } else {
-          ///已完成
-          done += data.data.length;
-        }
-      }
-    }
     return (
       <View style={{
         flexDirection: 'row',
@@ -520,35 +324,37 @@ export default class TicketList extends Component {
         borderTopRightRadius: 8,
         borderTopLeftRadius: 8,
         overflow: 'hidden',
-        backgroundColor: 'white'
+        backgroundColor: Colors.seBgContainer
       }}>
         <View style={{ flexDirection: 'row' }}>
           <Pressable onPress={() => {
             this.setState({
-              selectedIndex: 0
-            })
+              selectedIndex: 0,
+              pageIndex: 1,
+            }, () => this._loadTicketList())
           }}
             style={{ paddingLeft: 12, paddingRight: 12 }}>
             <Text style={{
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
-              color: this.state.selectedIndex === 0 ? '#3dcd58' : '#666'
-            }}>{`未完成(${unDone})`}</Text>
+              color: this.state.selectedIndex === 0 ? Colors.seBrandNomarl : Colors.seTextPrimary
+            }}>{`未完成(${this.state.unDoneCount})`}</Text>
           </Pressable>
           <Pressable onPress={() => {
             this.setState({
-              selectedIndex: 1
-            })
+              selectedIndex: 1,
+              pageIndex: 1,
+            }, () => this._loadTicketList())
           }}
             style={{ paddingLeft: 12, paddingRight: 12 }}>
             <Text style={{
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
-              color: this.state.selectedIndex === 1 ? '#3dcd58' : '#666'
-            }}>{`已完成(${done})`}</Text>
+              color: this.state.selectedIndex === 1 ? Colors.seBrandNomarl : Colors.seTextPrimary
+            }}>{`已完成(${this.state.doneCount})`}</Text>
           </Pressable>
         </View>
-        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: "#eee", height: 1 }} />
+        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: Colors.seBorderSplit, height: 1 }} />
       </View>
     )
   }
@@ -559,13 +365,11 @@ export default class TicketList extends Component {
     }
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <View style={{ flex: 1, backgroundColor: '#3DCD58' }}>
-          {/*{this._renderTop()}*/}
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
+        <View style={{ flex: 1 , backgroundColor: Colors.seBrandNomarl}}>
           {this._renderSectionHeader()}
           {this._getView()}
         </View>
-        {this._renderFilter()}
       </SafeAreaView>
     );
   }
