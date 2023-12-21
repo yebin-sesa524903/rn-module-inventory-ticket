@@ -28,6 +28,7 @@ import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
 import CacheImage from "./CacheImage";
 import { getLanguage, localStr } from "./utils/Localizations/localization";
+import Colors from "../../../app/utils/const/Colors";
 const DataGroup = () => [
   {
     groupName: localStr('lang_add_device_group_basic'),
@@ -181,11 +182,11 @@ export default class extends Component {
           alignItems: 'center',
           paddingVertical: 12,
           borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
+          borderTopColor: Colors.seBorderSplit,
         }}>
-        <Text style={{ color: '#595959', fontSize: 15 }}>{row.name}</Text>
+        <Text style={{ color: Colors.seTextPrimary, fontSize: 15 }}>{row.name}</Text>
         {!row.option ? null : (
-          <Text style={{ color: '#BFBFBF', fontSize: 15, marginLeft: 6 }}>
+          <Text style={{ color: Colors.seTextDisabled, fontSize: 15, marginLeft: 6 }}>
             {localStr('lang_add_device_options')}
           </Text>
         )}
@@ -195,14 +196,14 @@ export default class extends Component {
           style={{
             fontSize: 15,
             paddingVertical: 0,
-            color: '#595959',
+            color: Colors.seTextPrimary,
             marginRight: 6,
           }}
           textAlign='right'
           value={value}
           placeholder={localStr('lang_ticket_filter_input')}
           editable={!row.readOnly}
-          placeholderTextColor={'#BFBFBF'}
+          placeholderTextColor={Colors.seTextDisabled}
           underlineColorAndroid="transparent"
           returnKeyType={'done'}
           onChangeText={(text) => this._textChanged(row.key, text, row)}
@@ -304,21 +305,21 @@ export default class extends Component {
   //选择行
   _renderSelectRow(row) {
     let value = '';
-    let color = '#BFBFBF';
+    let color = Colors.seTextDisabled;
     if (row.isOptions) {
       value = row.Value;
       if (Array.isArray(value)) {
         value = value.join(',');
       }
       if (value) {
-        color = '#595959';
+        color = Colors.seTextSecondary;
       } else {
         value = localStr('lang_add_device_row_select');
       }
     } else {
       value = this.state.data[row.key];
       if (value) {
-        color = '#595959';
+        color = Colors.seTextSecondary;
       } else {
         value = localStr('lang_add_device_row_select');
       }
@@ -330,13 +331,13 @@ export default class extends Component {
           alignItems: 'center',
           paddingVertical: 12,
           borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
+          borderTopColor: Colors.seBorderSplit,
         }}
         onPress={() => this._clickSelect(row)}
       >
-        <Text style={{ color: '#595959', fontSize: 15 }}>{row.name}</Text>
+        <Text style={{ color: Colors.seTextPrimary, fontSize: 15 }}>{row.name}</Text>
         {!row.option ? null : (
-          <Text style={{ color: '#BFBFBF', fontSize: 15, marginLeft: 6 }}>
+          <Text style={{ color: Colors.seTextDisabled, fontSize: 15, marginLeft: 6 }}>
             {localStr('lang_add_device_options')}
           </Text>
         )}
@@ -352,7 +353,7 @@ export default class extends Component {
         >
           {value}
         </Text>
-        <Icon type={'arrow_right'} color={'#595959'} size={14} />
+        <Icon type={'arrow_right'} color={Colors.seTextDisabled} size={14} />
       </TouchableOpacity>
     );
   }
@@ -487,9 +488,9 @@ export default class extends Component {
     return (
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: Colors.seBgContainer,
           margin: 16,
-          marginBottom: 0,
+          marginBottom: 20,
           padding: 16,
           borderRadius: 12,
         }}
@@ -500,15 +501,15 @@ export default class extends Component {
             alignItems: 'center',
             paddingBottom: 12,
             borderBottomWidth: 1,
-            borderBottomColor: '#f0f0f0',
+            borderBottomColor: Colors.seBorderSplit,
           }}
         >
-          <Text style={{ fontSize: 15, color: '#1f1f1f' }}>{localStr('lang_add_device_group_photo')}</Text>
+          <Text style={{ fontSize: 15, color: Colors.seTextTitle }}>{localStr('lang_add_device_group_photo')}</Text>
         </View>
         <TouchableOpacity
           style={{
             borderWidth: 1,
-            borderColor: '#d9d9d9',
+            borderColor: Colors.seBorderSplit,
             marginTop: 12,
             alignItems: 'center',
             justifyContent: 'center',
@@ -517,7 +518,7 @@ export default class extends Component {
           }}
           onPress={this._openImagePicker}
         >
-          {child ? child : <Icon type="icon_add" size={36} color={'#d9d9d9'} />}
+          {child ? child : <Icon type="icon_add" size={36} color={Colors.seTextTitle} />}
           {childLoading}
         </TouchableOpacity>
       </View>
@@ -539,14 +540,14 @@ export default class extends Component {
       <View
         key={item.groupName}
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: Colors.seBgContainer,
           margin: 16,
           marginBottom: 0,
           padding: 16,
           borderRadius: 12,
         }}
       >
-        <Text style={{ fontSize: 15, color: '#1f1f1f', marginBottom: 10 }}>
+        <Text style={{ fontSize: 15, color: Colors.seTextTitle, marginBottom: 10 }}>
           {item.groupName}
         </Text>
         {item.items.map((row) => {
@@ -692,10 +693,12 @@ export default class extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: '#F4F6F8' }}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout}}>
         <Toolbar
           title={localStr('lang_add_device_title')}
           navIcon="back"
+          color={Colors.seBrandNomarl}
+          borderColor={Colors.seBrandNomarl}
           onIconClicked={this._doBack}
           actions={[]}
           onActionSelected={[]}
@@ -704,18 +707,18 @@ export default class extends Component {
           {this.state.groupData.map((group) => this._renderGroup(group))}
           {this._renderImage()}
         </ScrollView>
-        <View style={{ backgroundColor: '#fff', padding: 16, paddingTop: 12, paddingBottom: isPhoneX() ? 32 : 16, }}>
+        <View style={{ backgroundColor: Colors.seBgContainer, padding: 16, paddingTop: 12, paddingBottom: isPhoneX() ? 32 : 16, }}>
           <TouchableOpacity
             style={{
               height: 40,
-              backgroundColor: GREEN,
+              backgroundColor: Colors.seBrandNomarl,
               borderRadius: 8,
               alignItems: 'center',
               justifyContent: 'center',
             }}
             onPress={this._doSubmit}
           >
-            <Text style={{ fontSize: 17, color: '#fff' }}>{localStr("lang_add_device_submit_button")}</Text>
+            <Text style={{ fontSize: 17, color: Colors.seTextInverse }}>{localStr("lang_add_device_submit_button")}</Text>
           </TouchableOpacity>
         </View>
 

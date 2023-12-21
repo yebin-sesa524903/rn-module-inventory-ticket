@@ -20,6 +20,7 @@ import {
 
 import { isPhoneX } from "./utils";
 import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
+import Colors from "../../../app/utils/const/Colors";
 
 const MP = Platform.OS === 'ios' ? (isPhoneX() ? 0 : 10) : 36;
 const CODE_OK = '0';
@@ -68,14 +69,14 @@ export default class TicketList extends Component {
   _renderEmpty() {
     if (!this.state.refreshing && this.state.error) {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f2f2f2' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background.primary }}>
           <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{this.state.error}</Text>
         </View>
       )
     }
     if (this.state.refreshing) return null;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:'#fff', height: (Dimensions.get('window').height - 220) }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:Colors.background.white, height: (Dimensions.get('window').height - 220) }}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
         <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
       </View>
@@ -281,15 +282,15 @@ export default class TicketList extends Component {
   _getView() {
     if (this.state.showEmpty) return this._renderEmpty();
     return (
-      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: 'white' }}
+      <SectionList style={{ flex: 1, paddingHorizontal: 16, backgroundColor: Colors.seBgContainer }}
         sections={this.state.ticketData}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
             onRefresh={this._onRefresh}
-            tintColor={GREEN}
+            tintColor={Colors.theme}
             title={localStr('lang_load_more')}
-            colors={[GREEN]}
+            colors={[Colors.theme]}
             progressBackgroundColor={'white'}
           />
         }
@@ -323,7 +324,7 @@ export default class TicketList extends Component {
         borderTopRightRadius: 8,
         borderTopLeftRadius: 8,
         overflow: 'hidden',
-        backgroundColor: 'white'
+        backgroundColor: Colors.seBgContainer
       }}>
         <View style={{ flexDirection: 'row' }}>
           <Pressable onPress={() => {
@@ -336,7 +337,7 @@ export default class TicketList extends Component {
             <Text style={{
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
-              color: this.state.selectedIndex === 0 ? '#3dcd58' : '#666'
+              color: this.state.selectedIndex === 0 ? Colors.seBrandNomarl : Colors.seTextPrimary
             }}>{`${localStr('lang_ticket_list_tab_undone')}(${this.state.unDoneCount})`}</Text>
           </Pressable>
           <Pressable onPress={() => {
@@ -349,11 +350,11 @@ export default class TicketList extends Component {
             <Text style={{
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
-              color: this.state.selectedIndex === 1 ? '#3dcd58' : '#666'
+              color: this.state.selectedIndex === 1 ? Colors.seBrandNomarl : Colors.seTextPrimary
             }}>{`${localStr('lang_ticket_list_tab_done')}(${this.state.doneCount})`}</Text>
           </Pressable>
         </View>
-        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: "#eee", height: 1 }} />
+        <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: Colors.seBorderSplit, height: 1 }} />
       </View>
     )
   }
@@ -364,8 +365,8 @@ export default class TicketList extends Component {
     }
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <View style={{ flex: 1, backgroundColor: '#3DCD58' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
+        <View style={{ flex: 1 , backgroundColor: Colors.seBrandNomarl}}>
           {this._renderSectionHeader()}
           {this._getView()}
         </View>

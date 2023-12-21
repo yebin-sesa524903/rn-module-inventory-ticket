@@ -4,15 +4,16 @@ import React, { Component } from 'react';
 
 import {
   View,
-  StyleSheet, Image, Pressable,
+  StyleSheet, Image, Pressable, Appearance,
 } from 'react-native';
 
 import Text from './components/Text';
-import Icon from './components/Icon.js';
 import { GRAY, BLACK, ALARM_RED } from './styles/color';
 import moment from 'moment';
 import TouchFeedback from "./components/TouchFeedback";
 import { localStr } from "./utils/Localizations/localization";
+import Colors from "../../../app/utils/const/Colors";
+import {Icon} from "@ant-design/react-native";
 
 export default class TicketRow extends Component {
   constructor(props) {
@@ -35,29 +36,6 @@ export default class TicketRow extends Component {
     return strContent;
   }
 
-  _newText() {
-    var { rowData } = this.props;
-    var startTime = moment(rowData.StartTime).format('YYYY-MM-DD');
-    var endTime = moment(rowData.EndTime).format('YYYY-MM-DD');
-    var nowTime = moment().format('YYYY-MM-DD');
-    var status = rowData.Status | rowData.TicketStatus;
-    var isExpire = false;
-    if (status === 1) {
-      isExpire = startTime < nowTime;
-    } else if (status === 2) {
-      isExpire = endTime < nowTime;
-    }
-    if (isExpire) {
-      return (
-        <View style={styles.expireView}>
-          <Icon type='icon_over_due' size={18} color={ALARM_RED} />
-          <Text style={styles.expireText}>{localStr('lang_ticket_detail_status_expired')}</Text>
-        </View>
-      );
-    }
-    return null;
-  }
-
   _getStatusInfo(rowData) {
     let status = {
       10: localStr('lang_status_1'),
@@ -76,32 +54,33 @@ export default class TicketRow extends Component {
     switch (rowData.ticketState) {
       case 10:
         ///未开始/待执行
-        ret.textColor = '#1F1F1F';
-        ret.borderColor = '#D9D9D9';
-        ret.bgColor = '#f8f8f8';
+        ret.textColor = Colors.seTextTitle;
+        ret.borderColor = Colors.seBorderBase;
+        ret.bgColor = Colors.seFill3;
         break;
       case 20:
-        ret.textColor = '#3491FA';
-        ret.borderColor = '#9FD4FD';
-        ret.bgColor = '#f8f8f8';
+        ///执行中
+        ret.textColor = Colors.seInfoNormal;
+        ret.borderColor = Colors.seInfoBorder;
+        ret.bgColor = Colors.seInfoBg;
         break;
       case 30:
         ///已提交
-        ret.textColor = '#FAAD14';
-        ret.borderColor = '#FFCF8B';
-        ret.bgColor = '#f8f8f8';
+        ret.textColor = Colors.seWarningBg
+        ret.borderColor = Colors.seWarningBorder;
+        ret.bgColor = Colors.seWarningNormal;
         break;
       case 50:
         ///已完成
-        ret.textColor = '#3DCD58';
-        ret.borderColor = '#3DCD58';
-        ret.bgColor = '#F0FFF0';
+        ret.textColor = Colors.seBrandNomarl
+        ret.borderColor = Colors.seBrandNomarl;
+        ret.bgColor = Colors.seBrandBg;
         break;
       case 40:
         ///驳回
-        ret.textColor = '#F5222D';
-        ret.borderColor = '#FFA39E';
-        ret.bgColor = '#FFF1F0';
+        ret.textColor = Colors.seErrorNormal;
+        ret.borderColor = Colors.seErrorBorder;
+        ret.bgColor = Colors.seErrorBg;
         break;
     }
     return ret;
@@ -142,25 +121,27 @@ export default class TicketRow extends Component {
   }
 
   _renderInventoryItems(rowData) {
+    let isDarkMode = Appearance.getColorScheme() === 'dark';
+
     let infos = [
       {
         title: localStr('lang_ticket_detail_device_tab2'),
-        color: '#D9D9D9',
+        color: Colors.seBorderBase,
         count: this._configAssetCounts(1, rowData)
       },
       {
         title: localStr('lang_ticket_detail_device_tab3'),
-        color: '#3DCD58',
+        color: Colors.seSuccessNormal,
         count: this._configAssetCounts(2, rowData)
       },
       {
         title: localStr('lang_ticket_detail_device_tab4'),
-        color: '#F53F3F',
+        color: Colors.seErrorNormal,
         count: this._configAssetCounts(3, rowData)
       },
       {
         title: localStr('lang_ticket_detail_device_tab5'),
-        color: '#FAAD14',
+        color: Colors.seWarningNormal,
         count: this._configAssetCounts(4, rowData)
       },
     ]
@@ -176,7 +157,7 @@ export default class TicketRow extends Component {
                 paddingTop: 12,
                 paddingBottom: 12,
                 paddingRight: 8,
-                backgroundColor: '#f8f8f8',
+                backgroundColor: Colors.seFill4,
                 borderRadius: 8,
                 marginLeft: index > 0 ? 12 : 0,
               }} onPress={() => this.props.onInventoryItemClick(rowData, index + 1)}>
@@ -188,14 +169,15 @@ export default class TicketRow extends Component {
                   borderBottomRightRadius: 2
                 }} />
                 <View style={{}}>
-                  <Text style={{ fontSize: 13, color: '#666' }}>{item.title}</Text>
+                  <Text style={{ fontSize: 13, color: Colors.seTextPrimary }}>{item.title}</Text>
                   <Text style={{
                     fontSize: 22,
-                    backgroundColor: '#333',
-                    marginTop: 8
+                    color: Colors.seTextPrimary,
+                    marginTop: 8,
+                    fontWeight:'bold'
                   }}>{item.count}</Text>
                 </View>
-                <Image source={require('../app/images/login_arrow/arrow.png')} />
+                <Icon name={'right-square'} color={Colors.seTextSecondary} size={16}/>
               </Pressable>
             )
           })
@@ -232,26 +214,26 @@ export default class TicketRow extends Component {
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 12 }}>
                 <Text
-                  style={{ color: '#333', fontSize: 16, fontWeight: 'bold', flexShrink: 1, marginRight: 3 }}
+                  style={{ color: Colors.seTextTitle, fontSize: 16, fontWeight: 'bold', flexShrink: 1, marginRight: 3 }}
                   numberOfLines={1}>{title}</Text>
               </View>
               {this._renderTicketStatus(this._getStatusInfo(rowData))}
             </View>
-            <Text style={{ fontSize: 14, color: "#666", marginTop: 10, }}>
+            <Text style={{ fontSize: 14, color: Colors.seTextPrimary, marginTop: 10, }}>
               {localStr('lang_ticket_execute_time') + ': '}
               <Text style={{
                 fontSize: 14,
-                color: (isExpire ? '#ff4d4d' : '#666'),
+                color: (isExpire ? Colors.seErrorNormal : Colors.seTextPrimary),
               }}>{this._getDateDisplay()}</Text>
             </Text>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-              <Text style={{ marginLeft: 0, color: '#666', fontSize: 14 }} numberOfLines={1}
+              <Text style={{ marginLeft: 0, color: Colors.seTextPrimary, fontSize: 14 }} numberOfLines={1}
                 lineBreakModel='charWrapping'>{localStr('lang_ticket_location') + ": " + locationPath}</Text>
             </View>
           </View>
           {this._renderInventoryItems(rowData)}
-          <View style={{ backgroundColor: '#eee', height: 1, marginTop: 15 }} />
+          <View style={{ backgroundColor: Colors.seBorderSplit, height: 1, marginTop: 15 }} />
         </View>
       </TouchFeedback>
     );
