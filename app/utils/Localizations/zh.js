@@ -168,4 +168,9 @@ export default {
   lang_single_select_search_no_result: '搜索无结果',
   lang_single_select_manual_input: '手动输入',
   lang_single_select_input_keyword: '输入关键字',
+
+  lang_add_device_success_tip:'创建盘盈设备成功!',
+  lang_add_scrap_ticket_tip:'创建报废单成功！',
+  lang_ticket_list_tab_undone:'未完成',
+  lang_ticket_list_tab_done:'已完成',
 };
