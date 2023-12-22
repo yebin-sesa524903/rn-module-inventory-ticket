@@ -1283,7 +1283,7 @@ export default class TicketDetail extends Component {
             let isSel = index === this.state.deviceTab;
             return (
               <TouchableOpacity onPress={() => this.setState({ deviceTab: index })}>
-                <Text style={{ fontSize: 14, color: isSel ? Colors.seBrandNomarl : Colors.seTextSecondary }}>{item}</Text>
+                <Text style={{ fontSize: 12, color: isSel ? Colors.seBrandNomarl : Colors.seTextSecondary }}>{item}</Text>
                 <View style={{ height: 1, marginTop: 12, backgroundColor: isSel ? Colors.seBrandNomarl : undefined }} />
               </TouchableOpacity>
             )

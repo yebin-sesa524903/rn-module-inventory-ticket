@@ -169,7 +169,7 @@ export default class TicketRow extends Component {
                   borderBottomRightRadius: 2
                 }} />
                 <View style={{}}>
-                  <Text style={{ fontSize: 13, color: Colors.seTextPrimary }}>{item.title}</Text>
+                  <Text style={{ fontSize: 10, color: Colors.seTextPrimary }}>{item.title}</Text>
                   <Text style={{
                     fontSize: 22,
                     color: Colors.seTextPrimary,
