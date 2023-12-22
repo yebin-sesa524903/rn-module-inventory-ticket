@@ -66,9 +66,9 @@ export default class TicketRow extends Component {
         break;
       case 30:
         ///已提交
-        ret.textColor = Colors.seWarningBg
+        ret.textColor = Colors.seWarningNormal
         ret.borderColor = Colors.seWarningBorder;
-        ret.bgColor = Colors.seWarningNormal;
+        ret.bgColor = Colors.seWarningBg;
         break;
       case 50:
         ///已完成

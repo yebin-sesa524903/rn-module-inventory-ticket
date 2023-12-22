@@ -16,6 +16,7 @@ import {apiGetExecutorData, apiGetTicketExecutors} from "./middleware/bff";
 import TouchFeedback from "./components/TouchFeedback";
 import Icon from "./components/Icon";
 import {GRAY, GREEN} from "./styles/color";
+import Colors from "../../../app/utils/const/Colors";
 const CODE_OK = '0';
 
 export default class TicketSelectExecutors extends Component{
@@ -67,9 +68,9 @@ export default class TicketSelectExecutors extends Component{
 
   _renderEmpty() {
     return (
-      <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'#f2f2f2'}}>
+      <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:Colors.seBgColor}}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{width:60,height:40}}/>
-        <Text style={{fontSize:15,color:'#888',marginTop:8}}>{localStr('lang_empty_data')}</Text>
+        <Text style={{fontSize:15,color:Colors.seTextSecondary,marginTop:8}}>{localStr('lang_empty_data')}</Text>
       </View>
     )
   }
@@ -101,7 +102,7 @@ export default class TicketSelectExecutors extends Component{
             <Text numberOfLines={1} style={styles.titleText}>
               {item.userName}
             </Text>
-            <Text numberOfLines={1} style={{fontSize:14,color:'#888'}}>
+            <Text numberOfLines={1} style={{fontSize:14,color:Colors.seTextSecondary}}>
               {`${localStr('lang_status_2')}:${item.inProcessTicketCount || 0}  ${localStr('lang_status_1')}:${item.notStartedTicketCount || 0}`}
             </Text>
           </View>
@@ -132,10 +133,12 @@ export default class TicketSelectExecutors extends Component{
       }
     }
     return (
-      <View style={{flex:1,backgroundColor:'white'}}>
+      <View style={{flex:1,backgroundColor:Colors.seBgContainer}}>
         <Toolbar
           title={this.props.title}
           navIcon="back"
+          color={Colors.seBrandNomarl}
+          borderColor={Colors.seBrandNomarl}
           actions={[{title:localStr('lang_toolbar_ok'),disable:!this._canSubmit()}]}
           onActionSelected={[()=>{
             let users = this.state.data.filter(item => item.isSelect);
@@ -151,23 +154,23 @@ export default class TicketSelectExecutors extends Component{
   }
 }
 
-let styles = StyleSheet.create({
+const styles = global.amStyleProxy(() => StyleSheet.create({
   rowContent:{
     //height:62,
     flexDirection:'row',
     // justifyContent:'space-between',
     alignItems:'center',
-    backgroundColor:'white',
+    backgroundColor:Colors.seBgContainer,
     paddingHorizontal:16,
     paddingVertical:12,
-    borderBottomColor:'#f2f2f2',
+    borderBottomColor:Colors.seBorderSplit,
     borderBottomWidth:1
   },
   titleText:{
     marginLeft:16,
     fontSize:17,
     flex:1,
-    color:'#333'//BLACK
+    color:Colors.seTextTitle//BLACK
   },
   subTitleText:{
     marginLeft:16,
@@ -180,7 +183,7 @@ let styles = StyleSheet.create({
     width:18,
     height:18,
     borderRadius:10,
-    backgroundColor:GREEN,
+    backgroundColor:Colors.seBrandNomarl,
     justifyContent:'center',
     alignItems:'center'
   },
@@ -194,4 +197,4 @@ let styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center'
   },
-});
+}));

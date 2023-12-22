@@ -1342,33 +1342,33 @@ export default class TicketDetail extends Component {
         >
           <View style={{
             width: 16, height: 16, justifyContent: 'center', alignItems: 'center', borderRadius: 2, borderWidth: 1,
-            borderColor: Colors.background.divider, marginRight: 6
+            borderColor: Colors.seBorderBase, marginRight: 6
           }}>
             {!m.sel ? null :
-              <Icon type={'icon_check'} color={Colors.text.sub} size={14} />
+              <Icon type={'icon_check'} color={Colors.seGreen} size={14} />
             }
           </View>
-          <Text style={{ fontSize: 14, color: Colors.text.sub }}>{m.title}</Text>
+          <Text style={{ fontSize: 14, color: Colors.seTextPrimary }}>{m.title}</Text>
         </TouchableOpacity>
       )
     })
     return (
       <CommonDialog modalVisible={this.state.submitModalVisible} title={localStr('lang_ticket_detail_approved')}>
-        <View style={{ padding: 16, borderRadius: 12, backgroundColor: Colors.background.white, marginHorizontal: 32 }}>
-          <Text style={{ fontSize: 17, color: Colors.text.primary, fontWeight: '600', alignSelf: 'center' }}>{localStr('lang_ticket_detail_approved')}</Text>
+        <View style={{ padding: 16, borderRadius: 12, backgroundColor: Colors.seBgContainer, marginHorizontal: 32 }}>
+          <Text style={{ fontSize: 17, color: Colors.seTextTitle, fontWeight: '600', alignSelf: 'center' }}>{localStr('lang_ticket_detail_approved')}</Text>
           {menus}
           <View style={{
-            borderTopColor: Colors.background.divider, flexDirection: 'row', height: 40, borderTopWidth: 1, marginHorizontal: -16,
+            borderTopColor: Colors.seTextDisabled, flexDirection: 'row', height: 40, borderTopWidth: 1, marginHorizontal: -16,
             marginBottom: -16, marginTop: 16
           }}>
             <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => this.setState({ submitModalVisible: false })}>
-              <Text style={{ color: Colors.blue.primary, fontSize: 17 }}>{localStr('lang_ticket_filter_cancel')}</Text>
+              <Text style={{ color: Colors.seInfoNormal, fontSize: 17 }}>{localStr('lang_ticket_filter_cancel')}</Text>
             </TouchableOpacity>
-            <View style={{ width: 1, backgroundColor: '#bfbfbf' }} />
+            <View style={{ width: 1, backgroundColor: Colors.seTextDisabled }} />
             <TouchableOpacity style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}
               onPress={() => this._approveTicket()}>
-              <Text style={{ color: Colors.blue.primary, fontSize: 17 }}>{localStr("lang_ticket_filter_ok")}</Text>
+              <Text style={{ color: Colors.seInfoNormal, fontSize: 17 }}>{localStr("lang_ticket_filter_ok")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1381,7 +1381,7 @@ export default class TicketDetail extends Component {
   render() {
     if (!this.state.isFetching && this.state.errorMessage) {
       return (
-        <View style={{ flex: 1, backgroundColor: Colors.background.white }}>
+        <View style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
           {this._getToolbar(this.props.rowData)}
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 17, color: Colors.text.sub }}>{this.state.errorMessage}</Text>
@@ -1391,7 +1391,7 @@ export default class TicketDetail extends Component {
     }
     if (this.state.isFetching || !this.state.rowData) {
       return (
-        <View style={{ flex: 1, backgroundColor: Colors.background.white }}>
+        <View style={{ flex: 1, backgroundColor: Colors.seBgContainer }}>
           {this._getToolbar(this.state.rowData)}
           <Loading />
         </View>
@@ -1417,7 +1417,7 @@ export default class TicketDetail extends Component {
         );
       } else {
         bottomButton = (
-          <View style={{ paddingBottom: 20, backgroundColor: Colors.seBgContainer , height: 84}}>
+          <View style={{ paddingBottom: 16, backgroundColor: Colors.seBgContainer , height: 84}}>
             {bottomButton}
           </View>
         );
