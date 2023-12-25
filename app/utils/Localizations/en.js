@@ -125,8 +125,9 @@ export default {
   lang_scan_result_page_status_tag6: 'Retired',
   lang_scan_result_page_status_tag7: 'Retiring',
 
-  lang_scan_result_page_tag1: 'Fault Assets',
-  lang_scan_result_page_tag2: 'Marked Assets',
+  lang_scan_result_page_tag1: 'Fault',
+  lang_scan_result_page_tag2: 'Marked',
+
   lang_scan_result_submit_success_tip: 'Inventory result submitted successfully!',
   lang_scan_result_submit_error_tip: 'Inventory Failure, please check parameters!',
   lang_scan_result_label1: 'Result',
@@ -140,8 +141,9 @@ export default {
   lang_scan_result_label9: 'Confirm',
   lang_scan_result_label10: 'Number',
 
-  lang_ticket_detail_add_device: 'Add inventory gain asset',
-  lang_ticket_detail_scan_device: 'QR code scan',
+
+  lang_ticket_detail_add_device: 'Add Asset',
+  lang_ticket_detail_scan_device: 'QR Code Scan',
   lang_ticekt_detail_info_exception: 'Inventory gain asset cannot be created due to current ticket error',
   lang_ticket_detail_not_include_device: 'This asset is not in the scope of this inventory',
   lang_ticket_detail_delete_device_confirm: 'Delete this inventory gain asset?',
@@ -158,7 +160,8 @@ export default {
   lang_ticket_detail_device_tab2: 'Unchecked',
   lang_ticket_detail_device_tab3: 'Checked',
   lang_ticket_detail_device_tab4: 'Gain',
-  lang_ticket_detail_device_tab5: 'Gain',
+
+  lang_ticket_detail_device_tab5: 'Loss',
   lang_ticket_detail_submit_success: 'Submit Success',
   lang_ticket_detail_device_check: 'Inventory',
 
