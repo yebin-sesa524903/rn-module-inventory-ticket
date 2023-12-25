@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 import {
-  Modal, Pressable,
+  Modal,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -13,8 +13,9 @@ import FadeInView from './FadeInView';
 import TouchFeedback from '../TouchFeedback';
 import Text from '../Text';
 import PropTypes from 'prop-types';
-import { localStr } from '../../utils/Localizations/localization'
+
 import { isPhoneX } from '../../utils';
+import { localStr } from '../../utils/Localizations/localization';
 import Colors from "../../../../../app/utils/const/Colors";
 let toBottom = 0;
 if (isPhoneX()) toBottom = 34;
@@ -25,63 +26,60 @@ export default class SchActionSheet extends Component {
   }
 
   _getTitleView() {
-
     if (!this.props.title) {
       return;
     }
     return (
-      <View style={{
-        height: 45, backgroundColor: 'transparent',
-        justifyContent: 'center', alignItems: 'center',
-        borderBottomColor: Colors.seBorderSplit, borderBottomWidth: 1,
-      }}>
-        <Text style={{ fontSize: 13, color: Colors.seTextSecondary }}>
-          {this.props.title}
-        </Text>
-      </View>
+        <View style={{
+          height: 45, backgroundColor: 'transparent',
+          justifyContent: 'center', alignItems: 'center',
+          borderBottomColor: Colors.seTextDisabled, borderBottomWidth: 1,
+        }}>
+          <Text style={{ fontSize: 13, color: Colors.seTextTitle }}>
+            {this.props.title}
+          </Text>
+        </View>
     )
   }
   render() {
     var { arrActions } = this.props;
     var itemsView = arrActions.map((item, index) => {
       return (
-        <View key={index} style={{}}>
-          <TouchFeedback onPress={() => this.props.onSelect(item)}>
-            <View style={{
-              height: 55, backgroundColor: Colors.seBgContainer, justifyContent: 'center', alignItems: 'center',
-              borderTopColor: Colors.seBorderSplit, borderTopWidth: index === 0 ? 0 : 1,
-            }}>
-              <Text style={{ fontSize: 18, color: item.select ? Colors.seTextPrimary : '#0076ff' }}>
-                {item.title}
-              </Text>
-            </View>
-          </TouchFeedback>
-        </View>
+          <View key={index} style={{}}>
+            <TouchFeedback onPress={() => this.props.onSelect(item)}>
+              <View style={{
+                height: 55, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center',
+                borderTopColor: Colors.seTextDisabled, borderTopWidth: index === 0 ? 0 : 1,
+              }}>
+                <Text style={{ fontSize: 18, color: item.select ? Colors.seTextTitle : Colors.seTextPrimary }}>
+                  {item.title}
+                </Text>
+              </View>
+            </TouchFeedback>
+          </View>
       )
     })
     return (
-      <FadeInView visible={this.props.modalVisible}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.props.modalVisible}
-          onRequestClose={this.props.onCancel}>
-          <View style={styles.modalContainer}>
+        <FadeInView visible={this.props.modalVisible}>
+          <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.props.modalVisible}
+              onRequestClose={this.props.onCancel}>
+            <View style={styles.modalContainer}>
 
-            <TouchableOpacity style={styles.container} onPress={this.props.onCancel}></TouchableOpacity>
-            <View style={{
-              backgroundColor: Colors.seBgLayout, marginBottom: 8,
-              borderRadius: 12, marginHorizontal: 10
-            }}>
-              {this._getTitleView()}
-              {itemsView}
+              <TouchableOpacity style={styles.container} onPress={this.props.onCancel}></TouchableOpacity>
+              <View style={{
+                backgroundColor: Colors.seBgElevated, marginBottom: 8,
+                borderRadius: 12, marginHorizontal: 10
+              }}>
+                {this._getTitleView()}
+                {itemsView}
+              </View>
+              <Button onPress={this.props.onCancel} text={this.props.buttonText || localStr('lang_ticket_filter_cancel')} />
             </View>
-            <Pressable style={{backgroundColor: Colors.seBgLayout, height: 56, alignItems:'center', justifyContent:'center', marginHorizontal:10,}} onPress={this.props.onCancel}>
-              <Text style={{fontSize: 18, color: Colors.seTextPrimary}}>{this.props.buttonText || localStr('lang_ticket_filter_cancel')}</Text>
-            </Pressable>
-          </View>
-        </Modal>
-      </FadeInView>
+          </Modal>
+        </FadeInView>
     );
   }
 }
