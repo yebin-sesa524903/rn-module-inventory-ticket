@@ -125,22 +125,22 @@ export default class TicketRow extends Component {
 
     let infos = [
       {
-        title: '未盘',
+        title: localStr('lang_ticket_detail_device_tab2'),
         color: Colors.seBorderBase,
         count: this._configAssetCounts(1, rowData)
       },
       {
-        title: '已盘',
+        title: localStr('lang_ticket_detail_device_tab3'),
         color: Colors.seSuccessNormal,
         count: this._configAssetCounts(2, rowData)
       },
       {
-        title: '盘亏',
+        title: localStr('lang_ticket_detail_device_tab4'),
         color: Colors.seErrorNormal,
         count: this._configAssetCounts(3, rowData)
       },
       {
-        title: '盘盈',
+        title: localStr('lang_ticket_detail_device_tab5'),
         color: Colors.seWarningNormal,
         count: this._configAssetCounts(4, rowData)
       },

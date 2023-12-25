@@ -390,8 +390,7 @@ export default class TicketDetail extends Component {
     apiCreateNewAsset(body).then(ret => {
       if (ret.code === CODE_OK) {
         // this.props.ticketChanged && this.props.ticketChanged();
-        this.showToast(localStr('创建盘盈设备成功!'))
-        console.warn('------创建盘盈设备成功:', ret, ret.data?.newAssetId);
+        this.showToast(localStr('lang_add_device_success_tip'))
         if (ret.data) {
           let reqArrs = [];
           ret.data.forEach(item => {
@@ -447,7 +446,7 @@ export default class TicketDetail extends Component {
       if (ret.code === CODE_OK) {
         console.warn('------', body, ret);
         // this.props.ticketChanged && this.props.ticketChanged();
-        this.showToast(localStr('创建报废单成功！'))
+        this.showToast(localStr('lang_add_scrap_ticket_tip'))
 
       } else {
         Alert.alert(localStr('lang_alert_title'), ret.msg);
@@ -464,7 +463,6 @@ export default class TicketDetail extends Component {
       "userId": userId,
       "userName": userName,
     }
-    console.warn('未盘资产自动盘亏处理：', data);
     apiSubmitPointCheckResult(data).then(data => {
       if (data.code === '0' && data.data === true) {
         console.warn('----未盘资产自动盘亏处理结果：', data);
@@ -551,11 +549,9 @@ export default class TicketDetail extends Component {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let state = item.extensionProperties?.assetPointCheckState;
       if (state === 4 && isPanyingCheck) {//盘盈资产----自动入库
-        console.warn('盘盈资产:', index, item.assetId, item.extensionProperties?.assetPointCheckState);
         item.extensionProperties.assetInitData.id = item.assetId;
         arrNewAssets.push(item.extensionProperties.assetInitData);
       } else if (state === 1 && isNotPandianCheck) {//未盘----自动盘亏
-        console.warn('未盘资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
         this._updateDevicePandianStatus(item);
         this._changeNonePandianToPankuiState(item);
         ///未盘资产自动盘亏处理,
@@ -565,7 +561,6 @@ export default class TicketDetail extends Component {
         }
         arrScrapDevices.push(item);
       } else if (state === 3 && isPankuiCheck) {//盘亏
-        console.warn('盘亏资产:', index, item.assetName, item.extensionProperties?.assetPointCheckState);
         this._updateDevicePandianStatus(item);
         arrScrapDevices.push(item);
       }
@@ -573,7 +568,6 @@ export default class TicketDetail extends Component {
       // console.warn("=========", index, arrTags, item.assetName);
       //待清理资产
       if (arrTags && arrTags.includes(localStr('lang_scan_result_page_tag2')) && isWillClearCheck) {
-        console.warn('待清理资产:', item.assetName);
         this._updateDevicePandianStatus(item);
         arrScrapDevices.push(item);
       }

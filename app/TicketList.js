@@ -338,7 +338,7 @@ export default class TicketList extends Component {
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 0 ? 'bold' : 'normal',
               color: this.state.selectedIndex === 0 ? Colors.seBrandNomarl : Colors.seTextPrimary
-            }}>{`未完成(${this.state.unDoneCount})`}</Text>
+            }}>{`${localStr('lang_ticket_list_tab_undone')}(${this.state.unDoneCount})`}</Text>
           </Pressable>
           <Pressable onPress={() => {
             this.setState({
@@ -351,7 +351,7 @@ export default class TicketList extends Component {
               fontSize: 14,
               fontWeight: this.state.selectedIndex === 1 ? 'bold' : 'normal',
               color: this.state.selectedIndex === 1 ? Colors.seBrandNomarl : Colors.seTextPrimary
-            }}>{`已完成(${this.state.doneCount})`}</Text>
+            }}>{`${localStr('lang_ticket_list_tab_done')}(${this.state.doneCount})`}</Text>
           </Pressable>
         </View>
         <View style={{ position: 'absolute', left: 12, right: 12, bottom: 0, backgroundColor: Colors.seBorderSplit, height: 1 }} />
