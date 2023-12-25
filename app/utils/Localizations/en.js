@@ -127,6 +127,7 @@ export default {
 
   lang_scan_result_page_tag1: 'Fault',
   lang_scan_result_page_tag2: 'Marked',
+
   lang_scan_result_submit_success_tip: 'Inventory result submitted successfully!',
   lang_scan_result_submit_error_tip: 'Inventory Failure, please check parameters!',
   lang_scan_result_label1: 'Result',
@@ -139,6 +140,7 @@ export default {
   lang_scan_result_label8: 'Result',
   lang_scan_result_label9: 'Confirm',
   lang_scan_result_label10: 'Number',
+
 
   lang_ticket_detail_add_device: 'Add Asset',
   lang_ticket_detail_scan_device: 'QR Code Scan',
@@ -158,6 +160,7 @@ export default {
   lang_ticket_detail_device_tab2: 'Unchecked',
   lang_ticket_detail_device_tab3: 'Checked',
   lang_ticket_detail_device_tab4: 'Gain',
+
   lang_ticket_detail_device_tab5: 'Loss',
   lang_ticket_detail_submit_success: 'Submit Success',
   lang_ticket_detail_device_check: 'Inventory',
