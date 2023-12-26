@@ -76,6 +76,7 @@ import Scan from "./Scan";
 import DeviceAdd from "./DeviceAdd";
 import { Toast } from '@ant-design/react-native';
 import Colors from "../../../app/utils/const/Colors";
+import SndAlert from "../../../app/utils/components/SndAlert";
 // import Share from "react-native-share";
 
 
@@ -280,9 +281,10 @@ export default class TicketDetail extends Component {
       }, {
         title: localStr('lang_ticket_detail_del_log'),
         click: () => {
-          Alert.alert(
-            '',
+          SndAlert.alert(
+
             localStr('lang_ticket_log_del_confirm'),
+              '',
             [
               { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
               {
@@ -297,7 +299,7 @@ export default class TicketDetail extends Component {
                       rowData.ticketLogs = [].concat(rowData.ticketLogs);
                       this.setState({ rowData })
                     } else {
-                      Alert.alert(localStr('lang_alert_title'), res.msg);
+                      SndAlert.alert(localStr('lang_alert_title'), res.msg);
                     }
                   })
                 }
@@ -367,7 +369,7 @@ export default class TicketDetail extends Component {
         // this.props.ticketChanged && this.props.ticketChanged();
         console.warn('------更新AssetID成功:', body, ret);
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -412,7 +414,7 @@ export default class TicketDetail extends Component {
         }
 
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -449,7 +451,7 @@ export default class TicketDetail extends Component {
         this.showToast(localStr('lang_add_scrap_ticket_tip'))
 
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -500,7 +502,7 @@ export default class TicketDetail extends Component {
 
       } else {
         //给出提示
-        Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
+        SndAlert.alert(data.msg || localStr('lang_ticket_detail_set_status_error'), "", [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
         ]);
       }
@@ -533,7 +535,7 @@ export default class TicketDetail extends Component {
         this.showToast(localStr('lang_ticket_close_toast'))
         this._loadTicketDetail();
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
 
@@ -603,7 +605,7 @@ export default class TicketDetail extends Component {
         // this.showToast(localStr('lang_ticket_execute_toast'))
         this._loadTicketDetail();
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -625,9 +627,9 @@ export default class TicketDetail extends Component {
   }
 
   _doIgnore() {
-    Alert.alert(
-      '',
+    SndAlert.alert(
       localStr('lang_ticket_detail_ignore_confirm'),
+        '',
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -639,7 +641,7 @@ export default class TicketDetail extends Component {
                 this.props.ticketChanged && this.props.ticketChanged();
                 this._loadTicketDetail();
               } else {
-                Alert.alert(localStr('lang_alert_title'), ret.msg);
+                SndAlert.alert(localStr('lang_alert_title'), ret.msg);
               }
             })
           }
@@ -660,7 +662,7 @@ export default class TicketDetail extends Component {
         this._loadTicketDetail();
         this.showToast(localStr('lang_ticket_detail_submit_success'));
       } else {
-        Alert.alert(localStr('lang_alert_title'), ret.msg);
+        SndAlert.alert(localStr('lang_alert_title'), ret.msg);
       }
     })
   }
@@ -773,7 +775,7 @@ export default class TicketDetail extends Component {
           if (type == 'device') {
             let device = this.state.rowData.assets.find((item) => item.assetId === result.DeviceId);
             if (!device) {
-              Alert.alert(localStr('lang_ticket_detail_not_include_device'), null,
+              SndAlert.alert(localStr('lang_ticket_detail_not_include_device'), null,
                 [
                   {
                     text: localStr('lang_scan_page_alert_error_button'), onPress: () => {
@@ -797,9 +799,9 @@ export default class TicketDetail extends Component {
     if (device.extensionProperties?.assetPointCheckState !== 4) {
       return;
     }
-    Alert.alert(
-      '',
+    SndAlert.alert(
       localStr(localStr('lang_ticket_detail_delete_device_confirm')),
+        '',
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -811,7 +813,7 @@ export default class TicketDetail extends Component {
               if (res.code === CODE_OK) {
                 this._loadTicketDetail();
               } else {
-                Alert.alert(localStr('lang_alert_title'), res.msg);
+                SndAlert.alert(localStr('lang_alert_title'), res.msg);
               }
             })
           }
@@ -891,7 +893,7 @@ export default class TicketDetail extends Component {
                           this._loadTicketDetail();
                         } else {
                           //出错信息
-                          Alert.alert(localStr('lang_alert_title'), ret.msg)
+                          SndAlert.alert(localStr('lang_alert_title'), ret.msg)
                         }
                       })
                     },
@@ -923,7 +925,7 @@ export default class TicketDetail extends Component {
                           this.props.ticketChanged && this.props.ticketChanged();
                           this._loadTicketDetail();
                         } else {
-                          Alert.alert(localStr('lang_alert_title'), res.msg)
+                          SndAlert.alert(localStr('lang_alert_title'), res.msg)
                         }
                       })
                     },
@@ -987,7 +989,7 @@ export default class TicketDetail extends Component {
         this._loadTicketDetail();
       } else {
         //给出提示
-        Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
+        SndAlert.alert(data.msg || localStr('lang_ticket_detail_set_status_error'),"",  [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
         ]);
       }
