@@ -29,6 +29,7 @@ import Loading from './components/Loading';
 import CacheImage from "./CacheImage";
 import {getInterfaceLanguage, getLanguage, localStr} from "./utils/Localizations/localization";
 import Colors from "../../../app/utils/const/Colors";
+import SndAlert from "../../../app/utils/components/SndAlert";
 const DataGroup = () => [
   {
     groupName: localStr('lang_add_device_group_basic'),
@@ -138,7 +139,7 @@ export default class extends Component {
         //这里给赋值
         if (this.props.device) this._setParamMenu(this.tplData)
       } else {
-        Alert.alert('', data.Msg || localStr('lang_add_device_api_tpl_error'), [
+        SndAlert.alert( data.Msg || localStr('lang_add_device_api_tpl_error'), '', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
@@ -150,7 +151,7 @@ export default class extends Component {
       if (isCodeOk(data.Code)) {
         this.tplH = data.Data.datas.find(item => item.name === '设备');
       } else {
-        Alert.alert('', data.Msg || localStr('lang_add_device_api2_tpl_error'), [
+        SndAlert.alert( data.Msg || localStr('lang_add_device_api2_tpl_error'),'', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
@@ -569,7 +570,7 @@ export default class extends Component {
       if (!value) return true;
     });
     if (find || !this.state.logo) {
-      Alert.alert('', localStr('lang_add_device_submit_valid'), [
+      SndAlert.alert( localStr('lang_add_device_submit_valid'), '', [
         { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
       ]);
       return;
@@ -577,7 +578,7 @@ export default class extends Component {
 
     //如果图片没有上传成功，给出提示
     if (this.state.logo.loading || this.state.logo.error) {
-      Alert.alert('', localStr('lang_add_device_image_uploading'), [
+      SndAlert.alert(localStr('lang_add_device_image_uploading'), '', [
         { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
       ]);
       return;
@@ -684,7 +685,7 @@ export default class extends Component {
         this._doBack();
       } else {
         //给出报错提示
-        Alert.alert('', ret.msg || localStr("lang_add_device_api_submit_error"), [
+        SndAlert.alert(ret.msg || localStr("lang_add_device_api_submit_error"), '', [
           { text: localStr("lang_ticket_filter_ok"), onPress: () => { } },
         ]);
       }

@@ -1,5 +1,6 @@
 import Permissions,{PERMISSIONS,check,RESULTS,request} from 'react-native-permissions';
 import { PermissionsAndroid,Alert,InteractionManager,Platform } from 'react-native';
+import SndAlert from "../../../../app/utils/components/SndAlert";
 
 function requestExternalStorageAccess(cb,failCallback) {
 	try {
@@ -9,9 +10,9 @@ function requestExternalStorageAccess(cb,failCallback) {
 			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 				if(cb) cb();
 			} else {
-				Alert.alert(
-					'',
+				SndAlert.alert(
 					'请在手机的'+'"'+'设置'+'"'+'中，允许千里眼访问您的存储',
+					'',
 					[
 						{text: '取消', onPress: () => {
 							if(failCallback) failCallback();
@@ -45,9 +46,9 @@ function requestIOSPhotosAccess(cb,failCallback) {
             if(cb) cb();
           });
         } else {
-          Alert.alert(
-            '',
+          SndAlert.alert(
             '请在手机的'+'"'+'设置'+'"'+'中，允许千里眼访问您的相册',
+			'',
             [
               {text: '取消', onPress: () => {
                   if(failCallback) failCallback();
