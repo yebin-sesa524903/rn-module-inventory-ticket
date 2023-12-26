@@ -449,6 +449,7 @@ export default class ImagePicker extends Component {
       <View style={{flex:1}}>
         {this._getToolbar()}
         <CameraRollPicker
+          loadingText={{loading:localStr('lang_loading_waiting')}}
           groupName={Platform.OS==='ios'?'All Photos':undefined}
           selected={this.state.chosenImages}
           callback={(selected, image)=>{

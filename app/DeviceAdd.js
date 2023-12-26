@@ -27,7 +27,7 @@ import ImagePicker from './components/ImagePicker';
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
 import CacheImage from "./CacheImage";
-import { getLanguage, localStr } from "./utils/Localizations/localization";
+import {getInterfaceLanguage, getLanguage, localStr} from "./utils/Localizations/localization";
 import Colors from "../../../app/utils/const/Colors";
 const DataGroup = () => [
   {
@@ -367,7 +367,7 @@ export default class extends Component {
 
   _renderPickerDate() {
     return (
-      <DateTimePicker
+      <DateTimePicker locale={getLanguage()}
         is24Hour={true}
         titleIOS={localStr('lang_ticket_filter_select_date')}
         headerTextIOS={localStr('lang_ticket_filter_select_date')}
