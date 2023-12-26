@@ -28,6 +28,7 @@ import CacheImage from "./CacheImage";
 import {localStr} from "./utils/Localizations/localization";
 import PhotoShowView from "./components/assets/PhotoShowView";
 import Loading from './components/Loading';
+import SndAlert from "../../../app/utils/components/SndAlert";
 
 const CODE_OK = '0'
 
@@ -137,9 +138,9 @@ export default class LogEditView extends Component{
     })
   }
   _deleteImage(item,index){
-    Alert.alert(
-      '',
+    SndAlert.alert(
       localStr('lang_ticket_log_del_img_confirm'),
+      '',
       [
         {text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
         {text: localStr('lang_ticket_log_del_ok'), onPress: async () => {
@@ -172,7 +173,7 @@ export default class LogEditView extends Component{
         this.props.callBack();
       }else {
         //失败了
-        Alert.alert(localStr('lang_alert_title'),res.msg)
+        SndAlert.alert(localStr('lang_alert_title'),res.msg)
       }
     });
   }

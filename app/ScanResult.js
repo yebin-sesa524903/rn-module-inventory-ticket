@@ -24,6 +24,7 @@ import { forEach } from 'lodash';
 // import { Toast } from '@ant-design/react-native';
 import Toast from 'react-native-root-toast';
 import Colors from "../../../app/utils/const/Colors";
+import SndAlert from "../../../app/utils/components/SndAlert";
 const StatusColors = [Colors.seBrandNomarl, '#F53F3F', '#1F1F1F', '#3491FA', '#FAAD14', '#F53F3F', 'red']
 const StatusTags = [
   localStr('lang_scan_result_page_status_tag1'),
@@ -120,7 +121,7 @@ export default class extends Component {
         // });
       } else {
         //给出提示
-        Alert.alert("", data.msg || localStr('lang_ticket_detail_set_status_error'), [
+        SndAlert.alert( data.msg || localStr('lang_ticket_detail_set_status_error'), '', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
         ]);
       }

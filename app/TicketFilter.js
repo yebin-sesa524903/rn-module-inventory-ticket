@@ -19,6 +19,7 @@ import {isPhoneX} from './utils'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {localStr} from "./utils/Localizations/localization";
 import {getTicketFilter, setTicketFilter} from './store'
+import SndAlert from "../../../app/utils/components/SndAlert";
 
 let statusBarHeight=28;
 if(Platform.OS==='ios'){
@@ -209,7 +210,7 @@ export default class TicketFilter extends Component{
     let start = moment(moment(this.state.filter.StartTime).format('YYYY-MM-DD'))
     let end = moment(moment(this.state.filter.EndTime).format('YYYY-MM-DD'))
     if(start.isAfter(end)) {
-      Alert.alert(localStr('lang_alert_title'),localStr('lang_ticket_select_time_invalid'))
+      SndAlert.alert(localStr('lang_alert_title'),localStr('lang_ticket_select_time_invalid'))
       return;
     }
     setTicketFilter(this.state.filter)

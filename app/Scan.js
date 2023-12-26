@@ -14,6 +14,7 @@ import ScanView from './components/Scanner';
 import Permissions, { PERMISSIONS, RESULTS, request, check } from 'react-native-permissions';
 import ScanResult from "./ScanResult";
 import { openCamera } from 'react-native-image-crop-picker';
+import SndAlert from "../../../app/utils/components/SndAlert";
 
 
 export default class Scan extends Component {
@@ -74,7 +75,7 @@ export default class Scan extends Component {
         }
       } else {
         this.setState({ openCamera: false });
-        Alert.alert(localStr("lang_scan_page_alert_error_title"), localStr('lang_scan_page_alert_error_content'),
+        SndAlert.alert(localStr("lang_scan_page_alert_error_title"), localStr('lang_scan_page_alert_error_content'),
           [
             {
               text: localStr('lang_scan_page_alert_error_button'), onPress: () => {
@@ -139,9 +140,9 @@ export default class Scan extends Component {
               this.setState({ hasCameraAuth: true });
             } else {
               this.setState({ hasCameraAuth: false });
-              Alert.alert(
-                '',
+              SndAlert.alert(
                 localStr('lang_image_picker_accept_msg'),
+                '',
                 [
                   { text: localStr('lang_image_picker_cancel'), onPress: () => { } },
                   {

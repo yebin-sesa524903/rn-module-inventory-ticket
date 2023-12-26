@@ -28,6 +28,7 @@ import Loading from './Loading';
 var {ImagePickerManager} = NativeModules;
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {localStr} from "../utils/Localizations/localization";
+import SndAlert from "../../../../app/utils/components/SndAlert";
 
 export default class ImagePicker extends Component {
   // static propTypes = {
@@ -84,7 +85,8 @@ export default class ImagePicker extends Component {
           if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
               response = await request(cameraPermission);
               if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
-                  Alert.alert('', localStr('lang_image_picker_accept_msg'),
+                  SndAlert.alert(localStr('lang_image_picker_accept_msg'),
+                  '',
                   [
                     {text: localStr('lang_image_picker_cancel'), onPress: () => {
                       return;
@@ -106,7 +108,7 @@ export default class ImagePicker extends Component {
           if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
             response = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
             if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
-              Alert.alert('', localStr('lang_image_picker_access_storage'),
+             SndAlert.alert( localStr('lang_image_picker_access_storage'),'',
                 [
                   {text: localStr('lang_image_picker_cancel'), onPress: () => {
                       return;
@@ -250,9 +252,9 @@ export default class ImagePicker extends Component {
       if (!(res === RESULTS.GRANTED || res === RESULTS.LIMITED)) {
         res = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
         if (!(res === RESULTS.GRANTED || res === RESULTS.LIMITED)) {
-          Alert.alert(
-            '',
+          SndAlert.alert(
             localStr('lang_image_picker_access_photos'),
+            '',
             [
               {text: localStr('lang_image_picker_cancel'), onPress: () => {
                 }},
@@ -280,9 +282,9 @@ export default class ImagePicker extends Component {
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         this.setState({ rollPermissionExists: true })
       } else {
-        Alert.alert(
-          '',
+        SndAlert.alert(
           localStr('lang_image_picker_read_storage'),
+          '',
           [
             {text: localStr('lang_image_picker_cancel'), onPress: () => {
             }},
