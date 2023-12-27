@@ -29,6 +29,7 @@ var {ImagePickerManager} = NativeModules;
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {localStr} from "../utils/Localizations/localization";
 import SndAlert from "../../../../app/utils/components/SndAlert";
+import Colors from "../../../../app/utils/const/Colors";
 
 export default class ImagePicker extends Component {
   // static propTypes = {
@@ -228,6 +229,8 @@ export default class ImagePicker extends Component {
           title:localStr('lang_toolbar_ok'),
           show: 'always', showWithText: true
         }]}
+        color={Colors.seBrandNomarl}
+        borderColor={Colors.seBrandNomarl}
         // titleClick={()=>{this.props.titleClick()}}
         onIconClicked={()=>this.props.onBack()}
         onActionSelected={[()=>{
@@ -437,7 +440,9 @@ export default class ImagePicker extends Component {
     var whStyle = {width:this._imageSize,height:this._imageSize,
       margin:4,
       marginLeft:0,
-      marginTop:0,};
+      marginTop:0,
+      backgroundColor: Colors.seBgContainer
+    };
     if(!this.state.rollPermissionExists&&Platform.OS==='android'){
       return (
         <View style={{flex:1}}>
@@ -451,6 +456,7 @@ export default class ImagePicker extends Component {
       <View style={{flex:1}}>
         {this._getToolbar()}
         <CameraRollPicker
+            backgroundColor={Colors.seBgContainer}
           loadingText={{loading:localStr('lang_loading_waiting')}}
           groupName={Platform.OS==='ios'?'All Photos':undefined}
           selected={this.state.chosenImages}
@@ -463,7 +469,7 @@ export default class ImagePicker extends Component {
                 <TouchFeedback onPress={()=>ImagePicker._takePhoto((imgs)=>this._takeFinish(imgs))} style={{flex:1}}>
                   <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Icon type="photo" color={'white'} size={whStyle.width/3} />
-                    <Text style={{color:'white',marginTop:6}}>{localStr('lang_image_take_photo')}</Text>
+                    <Text style={{color:Colors.seTextInverse,marginTop:6}}>{localStr('lang_image_take_photo')}</Text>
                   </View>
                 </TouchFeedback>
               </View>
@@ -497,7 +503,6 @@ const styles = StyleSheet.create({
 
 
   addStyle: {
-    backgroundColor:'gray',
     justifyContent:'center',
     alignItems:'center'
   }
