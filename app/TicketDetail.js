@@ -8,7 +8,7 @@ import {
   ScrollView,
   Platform,
   DeviceEventEmitter,
-  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal, Image, InteractionManager
+  Text, Dimensions, Alert, TouchableOpacity, TouchableWithoutFeedback, Modal, Image, InteractionManager, Appearance
 } from 'react-native';
 
 import Toolbar from './components/Toolbar';
@@ -43,7 +43,7 @@ const STATE_CLOSED = 50
 const STATE_REJECTED = 40
 const REJECT_OPERATION_TYPE = 34
 
-import { localStr } from "./utils/Localizations/localization";
+import {getLanguage, localStr} from "./utils/Localizations/localization";
 import NetworkImage from './components/NetworkImage'
 import {
   apiCheckDeviceStatus,
@@ -75,7 +75,7 @@ import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
 import Scan from "./Scan";
 import DeviceAdd from "./DeviceAdd";
 import { Toast } from '@ant-design/react-native';
-import Colors from "../../../app/utils/const/Colors";
+import Colors, {AppearanceMode} from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
 // import Share from "react-native-share";
 
@@ -86,6 +86,45 @@ const DEVICE_STATUS_ICON = {
   2: require('./images/device_status/device_already_pd.png'),
   3: require('./images/device_status/device_loss.png'),
   4: require('./images/device_status/device_new.png'),
+}
+
+const DEVICE_STATUS_ICON2 = {
+  dark_loss_zh:require('./images/device_status/盘亏-Dark-中文.png'),
+  dark_loss_en:require('./images/device_status/盘亏-Dark-英文.png'),
+  light_loss_zh:require('./images/device_status/盘亏-Light-中文.png'),
+  light_loss_en:require('./images/device_status/盘亏-Light-英文.png'),
+  dark_gain_zh:require('./images/device_status/盘盈-Dark-中文.png'),
+  dark_gain_en:require('./images/device_status/盘盈-Dark-英文.png'),
+  light_gain_zh:require('./images/device_status/盘盈-Light-中文.png'),
+  light_gain_en:require('./images/device_status/盘盈-Light-英文.png'),
+  dark_checked_zh:require('./images/device_status/已盘-Dark-中文.png'),
+  dark_checked_en:require('./images/device_status/已盘-Dark-英文.png'),
+  light_checked_zh:require('./images/device_status/已盘-Light-中文.png'),
+  light_checked_en:require('./images/device_status/已盘-Light-英文.png'),
+}
+
+function getInventoryIcon(status) {
+  let lang = getLanguage();
+  let theme = Appearance.getColorScheme();
+  let light = 'light'
+  switch (status) {
+    case 2:
+      return lang === 'en' ?
+          theme === light ? DEVICE_STATUS_ICON2.light_checked_en : DEVICE_STATUS_ICON2.dark_checked_en
+          :
+          theme === light ? DEVICE_STATUS_ICON2.light_checked_zh : DEVICE_STATUS_ICON2.dark_checked_zh
+    case 3:
+      return lang === 'en' ?
+          theme === light ? DEVICE_STATUS_ICON2.light_loss_en : DEVICE_STATUS_ICON2.dark_loss_en
+          :
+          theme === light ? DEVICE_STATUS_ICON2.light_loss_zh : DEVICE_STATUS_ICON2.dark_loss_zh
+    case 4:
+      return lang === 'en' ?
+          theme === light ? DEVICE_STATUS_ICON2.light_gain_en : DEVICE_STATUS_ICON2.dark_gain_en
+          :
+          theme === light ? DEVICE_STATUS_ICON2.light_gain_zh : DEVICE_STATUS_ICON2.dark_gain_zh
+
+  }
 }
 
 class Avatar extends Component {
@@ -1252,7 +1291,7 @@ export default class TicketDetail extends Component {
                     // || (!item.status && item.status !== 0)) ?
                     (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) ?
                       <Text style={{ fontSize: 12, color: Colors.seBrandNomarl, marginTop: 8 }}>{this.state.canManual && this._canExecute() ? localStr('lang_ticket_detail_device_check') : ''}</Text> :
-                      <Image style={{ width: 60, height: 60 }} source={DEVICE_STATUS_ICON[item.extensionProperties?.assetPointCheckState]} />
+                      <Image style={{ width: 60, height: 60 }} source={getInventoryIcon(item.extensionProperties?.assetPointCheckState)} />
                   }
                 </TouchFeedback>
             }

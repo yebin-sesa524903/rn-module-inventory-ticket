@@ -128,7 +128,7 @@ let defaultFetch = async function (options) {
       //   console.log('data',data)
       //   return data//reader.result;
       // }
-      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:' + data + '\n\n' + JSON.stringify(data) + '\n\n');
+      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:' + data + '\n\n' + JSON.stringify(data) + '\n\n',data);
 
       return data;
     }).catch(err => {
