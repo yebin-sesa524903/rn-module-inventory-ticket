@@ -159,9 +159,8 @@ export default {
   lang_ticket_detail_device_tab1: 'All',
   lang_ticket_detail_device_tab2: 'Unchecked',
   lang_ticket_detail_device_tab3: 'Checked',
-  lang_ticket_detail_device_tab4: 'Gain',
-
-  lang_ticket_detail_device_tab5: 'Loss',
+  lang_ticket_detail_device_tab5: 'Gain',
+  lang_ticket_detail_device_tab4: 'Loss',
   lang_ticket_detail_submit_success: 'Submit Success',
   lang_ticket_detail_device_check: 'Inventory',
 

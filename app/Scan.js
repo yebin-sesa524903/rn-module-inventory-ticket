@@ -206,6 +206,14 @@ export default class Scan extends Component {
     })
   }
 
+  _getLightText(flashMode) {
+    let lan = getLanguage();
+    //{`${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')}`}</Text>
+    if(lan === 'en')
+      return `${localStr('lang_scan_page_light')} ${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}`
+    return `${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')} `
+  }
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -235,7 +243,9 @@ export default class Scan extends Component {
             <Image style={{ width: 56, height: 56 }} source={this.state.flashMode != 'on' ? require('./images/scan_light/light_off.png') : require('./images/scan_light/light_on.png')} />
           </TouchableOpacity>
           <Text style={{ color: '#595959', fontSize: 16, marginTop: 12 }}>
-            {`${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')}`}</Text>
+            {this._getLightText(this.state.flashMode)}
+            {/*{`${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')}`}*/}
+          </Text>
         </View>
         <TouchableOpacity style={{ position: 'absolute', left: 22, top: 44 }}
           onPress={() => this.props.navigator.pop()}
