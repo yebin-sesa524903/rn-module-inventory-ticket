@@ -88,20 +88,12 @@ export default class TicketList extends Component {
    * @private
    */
   _loadApiHierarchyList() {
-    apiHierarchyList({
-      customerId: 1,
-      treeType: 'fmhc',
-      type: '1'
-    }).then((res) => {
-      this.setState({
-        locations: res.data
-      }, () => {
-        this._loadTicketList();
-        ///第一次进入需要获取一下已完成的个数
-        this._loadDoneCount();
-      })
-    }).catch((reason) => {
-
+    this.setState({
+      locations: this.props.hierarchyList
+    }, () => {
+      this._loadTicketList();
+      ///第一次进入需要获取一下已完成的个数
+      this._loadDoneCount();
     })
   }
 
@@ -164,7 +156,7 @@ export default class TicketList extends Component {
 
 
   _loadTicketList() {
-    this.setState({ refreshing: true, showEmpty: false, ticketData: [], error: null })
+    this.setState({ refreshing: true, showEmpty: false, error: null })
     //处理加载中等...
     let locations = [];
     for (const re of this.state.locations) {
@@ -190,10 +182,9 @@ export default class TicketList extends Component {
         }
         ///处理分页逻辑
         let tickets = [];
-        let hasMoreData = false;
+        let hasMoreData = (responseObj.list?.length >= responseObj.pageSize);
         if (this.state.pageIndex === 1) {
           tickets = responseObj.list;
-          hasMoreData = !(responseObj.pageSize >= responseObj.list?.length);
         } else {
           tickets = this.state.ticketData[0].data.concat(responseObj.list);
         }

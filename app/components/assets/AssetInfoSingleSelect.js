@@ -17,6 +17,7 @@ import { isPhoneX } from "../../utils";
 import backHelper from "../../utils/backHelper";
 import Icon from "../Icon";
 import { localStr } from '../../utils/Localizations/localization';
+import Colors from "../../../../../app/utils/const/Colors";
 
 
 class InputView extends Component {
@@ -81,15 +82,16 @@ export default class SingleSelect extends Component {
   _renderListRow(title, index) {
     let rightIcon = null;
     if (this.props.multi && this.state.selectRows && this.state.selectRows.includes(title)) {
-      rightIcon = <Icon type={'icon_check'} color={'#333'} size={17} />
+      rightIcon = <Icon type={'icon_check'} color={Colors.seTextPrimary} size={17} />
     }
     return (
       <TouchFeedback key={index} onPress={() => this._onSelect(title)}>
         <View style={{
-          borderBottomColor: '#e6e6e6', padding: 16, justifyContent: 'space-between',
-          borderBottomWidth: 1, alignItems: 'center', flexDirection: 'row'
+          borderTopColor: Colors.seBorderSplit, padding: 16, justifyContent: 'space-between',
+          borderTopWidth: index > 0 ? 1 : 0, alignItems: 'center', flexDirection: 'row',
+          backgroundColor: Colors.seBgContainer
         }}>
-          <Text style={{ fontSize: 17, color: '#333', lineHeight: 23 }}>{title}</Text>
+          <Text style={{ fontSize: 17, color: Colors.seTextPrimary, lineHeight: 23 }}>{title}</Text>
           {rightIcon}
         </View>
       </TouchFeedback>
@@ -138,7 +140,7 @@ export default class SingleSelect extends Component {
   _renderList() {
     let empty = (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 14, color: '#888' }}>{localStr('lang_single_select_search_no_result')}</Text>
+        <Text style={{ fontSize: 14, color: Colors.seTextSecondary }}>{localStr('lang_single_select_search_no_result')}</Text>
       </View>
     )
 
@@ -168,10 +170,10 @@ export default class SingleSelect extends Component {
     if (!this.props.showInput) return;
     return (
       <>
-        <View style={{ height: 10, backgroundColor: LIST_BG }} />
+        <View style={{ height: 10, backgroundColor: Colors.seBgLayout }} />
         <TouchFeedback onPress={() => this._toEdit()}>
-          <View style={{ height: 56, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-            <Text style={{ fontSize: 17, color: GREEN }}>{localStr('lang_single_select_manual_input')}</Text>
+          <View style={{ height: 56, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.seBgContainer }}>
+            <Text style={{ fontSize: 17, color: Colors.seBrandNomarl }}>{localStr('lang_single_select_manual_input')}</Text>
           </View>
         </TouchFeedback>
       </>
@@ -241,7 +243,7 @@ export default class SingleSelect extends Component {
     if (!this.props.showSearch) return;
     return (
       <SearchBar
-        style={{ marginTop: -1, backgroundColor: '#fff', borderColor: '#f2f2f2', borderBottomWidth: 1 }}
+        style={{ marginTop: -1, backgroundColor: Colors.seBgContainer, borderColor: Colors.seBorderSplit, borderBottomWidth: 1 }}
         value={this.state.value}
         hint={this.props.searchHint || localStr('lang_single_select_input_keyword')}
         showCancel={this.state.showKeyboard || this.state.value.length > 0}
@@ -264,20 +266,22 @@ export default class SingleSelect extends Component {
       actions = [{ title: localStr('lang_toolbar_ok') }]
     }
     return (
-      <View style={{ flex: 1, backgroundColor: LIST_BG }}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
         <Toolbar
           title={this.props.title}
           navIcon="back"
           noShadow={true}
+          color={Colors.seBrandNomarl}
+          borderColor={Colors.seBrandNomarl}
           actions={actions}
           onActionSelected={actionsClick}
           onIconClicked={() => this.props.onBack()}
         />
         {this._renderSearch()}
         <ScrollView style={{ flex: 1, marginBottom: isPhoneX() ? 34 : 0 }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ backgroundColor: '#fff' }}>
+          contentContainerStyle={{ backgroundColor: Colors.seBgLayout }}>
           {this._renderInput()}
-          <View style={{ height: 10, backgroundColor: LIST_BG }} />
+          <View style={{ height: 10, backgroundColor: Colors.seBgLayout }} />
           {this._renderList()}
         </ScrollView>
       </View>
