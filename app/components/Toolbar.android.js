@@ -245,7 +245,7 @@ var styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 17,
-    // fontWeight: '500',
+    fontWeight: 'bold',
     // textAlign: 'center',
     color: 'white',
     flexShrink: 1

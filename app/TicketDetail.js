@@ -75,7 +75,7 @@ import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
 import Scan from "./Scan";
 import DeviceAdd from "./DeviceAdd";
 import { Toast } from '@ant-design/react-native';
-import Colors, {AppearanceMode} from "../../../app/utils/const/Colors";
+import Colors, {AppearanceMode, isDarkMode} from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
 // import Share from "react-native-share";
 
@@ -171,11 +171,11 @@ export default class TicketDetail extends Component {
   _renderInventoryTicketInfo() {
     return (
       <View style={{ margin: 16, padding: 16, backgroundColor: Colors.seBgContainer, borderRadius: 12 }}>
-        <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{this.state.rowData.title}</Text>
-        <Text style={{ fontSize: 12, color: Colors.seTextPrimary, marginVertical: 8 }}>
+        <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: 'bold' }}>{this.state.rowData.title}</Text>
+        <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginVertical: 8 }}>
           {`${localStr('lang_ticket_detail_execute_time')}：${moment(this.state.rowData.startTime).format('YYYY-MM-DD')} ~ ${moment(this.state.rowData.endTime).format('YYYY-MM-DD')}`}
         </Text>
-        <Text style={{ fontSize: 12, lineHeight: 20, color: Colors.seTextPrimary, }}>{`${localStr('lang_ticket_detail_execute_person')}：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
+        <Text style={{ fontSize: 12, lineHeight: 20, color: Colors.seTextSecondary, }}>{`${localStr('lang_ticket_detail_execute_person')}：${this.state.rowData.executors.map(item => item.userName).join('、')}`}</Text>
       </View>
     )
   }
@@ -1173,7 +1173,7 @@ export default class TicketDetail extends Component {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
         </View>
-        <View style={{ height: 1, backgroundColor: Colors.seBorderBase, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
+        <View style={{ height: 1, backgroundColor: Colors.seBorderSplit, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
         <Text style={{ fontSize: 16, color: Colors.seTextTitle, lineHeight: 28 }}>{reason}</Text>
         <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
       </View>
@@ -1229,7 +1229,7 @@ export default class TicketDetail extends Component {
     const devices = this.state.rowData.assets.map((item, index) => {
       // let canCheck = this.state.isExecutor && (item.extensionProperties && item.extensionProperties.assetPointCheckState === 1) && privilegeHelper.hasAuth(CodeMap.TICKET_MANAGEMENT_FULL)
       let imgUrl = null;
-      let defaultImg = require('./images/building_default/building.png');
+      let defaultImg = isDarkMode() ? require('./images/building_default/placeholder.png') : require('./images/building_default/building.png');
       if (item.extensionProperties && item.extensionProperties?.assetLogo) {
         try {
           let jsonLogo = JSON.parse(item.extensionProperties?.assetLogo);
@@ -1280,7 +1280,7 @@ export default class TicketDetail extends Component {
             </View>
 
             <View style={{ marginLeft: 16, flex: 1 }}>
-              <Text style={{ color: Colors.seTextTitle, fontSize: 14 }}>{item.assetName}</Text>
+              <Text style={{ color: Colors.seTextTitle, fontSize: 14, fontWeight:'bold' }}>{item.assetName}</Text>
               <Text style={{ color: Colors.seTextPrimary, fontSize: 12, marginTop: 8 }}>{`${localStr('lang_scan_result_label10')}：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
             </View>
             {
@@ -1395,7 +1395,7 @@ export default class TicketDetail extends Component {
     })
     return (
       <CommonDialog modalVisible={this.state.submitModalVisible} title={localStr('lang_ticket_detail_approved')}>
-        <View style={{ padding: 16, borderRadius: 12, backgroundColor: Colors.seBgContainer, marginHorizontal: 32 }}>
+        <View style={{ padding: 16, borderRadius: 12, backgroundColor: Colors.seBgElevated, marginHorizontal: 32 }}>
           <Text style={{ fontSize: 17, color: Colors.seTextTitle, fontWeight: '600', alignSelf: 'center' }}>{localStr('lang_ticket_detail_approved')}</Text>
           {menus}
           <View style={{
