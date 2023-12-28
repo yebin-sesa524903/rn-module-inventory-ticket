@@ -20,7 +20,7 @@ import {
 
 import { isPhoneX } from "./utils";
 import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
-import Colors from "../../../app/utils/const/Colors";
+import Colors, {isDarkMode} from "../../../app/utils/const/Colors";
 
 const MP = Platform.OS === 'ios' ? (isPhoneX() ? 0 : 10) : 36;
 const CODE_OK = '0';
@@ -69,16 +69,16 @@ export default class TicketList extends Component {
   _renderEmpty() {
     if (!this.state.refreshing && this.state.error) {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background.primary }}>
-          <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{this.state.error}</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.seBgContainer }}>
+          <Text style={{ fontSize: 15, color: Colors.seTextPrimary, marginTop: 8 }}>{this.state.error}</Text>
         </View>
       )
     }
     if (this.state.refreshing) return null;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:Colors.background.white, height: (Dimensions.get('window').height - 220) }}>
-        <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
-        <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:Colors.seBgContainer, height: (Dimensions.get('window').height - 220) }}>
+        <Image resizeMode={'contain'} source={isDarkMode() ? require('./images/empty_box/empty_box_dark.png') : require('./images/empty_box/empty_box.png')} style={{width: 128 * 0.5, height: 80 * 0.5}} />
+        <Text style={{ fontSize: 14, color: Colors.seTextDisabled, marginTop: 8 }}>{localStr('lang_empty_data')}</Text>
       </View>
     )
   }
@@ -171,6 +171,7 @@ export default class TicketList extends Component {
       locations: locations,
       pageIndex: this.state.pageIndex,
       pageSize: 20,
+      customerId: 1,
     };
     apiAppTicketList(params).then((data) => {
       if (data.code === CODE_OK) {
@@ -300,7 +301,7 @@ export default class TicketList extends Component {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40 }}>
         <Image source={require('./images/empty_box/empty_box.png')} style={{ width: 60, height: 40 }} />
-        <Text style={{ fontSize: 15, color: '#888', marginTop: 8 }}>{localStr('lang_ticket_list_no_permission')}</Text>
+        <Text style={{ fontSize: 15, color: Colors.seTextSecondary, marginTop: 8 }}>{localStr('lang_ticket_list_no_permission')}</Text>
       </View>
     );
   }
