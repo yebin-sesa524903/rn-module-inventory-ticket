@@ -16,7 +16,7 @@ import {apiGetExecutorData, apiGetTicketExecutors} from "./middleware/bff";
 import TouchFeedback from "./components/TouchFeedback";
 import Icon from "./components/Icon";
 import {GRAY, GREEN} from "./styles/color";
-import Colors from "../../../app/utils/const/Colors";
+import Colors, {isDarkMode} from "../../../app/utils/const/Colors";
 const CODE_OK = '0';
 
 export default class TicketSelectExecutors extends Component{
@@ -69,7 +69,7 @@ export default class TicketSelectExecutors extends Component{
   _renderEmpty() {
     return (
       <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:Colors.seBgColor}}>
-        <Image source={require('./images/empty_box/empty_box.png')} style={{width:60,height:40}}/>
+        <Image resizeMode={'contain'} source={isDarkMode() ? require('./images/empty_box/empty_box_dark.png') : require('./images/empty_box/empty_box.png')} style={{width: 128 * 0.5, height: 80 * 0.5}} />
         <Text style={{fontSize:15,color:Colors.seTextSecondary,marginTop:8}}>{localStr('lang_empty_data')}</Text>
       </View>
     )
@@ -79,7 +79,7 @@ export default class TicketSelectExecutors extends Component{
     if(item.isSelect){
       return (
         <View style={styles.selectView}>
-          <Icon type='icon_check' size={10} color='white' />
+          <Icon type='icon_check' size={10} color={Colors.seTextInverse} />
         </View>
       )
     }else {
@@ -170,12 +170,12 @@ const styles = global.amStyleProxy(() => StyleSheet.create({
     marginLeft:16,
     fontSize:17,
     flex:1,
-    color:Colors.seTextTitle//BLACK
+    color:Colors.seTextPrimary//BLACK
   },
   subTitleText:{
     marginLeft:16,
     fontSize:15,
-    color:'#888',//BLACK,
+    color:Colors.seTextPrimary,//BLACK,
     backgroundColor:'red',
     width:80
   },
@@ -191,7 +191,7 @@ const styles = global.amStyleProxy(() => StyleSheet.create({
     width:18,
     height:18,
     borderRadius:10,
-    borderColor:GRAY,
+    borderColor:Colors.seBorderBase,
     borderWidth:1,
     // marginRight:16,
     justifyContent:'center',

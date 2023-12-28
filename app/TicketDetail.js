@@ -1169,13 +1169,14 @@ export default class TicketDetail extends Component {
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, margin: 16, marginBottom: 0, borderRadius: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, marginBottom: 0, flexDirection:'row'}}>
+        <Image source={require('./images/reject/Union.png')} style={{width: 14, height: 14, marginTop: 3}}/>
+        <View style={{marginLeft: 8}}>
+          <Text style={{ fontSize: 14, color: Colors.seTextTitle, }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+          <Text style={{ fontSize: 14, color: Colors.seTextTitle, marginTop: 6}}>{reason}</Text>
+          <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 6 }}>{`${RejectUser}  ${rejectTime}`}</Text>
         </View>
-        <View style={{ height: 1, backgroundColor: Colors.seBorderSplit, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
-        <Text style={{ fontSize: 16, color: Colors.seTextTitle, lineHeight: 28 }}>{reason}</Text>
-        <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
+
       </View>
     )
   }
