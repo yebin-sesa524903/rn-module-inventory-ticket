@@ -88,19 +88,21 @@ const DEVICE_STATUS_ICON = {
   4: require('./images/device_status/device_new.png'),
 }
 
-const DEVICE_STATUS_ICON2 = {
-  dark_loss_zh:require('./images/device_status/盘亏-Dark-中文.png'),
-  dark_loss_en:require('./images/device_status/盘亏-Dark-英文.png'),
-  light_loss_zh:require('./images/device_status/盘亏-Light-中文.png'),
-  light_loss_en:require('./images/device_status/盘亏-Light-英文.png'),
-  dark_gain_zh:require('./images/device_status/盘盈-Dark-中文.png'),
-  dark_gain_en:require('./images/device_status/盘盈-Dark-英文.png'),
-  light_gain_zh:require('./images/device_status/盘盈-Light-中文.png'),
-  light_gain_en:require('./images/device_status/盘盈-Light-英文.png'),
-  dark_checked_zh:require('./images/device_status/已盘-Dark-中文.png'),
-  dark_checked_en:require('./images/device_status/已盘-Dark-英文.png'),
-  light_checked_zh:require('./images/device_status/已盘-Light-中文.png'),
-  light_checked_en:require('./images/device_status/已盘-Light-英文.png'),
+const DEVICE_STATUS_ICON2 = ()=>{
+  return {
+    dark_loss_zh:require('./images/device_status/pk-Dark-cn.png'),
+    dark_loss_en:require('./images/device_status/pk-Dark-en.png'),
+    light_loss_zh:require('./images/device_status/pk-Light-cn.png'),
+    light_loss_en:require('./images/device_status/pk-Light-en.png'),
+    dark_gain_zh:require('./images/device_status/py-Dark-cn.png'),
+    dark_gain_en:require('./images/device_status/py-Dark-en.png'),
+    light_gain_zh:require('./images/device_status/py-Light-cn.png'),
+    light_gain_en:require('./images/device_status/py-Light-en.png'),
+    dark_checked_zh:require('./images/device_status/yp-Dark-cn.png'),
+    dark_checked_en:require('./images/device_status/yp-Dark-en.png'),
+    light_checked_zh:require('./images/device_status/yp-Light-cn.png'),
+    light_checked_en:require('./images/device_status/yp-Light-en.png'),
+  }
 }
 
 function getInventoryIcon(status) {
@@ -110,19 +112,19 @@ function getInventoryIcon(status) {
   switch (status) {
     case 2:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2.light_checked_en : DEVICE_STATUS_ICON2.dark_checked_en
+          theme === light ? DEVICE_STATUS_ICON2().light_checked_en : DEVICE_STATUS_ICON2().dark_checked_en
           :
-          theme === light ? DEVICE_STATUS_ICON2.light_checked_zh : DEVICE_STATUS_ICON2.dark_checked_zh
+          theme === light ? DEVICE_STATUS_ICON2().light_checked_zh : DEVICE_STATUS_ICON2().dark_checked_zh
     case 3:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2.light_loss_en : DEVICE_STATUS_ICON2.dark_loss_en
+          theme === light ? DEVICE_STATUS_ICON2().light_loss_en : DEVICE_STATUS_ICON2().dark_loss_en
           :
-          theme === light ? DEVICE_STATUS_ICON2.light_loss_zh : DEVICE_STATUS_ICON2.dark_loss_zh
+          theme === light ? DEVICE_STATUS_ICON2().light_loss_zh : DEVICE_STATUS_ICON2().dark_loss_zh
     case 4:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2.light_gain_en : DEVICE_STATUS_ICON2.dark_gain_en
+          theme === light ? DEVICE_STATUS_ICON2().light_gain_en : DEVICE_STATUS_ICON2().dark_gain_en
           :
-          theme === light ? DEVICE_STATUS_ICON2.light_gain_zh : DEVICE_STATUS_ICON2.dark_gain_zh
+          theme === light ? DEVICE_STATUS_ICON2().light_gain_zh : DEVICE_STATUS_ICON2().dark_gain_zh
 
   }
 }
@@ -1277,7 +1279,7 @@ export default class TicketDetail extends Component {
             borderTopWidth: 1, paddingTop: 10
           }}>
             <View style={{ borderRadius: 8, overflow: 'hidden', }}>
-              <CacheImage borderWidth={0} space={0} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
+              <CacheImage borderWidth={0} space={0} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={96} height={54} />
             </View>
 
             <View style={{ marginLeft: 16, flex: 1 }}>
