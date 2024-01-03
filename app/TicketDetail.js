@@ -88,19 +88,21 @@ const DEVICE_STATUS_ICON = {
   4: require('./images/device_status/device_new.png'),
 }
 
-const DEVICE_STATUS_ICON2 = {
-  dark_loss_zh:require('./images/device_status/盘亏-Dark-中文.png'),
-  dark_loss_en:require('./images/device_status/盘亏-Dark-英文.png'),
-  light_loss_zh:require('./images/device_status/盘亏-Light-中文.png'),
-  light_loss_en:require('./images/device_status/盘亏-Light-英文.png'),
-  dark_gain_zh:require('./images/device_status/盘盈-Dark-中文.png'),
-  dark_gain_en:require('./images/device_status/盘盈-Dark-英文.png'),
-  light_gain_zh:require('./images/device_status/盘盈-Light-中文.png'),
-  light_gain_en:require('./images/device_status/盘盈-Light-英文.png'),
-  dark_checked_zh:require('./images/device_status/已盘-Dark-中文.png'),
-  dark_checked_en:require('./images/device_status/已盘-Dark-英文.png'),
-  light_checked_zh:require('./images/device_status/已盘-Light-中文.png'),
-  light_checked_en:require('./images/device_status/已盘-Light-英文.png'),
+const DEVICE_STATUS_ICON2 = ()=>{
+  return {
+    dark_loss_zh:require('./images/device_status/pk-Dark-cn.png'),
+    dark_loss_en:require('./images/device_status/pk-Dark-en.png'),
+    light_loss_zh:require('./images/device_status/pk-Light-cn.png'),
+    light_loss_en:require('./images/device_status/pk-Light-en.png'),
+    dark_gain_zh:require('./images/device_status/py-Dark-cn.png'),
+    dark_gain_en:require('./images/device_status/py-Dark-en.png'),
+    light_gain_zh:require('./images/device_status/py-Light-cn.png'),
+    light_gain_en:require('./images/device_status/py-Light-en.png'),
+    dark_checked_zh:require('./images/device_status/yp-Dark-cn.png'),
+    dark_checked_en:require('./images/device_status/yp-Dark-en.png'),
+    light_checked_zh:require('./images/device_status/yp-Light-cn.png'),
+    light_checked_en:require('./images/device_status/yp-Light-en.png'),
+  }
 }
 
 function getInventoryIcon(status) {
@@ -110,19 +112,19 @@ function getInventoryIcon(status) {
   switch (status) {
     case 2:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2.light_checked_en : DEVICE_STATUS_ICON2.dark_checked_en
+          theme === light ? DEVICE_STATUS_ICON2().light_checked_en : DEVICE_STATUS_ICON2().dark_checked_en
           :
-          theme === light ? DEVICE_STATUS_ICON2.light_checked_zh : DEVICE_STATUS_ICON2.dark_checked_zh
+          theme === light ? DEVICE_STATUS_ICON2().light_checked_zh : DEVICE_STATUS_ICON2().dark_checked_zh
     case 3:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2.light_loss_en : DEVICE_STATUS_ICON2.dark_loss_en
+          theme === light ? DEVICE_STATUS_ICON2().light_loss_en : DEVICE_STATUS_ICON2().dark_loss_en
           :
-          theme === light ? DEVICE_STATUS_ICON2.light_loss_zh : DEVICE_STATUS_ICON2.dark_loss_zh
+          theme === light ? DEVICE_STATUS_ICON2().light_loss_zh : DEVICE_STATUS_ICON2().dark_loss_zh
     case 4:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2.light_gain_en : DEVICE_STATUS_ICON2.dark_gain_en
+          theme === light ? DEVICE_STATUS_ICON2().light_gain_en : DEVICE_STATUS_ICON2().dark_gain_en
           :
-          theme === light ? DEVICE_STATUS_ICON2.light_gain_zh : DEVICE_STATUS_ICON2.dark_gain_zh
+          theme === light ? DEVICE_STATUS_ICON2().light_gain_zh : DEVICE_STATUS_ICON2().dark_gain_zh
 
   }
 }
@@ -1169,13 +1171,14 @@ export default class TicketDetail extends Component {
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, margin: 16, marginBottom: 0, borderRadius: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: Colors.seTextTitle, fontWeight: '600' }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, marginBottom: 0, flexDirection:'row'}}>
+        <Image source={require('./images/reject/Union.png')} style={{width: 14, height: 14, marginTop: 3}}/>
+        <View style={{marginLeft: 8}}>
+          <Text style={{ fontSize: 14, color: Colors.seTextTitle, }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
+          <Text style={{ fontSize: 14, color: Colors.seTextTitle, marginTop: 6}}>{reason}</Text>
+          <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 6 }}>{`${RejectUser}  ${rejectTime}`}</Text>
         </View>
-        <View style={{ height: 1, backgroundColor: Colors.seBorderSplit, marginRight: -16, marginTop: 16, marginBottom: 12 }} />
-        <Text style={{ fontSize: 16, color: Colors.seTextTitle, lineHeight: 28 }}>{reason}</Text>
-        <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 10 }}>{`${RejectUser}  ${rejectTime}`}</Text>
+
       </View>
     )
   }
@@ -1276,7 +1279,7 @@ export default class TicketDetail extends Component {
             borderTopWidth: 1, paddingTop: 10
           }}>
             <View style={{ borderRadius: 8, overflow: 'hidden', }}>
-              <CacheImage borderWidth={0} space={0} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={70} height={50} />
+              <CacheImage borderWidth={0} space={0} key={imgUrl} imageKey={imgUrl} defaultImgPath={defaultImg} width={96} height={54} />
             </View>
 
             <View style={{ marginLeft: 16, flex: 1 }}>

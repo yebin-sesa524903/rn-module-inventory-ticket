@@ -31,7 +31,7 @@ export default class Button extends Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = global.amStyleProxy(() => StyleSheet.create({
   buttonText: {
     color: Colors.seInfoNormal,
     alignSelf: 'center',
@@ -47,4 +47,4 @@ var styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center'
   }
-});
+}));

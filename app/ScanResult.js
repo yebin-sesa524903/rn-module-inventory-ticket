@@ -23,9 +23,8 @@ import {
 import { forEach } from 'lodash';
 // import { Toast } from '@ant-design/react-native';
 import Toast from 'react-native-root-toast';
-import Colors from "../../../app/utils/const/Colors";
+import Colors, {isDarkMode} from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
-const StatusColors = [Colors.seBrandNomarl, '#F53F3F', '#1F1F1F', '#3491FA', '#FAAD14', '#F53F3F', 'red']
 const StatusTags = [
   localStr('lang_scan_result_page_status_tag1'),
   localStr('lang_scan_result_page_status_tag2'),
@@ -250,20 +249,73 @@ export default class extends Component {
     })
   }
 
+  _getStatusInfo(deviceStatus) {
+    let ret = {
+      label: localStr('lang_scan_result_label7'),
+      textColor: Colors.seBrandNomarl,
+      bgColor:  Colors.seBrandBg,
+      borderColor: Colors.seBrandBorder,
+    };
+    switch (deviceStatus) {
+      case 0:
+        ret.label = localStr('lang_scan_result_page_status_tag1');
+        ret.textColor = Colors.seBrandNomarl;
+        ret.borderColor = Colors.seBrandBorder
+        ret.bgColor = Colors.seBrandBg;
+        break;
+      case 1:
+        ret.label = localStr('lang_scan_result_page_status_tag2');
+        ret.textColor = Colors.seErrorNormal;
+        ret.borderColor = Colors.seErrorBorder;
+        ret.bgColor = Colors.seErrorBg;
+        break;
+      case 2:
+        ret.label = localStr('lang_scan_result_page_status_tag3');
+        ret.textColor = Colors.seTextTitle;
+        ret.borderColor = Colors.seBorderBase;
+        ret.bgColor = Colors.seFill3;
+        break;
+      case 3:
+        ret.label = localStr('lang_scan_result_page_status_tag4');
+        ret.textColor = Colors.seInfoNormal;
+        ret.borderColor = Colors.seInfoBorder;
+        ret.bgColor = Colors.seInfoBg;
+        break;
+      case 4:
+        ret.label = localStr('lang_scan_result_page_status_tag5');
+        ret.textColor = Colors.seWarningNormal;
+        ret.borderColor = Colors.seWarningBorder;
+        ret.bgColor = Colors.seWarningBg;
+        break;
+      case 5:
+        ret.label = localStr('lang_scan_result_page_status_tag6');
+        ret.textColor = Colors.seErrorNormal;
+        ret.borderColor = Colors.seErrorBorder;
+        ret.bgColor = Colors.seErrorBg;
+        break;
+    }
+    return ret;
+  }
+
   _renderStatusTag() {
-    let color = 'gray';
+    let textColor = '';
+    let bgColor = '';
+    let borderColor = '';
     let tag = localStr('lang_scan_result_label7');
     if (!this.state.isRequestStatus) {
-      tag = StatusTags[this.state.deviceStatus];
-      color = StatusColors[this.state.deviceStatus];
+      let res = this._getStatusInfo(this.state.deviceStatus);
+      tag = res.label;
+      bgColor = res.bgColor;
+      borderColor = res.borderColor;
+      textColor = res.textColor;
     }
     return (
       <TouchableOpacity disabled={true || this.state.statusType === 4} onPress={this._showStatusTagsDialog}>
         <View style={{
-          borderRadius: 2, paddingHorizontal: 6, marginLeft: 6,
-          borderWidth: 1, borderColor: color, paddingVertical: 2, justifyContent: 'center', alignItems: 'center'
+          borderRadius: 4, paddingHorizontal: 6, marginLeft: 6,backgroundColor: bgColor,
+          borderWidth: 0.8, borderColor: borderColor, paddingVertical: 2, justifyContent: 'center', alignItems: 'center'
         }}>
-          <Text style={{ color, fontSize: 12 }}>{tag}</Text>
+          <Text style={{ color: textColor, fontSize: 12 }}>{tag}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -298,7 +350,7 @@ export default class extends Component {
       assetCode = this.props.device.extensionProperties.assetCode;
     }
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.seBrandBg }}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
         <Toolbar
           title={localStr('lang_scan_result_label8')}
           navIcon="back"
@@ -314,7 +366,7 @@ export default class extends Component {
           flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 16,
           borderTopWidth: 1, paddingTop: 10, backgroundColor: Colors.seBgContainer, borderRadius: 12, margin: 16, padding: 16, marginBottom: 0,
         }}>
-          <CacheImage borderWidth={1} imageKey={this.state.imgUrl} defaultImgPath={require('./images/building_default/building.png')} width={70} height={50} />
+          <CacheImage imageKey={this.state.imgUrl} borderWidth={0} defaultImgPath={isDarkMode() ? require('./images/building_default/placeholder.png') : require('./images/building_default/building.png')} width={96} height={54} />
           <View style={{ marginLeft: 16, flex: 1 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ color: Colors.seTextTitle, fontSize: 14, flex: 1 }}>{this.props.device.assetName}</Text>

@@ -15,7 +15,7 @@ import { localStr } from "./utils/Localizations/localization";
 import TicketDetail from "./TicketDetail";
 import {
   apiAppTicketList,
-  apiHierarchyList,
+  apiHierarchyList, customerId,
 } from "./middleware/bff";
 
 import { isPhoneX } from "./utils";
@@ -171,7 +171,7 @@ export default class TicketList extends Component {
       locations: locations,
       pageIndex: this.state.pageIndex,
       pageSize: 20,
-      customerId: 1,
+      customerId: customerId,
     };
     apiAppTicketList(params).then((data) => {
       if (data.code === CODE_OK) {

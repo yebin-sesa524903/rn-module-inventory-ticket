@@ -93,7 +93,8 @@ export default class TicketRow extends Component {
         borderRadius: 4,
         borderWidth: 1,
         borderColor: statusInfo.borderColor,
-        paddingVertical: 4,
+        height: 22,
+        justifyContent:'center',
         paddingHorizontal: 6
       }}>
         <Text style={{ fontSize: 12, color: statusInfo.textColor }}>{statusInfo.label}</Text>
