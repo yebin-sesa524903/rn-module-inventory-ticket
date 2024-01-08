@@ -236,6 +236,9 @@ export async function apiQueryTicketList(filter) {
   })
 }
 
+export function updateInventoryCustomerId(id){
+  customerId = id;
+}
 
 export async function configCookie(data) {
   sysId = data.sysId;
