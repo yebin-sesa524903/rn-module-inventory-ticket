@@ -54,7 +54,8 @@ let defaultFetch = async function (options) {
     } else {
       body = {
         ...options.body,
-        sysId, userId
+        sysId, userId,
+        customerId
       }
     }
 
