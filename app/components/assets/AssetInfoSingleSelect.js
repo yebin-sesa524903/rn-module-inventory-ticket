@@ -28,7 +28,7 @@ class InputView extends Component {
   }
 
   componentDidMount() {
-    backHelper.init(this.props.navigator, this.props.route.id);
+    backHelper.init(this.props.navigation, this.props.route.id);
 
   }
 
@@ -126,7 +126,7 @@ export default class SingleSelect extends Component {
         title: this.props.inputTitle,
         onBack: () => this.props.onBack(),
         onSelect: (text) => {
-          this.props.navigator.popN(2);
+          this.props.navigation.popN(2);
           this.props.onSelect(text);
         }
       }
@@ -209,7 +209,7 @@ export default class SingleSelect extends Component {
 
   componentDidMount() {
 
-    backHelper.init(this.props.navigator, this.props.route.id);
+    backHelper.init(this.props.navigation, this.props.route.id);
     this._registerEvents();
     //注册监听
     InteractionManager.runAfterInteractions(() => {

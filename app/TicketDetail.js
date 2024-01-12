@@ -358,7 +358,7 @@ export default class TicketDetail extends Component {
       let imgs = log.pictures.map((img, imgIndex) => {
         return (
           <TouchableWithoutFeedback key={imgIndex} onPress={() => {
-            this.props.navigator.push({
+            this.props.navigation.push('PageWarpper',{
               id: 'ticket_log_edit',
               component: PhotoShowView,
               passProps: {
@@ -1215,7 +1215,7 @@ export default class TicketDetail extends Component {
         objectType: this.state.rowData.objectType,
         onRefresh: () => this._loadTicketDetail(),
         callBack: () => {
-          // this.props.navigator.pop();
+          // this.props.navigation.pop();
           // this._loadTicketDetail();
         },
         onBack: () => this.props.navigation.pop()

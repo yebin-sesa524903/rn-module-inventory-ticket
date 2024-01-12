@@ -162,8 +162,8 @@ export default class Scan extends Component {
         }
       });
       let that = this;
-      var navigator = this.props.navigation;
-      if (navigator) {
+      var navigation = this.props.navigation;
+      if (navigation) {
         let callback = (event) => {
           if (event.data.route && event.data.route.id && event.data.route.id === this.props.route.id) {
             InteractionManager.runAfterInteractions(() => {
@@ -179,8 +179,8 @@ export default class Scan extends Component {
             })
           }
         };
-        if (navigator.navigationContext && navigator.navigationContext.addListener)
-          this._listener = navigator.navigationContext.addListener('willfocus', callback);
+        if (navigation.navigationContext && navigation.navigationContext.addListener)
+          this._listener = navigation.navigationContext.addListener('willfocus', callback);
 
       }
     });
