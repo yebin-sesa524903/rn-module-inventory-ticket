@@ -8,7 +8,7 @@ import TouchFeedback from './TouchFeedback.js';
 
 export default class ClickableRow extends Component {
   static contextTypes = {
-    navigator:PropTypes.object
+    navigation:PropTypes.object
   }
   constructor(props){
     super(props);

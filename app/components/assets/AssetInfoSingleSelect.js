@@ -118,7 +118,7 @@ export default class SingleSelect extends Component {
   }
 
   _toEdit() {
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'AssetInfoSingleSelect_InputView',
       component: InputView,
       passProps: {

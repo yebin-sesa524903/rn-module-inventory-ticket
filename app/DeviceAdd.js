@@ -280,7 +280,7 @@ export default class extends Component {
       data = row.data;
     }
 
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'device_add',
       component: SingleSelect,
       passProps: {
@@ -405,14 +405,14 @@ export default class extends Component {
   }
 
   _openImagePicker = () => {
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'imagePicker',
       component: ImagePicker,
       passProps: {
         max: 1,
-        onBack: () => this.props.navigator.pop(),
+        onBack: () => this.props.navigation.pop(),
         done: (data) => {
-          this.props.navigator.pop();
+          this.props.navigation.pop();
           this.state.logo = data[0];
           this.setState({});
           this._uploadImages();
@@ -560,7 +560,7 @@ export default class extends Component {
     );
   }
 
-  _doBack = () => this.props.navigator.pop();
+  _doBack = () => this.props.navigation.pop();
 
   _doSubmit = () => {
 

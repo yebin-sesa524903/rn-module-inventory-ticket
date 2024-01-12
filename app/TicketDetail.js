@@ -304,7 +304,7 @@ export default class TicketDetail extends Component {
       arrActions: [{
         title: localStr('lang_ticket_detail_edit_log'),
         click: () => {
-          this.props.navigator.push({
+          this.props.navigation.push('PageWarpper',{
             id: 'ticket_log_edit',
             component: TicketLogEdit,
             passProps: {
@@ -312,10 +312,10 @@ export default class TicketDetail extends Component {
               tid: this.state.rowData.id,
               log,
               callBack: () => {
-                this.props.navigator.pop();
+                this.props.navigation.pop();
                 this._loadTicketDetail();
               },
-              onBack: () => this.props.navigator.pop()
+              onBack: () => this.props.navigation.pop()
             }
           })
         }
@@ -363,7 +363,7 @@ export default class TicketDetail extends Component {
               component: PhotoShowView,
               passProps: {
                 index: imgIndex,
-                onBack: () => this.props.navigator.pop(),
+                onBack: () => this.props.navigation.pop(),
                 data: log.pictures
               }
             })
@@ -652,17 +652,17 @@ export default class TicketDetail extends Component {
   }
 
   _writeLog() {
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'ticket_log_edit',
       component: TicketLogEdit,
       passProps: {
         title: localStr('lang_ticket_detail_add_log'),
         tid: this.state.rowData.id,
         callBack: () => {
-          this.props.navigator.pop();
+          this.props.navigation.pop();
           this._loadTicketDetail();
         },
-        onBack: () => this.props.navigator.pop()
+        onBack: () => this.props.navigation.pop()
       }
     })
   }
@@ -789,7 +789,7 @@ export default class TicketDetail extends Component {
       this.showToast(localStr('lang_ticekt_detail_info_exception'));
       return;
     }
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'device_add',
       component: DeviceAdd,
       passProps: {
@@ -806,8 +806,7 @@ export default class TicketDetail extends Component {
 
   //扫描盘点
   _scanInventory = () => {
-    console.log('scan inventory')
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'scan_device',
       component: Scan,
       passProps: {
@@ -907,7 +906,7 @@ export default class TicketDetail extends Component {
             arrActions: [{
               title: localStr('lang_ticket_detail_change_executors'),
               click: () => {
-                this.props.navigator.push({
+                this.props.navigation.push('PageWarpper',{
                   id: 'ticket_select_executors',
                   component: TicketSelectExecutors,
                   passProps: {
@@ -938,14 +937,14 @@ export default class TicketDetail extends Component {
                         }
                       })
                     },
-                    onBack: () => this.props.navigator.pop()
+                    onBack: () => this.props.navigation.pop()
                   }
                 })
               }
             }, {
               title: localStr('lang_ticket_detail_change_time'),
               click: () => {
-                this.props.navigator.push({
+                this.props.navigation.push('PageWarpper',{
                   id: 'ticket_select_time',
                   component: TicketSelectTime,
                   passProps: {
@@ -970,7 +969,7 @@ export default class TicketDetail extends Component {
                         }
                       })
                     },
-                    onBack: () => this.props.navigator.pop()
+                    onBack: () => this.props.navigation.pop()
                   }
                 })
               }
@@ -986,7 +985,7 @@ export default class TicketDetail extends Component {
         color={Colors.seBrandNomarl}
         borderColor={Colors.seBrandNomarl}
         onIconClicked={() => {
-          this.props.navigator.pop()
+          this.props.navigation.pop()
         }}
         actions={this._actions}
         onActionSelected={actionSelected}
@@ -1203,7 +1202,7 @@ export default class TicketDetail extends Component {
     if (device.extensionProperties?.assetPointCheckState === 4) {
       Cmp = DeviceAdd;
     }
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'ticket_pd',
       component: Cmp,
       passProps: {
@@ -1219,7 +1218,7 @@ export default class TicketDetail extends Component {
           // this.props.navigator.pop();
           // this._loadTicketDetail();
         },
-        onBack: () => this.props.navigator.pop()
+        onBack: () => this.props.navigation.pop()
       }
     })
   }
