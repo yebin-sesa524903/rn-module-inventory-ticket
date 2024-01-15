@@ -8,14 +8,14 @@ export default {
   lang_status_1: 'To Do',
   lang_status_2: 'In Progress',
   lang_status_3: 'Submitted',
-  lang_status_4: 'Reverted',
+  lang_status_4: 'Rejected',
   lang_status_5: 'Completed',
   lang_status_6: 'Ignored',
 
-  lang_ticket_status_type: ['To Do', 'In Progress', 'Submitted', 'Reverted', 'Completed', 'Ignored'],
+  lang_ticket_status_type: ['To Do', 'In Progress', 'Submitted', 'Rejected', 'Completed', 'Ignored'],
   lang_ticket_name: 'Work Name',
   lang_ticket_filter_time: 'Time',
-  lang_ticket_filter_ok: 'confirm',
+  lang_ticket_filter_ok: 'Confirm',
   lang_ticket_filter_reset: 'Reset',
   lang_ticket_filter_status: 'Status',
   lang_ticket_filter_start_time: 'Start Time',
@@ -173,6 +173,6 @@ export default {
 
   lang_add_device_success_tip:'Create Inventory Gain Asset Successfully!',
   lang_add_scrap_ticket_tip:'Create Retirement Record Successfully!',
-  lang_ticket_list_tab_undone:'Undone',
-  lang_ticket_list_tab_done:'Done',
+  lang_ticket_list_tab_undone:'Incompleted',
+  lang_ticket_list_tab_done:'Completed',
 };
