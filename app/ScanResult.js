@@ -110,7 +110,7 @@ export default class extends Component {
         device.assetId
       ],
       "hierarchyId": device.locationId,
-      "pointCheckStatus": checkStatus,
+      "pointCheckStatus": checkStatus,  ///pointCheckStatus 已盘 :0  盘亏/未盘:1
     }
     apiCheckDeviceStatus(data).then(data => {
       if (data.code === '0') {

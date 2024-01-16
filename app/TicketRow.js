@@ -113,7 +113,7 @@ export default class TicketRow extends Component {
         }
       }
       if (asset.extensionProperties && asset.extensionProperties.assetPointCheckState) {
-        if (status === asset.extensionProperties.assetPointCheckState) {
+        if (status === asset.extensionProperties.assetPointCheckState && !asset.extensionProperties.assetInitData) {
           count++;
         }
       }
