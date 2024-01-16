@@ -235,7 +235,7 @@ export default class TicketList extends Component {
 
   _gotoDetail = (rowData, selectIndex = 0) => {
     console.log('rowData', rowData)
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'service_ticket_detail',
       component: TicketDetail,
       passProps: {

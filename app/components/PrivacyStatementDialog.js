@@ -72,9 +72,9 @@ export default class InputDialog extends Component{
   _onShouldStartLoadWithRequest(e) {
     // console.log(e);
     if (e.url&&this._webLoaded) {
-      // let Router = this.props.navigator.props.router;
+      // let Router = this.props.navigation.props.router;
       // let route = Router.getRouteFromUrl(e.url);
-      // this.props.navigator.push(route);
+      // this.props.navigation.push(route);
       //
       // this.refs[WEBVIEW_REF].stopLoading();  // <---- Add a similar line
       //This will tell your webView to stop processing the clicked link
