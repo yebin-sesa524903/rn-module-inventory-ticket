@@ -1258,16 +1258,12 @@ export default class TicketDetail extends Component {
           assetPointCheckState: 1
         }
       }
-      if (item.extensionProperties && item.extensionProperties.assetPointCheckState && !item.extensionProperties.assetInitData) {
+      if (item.extensionProperties && item.extensionProperties.assetPointCheckState) {
         arrStatus[item.extensionProperties.assetPointCheckState] += 1;
       }
       if (this.state.deviceTab != 0 && item.extensionProperties &&
         this.state.deviceTab != item.extensionProperties.assetPointCheckState) {
         return;
-      }
-      ///盘盈创建失败的 assetInitData会有值 过滤掉
-      if (item.extensionProperties && item.extensionProperties.assetInitData){
-        return ;
       }
       return (
         <TouchFeedback
@@ -1303,16 +1299,9 @@ export default class TicketDetail extends Component {
             }
           </View>
         </TouchFeedback>
-
       )
     })
-    ///这里过滤 盘盈未成功的资产  盘盈创建失败会返回assetInitData
-    let total = this.state.rowData.assets.filter((asset)=>{
-      if (asset.extensionProperties && asset.extensionProperties.assetPointCheckState && !asset.extensionProperties.assetInitData) {
-        return asset;
-      }
-    })
-    arrStatus[0] = total.length;
+    arrStatus[0] = this.state.rowData.assets.length;
     return (
       <View style={{ margin: 16, marginTop: 0, borderRadius: 12, backgroundColor: Colors.seBgContainer, padding: 16 }}>
         {this._renderInventoryTabs(arrStatus)}

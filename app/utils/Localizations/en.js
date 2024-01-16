@@ -48,7 +48,7 @@ export default {
   lang_ticket_detail_ignore_confirm: 'It cannot be operated after being ignored.Are you sure to ignore it?',
   lang_ticket_detail_ticketId: 'Work ID',
   lang_ticket_submit_invalid: 'Unable to submit, please add work log and try again',
-  lang_ticket_detail_reject_reason: 'Cause of Reverted',
+  lang_ticket_detail_reject_reason: 'Cause of Rejected',
   lang_ticket_execute_toast: 'Starting, please add work log',
   lang_ticket_submit_toast: 'Submitted Successfully',
   lang_ticket_close_toast: 'Approved and task is complete',
