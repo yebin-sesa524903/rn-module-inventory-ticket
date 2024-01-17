@@ -27,7 +27,7 @@ import {
   apiGetOssPath,
   apiHierarchyTpl,
   apiTplTree,
-  apiUploadFile,
+  apiUploadFile, customerId,
   userId,
   userName
 } from './middleware/bff';
@@ -154,7 +154,7 @@ export default class extends Component {
       }
     });
 
-    apiHierarchyTpl().then(data => {
+    apiHierarchyTpl(customerId).then(data => {
       if (isCodeOk(data.Code)) {
         this.tplH = data.Data.datas.find(item => item.name === '设备');
         ///获取id
@@ -627,7 +627,7 @@ export default class extends Component {
       'templateId': this.tplH.id,
       'createBy': userName,
       'updateBy': userName,
-      'tenantId': 1,
+      'tenantId': customerId,
       'treeType': 'fmhc',
       'iconKey': this.tplH.icon,
       'objectType': 'device',

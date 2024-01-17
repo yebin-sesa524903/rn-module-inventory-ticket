@@ -308,12 +308,12 @@ export async function apiTplTree(spid) {
 }
 
 //获取层级台账模板
-export async function apiHierarchyTpl() {
+export async function apiHierarchyTpl(customerId) {
   return await defaultFetch({
     url: `/bff/xiot/rest/getHierarchyTemplate`,
     verb: 'post',
     body: {
-      id: '1',
+      id: customerId,
       type: 'fmhc'
     }
   })
