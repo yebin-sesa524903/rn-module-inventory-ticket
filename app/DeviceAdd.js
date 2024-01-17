@@ -21,7 +21,16 @@ import { isPhoneX } from './utils';
 import Icon from './components/Icon';
 import SingleSelect from './components/assets/AssetInfoSingleSelect';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { apiAddDeviceInitData, apiGetOssPath, apiHierarchyTpl, apiTplTree, apiUploadFile, userId, userName } from './middleware/bff';
+import {
+  apiAddDeviceInitData,
+  apiGetNodeTemplateDetail,
+  apiGetOssPath,
+  apiHierarchyTpl,
+  apiTplTree,
+  apiUploadFile,
+  userId,
+  userName
+} from './middleware/bff';
 import TouchFeedback from './components/TouchFeedback';
 import ImagePicker from './components/ImagePicker';
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
@@ -143,13 +152,25 @@ export default class extends Component {
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
-      console.log('tpl tree', data);
     });
 
     apiHierarchyTpl().then(data => {
-      console.log('hierarchyTpl', data);
       if (isCodeOk(data.Code)) {
         this.tplH = data.Data.datas.find(item => item.name === '设备');
+        ///获取id
+        apiGetNodeTemplateDetail(this.tplH.id).then(data=>{
+          if (isCodeOk(data.Code)) {
+            if (data.Data && data.Data.groups){
+              if (data.Data.groups.length > 0){
+                let fields = data.Data.groups[0].fields;
+                this.setState({
+                  fieldTemplate: fields
+                })
+              }
+            }
+          }
+        });
+
       } else {
         SndAlert.alert( data.Msg || localStr('lang_add_device_api2_tpl_error'),'', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
@@ -562,8 +583,23 @@ export default class extends Component {
 
   _doBack = () => this.props.navigation.pop();
 
-  _doSubmit = () => {
+  /**
+   * 通过接口返回的值 找fieldTemplateId
+   * @param code
+   * @returns {undefined}
+   * @private
+   */
+  _findFieldTemplateId(code){
+    let id = undefined;
+    this.state.fieldTemplate.forEach((item)=>{
+      if (item.code === code){
+        id = item.id;
+      }
+    });
+    return id;
+  }
 
+  _doSubmit = () => {
     //资产名称、编号、总称、类型、型号都不能为空
     let find = Object.keys(this.state.data).find((key) => {
       let value = this.state.data[key];
@@ -603,17 +639,17 @@ export default class extends Component {
           'fieldGroupId': this.tplH.id,
           'fieldValueEntityList': [
             {
-              'fieldTemplateId': 51,
+              'fieldTemplateId': this._findFieldTemplateId('name'),
               'value': this.state.data.productName,
               'code': 'name',
             },
             {
-              'fieldTemplateId': 52,
+              'fieldTemplateId': this._findFieldTemplateId('code'),
               'value': this.state.data.ProductNum,
               'code': 'code',
             },
             {
-              'fieldTemplateId': 69,
+              'fieldTemplateId': this._findFieldTemplateId('logo'),
               'value': JSON.stringify([{
                 "key": this.state.logo.key,
                 "name": this.state.logo.name

@@ -348,6 +348,18 @@ export async function apiLoadDevicePointCheckStatus(data) {
   })
 }
 
+/**
+ * 获取取fieldTemplateId
+ * @param id
+ * @returns {Promise<unknown>}
+ */
+export async function apiGetNodeTemplateDetail(id) {
+  return await defaultFetch({
+    url: `/bff/xiot/rest/eh/getNodeTemplateDetial?id=${id}`,
+    verb: 'get',
+  })
+}
+
 //更新盘点设备状态
 export async function apiUpdateDevicePointCheckStatus(data) {
   return await defaultFetch({
