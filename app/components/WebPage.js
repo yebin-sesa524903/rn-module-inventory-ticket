@@ -49,7 +49,7 @@ export default class WebPage extends Component{
       if(this.props.doBack){
         this.props.doBack();
       }else {
-        this.props.navigator.pop();
+        this.props.navigation.pop();
       }
     }
   }

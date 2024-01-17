@@ -38,7 +38,7 @@ class ImageCategory extends Component {
 
   componentDidMount() {
     this.getPhotoTypes();
-    backHelper.init(this.props.navigator,this.props.route.id);
+    backHelper.init(this.props.navigation,this.props.route.id);
   }
 
   componentWillUnmount() {

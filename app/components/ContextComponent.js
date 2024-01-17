@@ -11,7 +11,7 @@ export default class ContextComponent extends Component {
   static childContextTypes = {
     showSpinner: PropTypes.func,
     hideHud: PropTypes.func,
-    navigator:PropTypes.object,
+    navigation:PropTypes.object,
   };
   getChildContext() {
     return {
@@ -21,7 +21,7 @@ export default class ContextComponent extends Component {
       hideHud:()=>{
         this._hud.hide();
       },
-      navigator:this.props.navigator
+      navigation:this.props.navigation
     };
   }
   render() {
@@ -36,7 +36,7 @@ export default class ContextComponent extends Component {
 
 ContextComponent.propTypes = {
   children:PropTypes.any.isRequired,
-  navigator:PropTypes.any.isRequired
+  navigation:PropTypes.any.isRequired
 }
 
 // ContextComponent.childContextTypes = {

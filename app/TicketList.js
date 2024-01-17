@@ -155,6 +155,20 @@ export default class TicketList extends Component {
   }
 
 
+  _setTicketCount (count){
+    if (this.state.selectedIndex === 0) {
+      ///未完成
+      this.setState({
+        unDoneCount: count
+      })
+    } else {
+      ///已完成
+      this.setState({
+        doneCount: count
+      })
+    }
+  }
+
   _loadTicketList() {
     this.setState({ refreshing: true, showEmpty: false, error: null })
     //处理加载中等...
@@ -179,6 +193,7 @@ export default class TicketList extends Component {
         ///处理空数据
         if (!responseObj || responseObj.list?.length === 0) {
           this.setState({ showEmpty: true, refreshing: false })
+          this._setTicketCount(0);
           return;
         }
         ///处理分页逻辑
@@ -201,17 +216,7 @@ export default class TicketList extends Component {
         this.setState({ ticketData: stateTicket, hasMore: hasMoreData, refreshing: false })
 
         ///未完成/已完成个数赋值
-        if (this.state.selectedIndex === 0) {
-          ///未完成
-          this.setState({
-            unDoneCount: responseObj.total
-          })
-        } else {
-          ///已完成
-          this.setState({
-            doneCount: responseObj.total
-          })
-        }
+        this._setTicketCount(responseObj.total);
       } else {
         //请求失败
         let update = { ticketData: [],refreshing: false, error: data.msg, showEmpty: true }
@@ -230,7 +235,7 @@ export default class TicketList extends Component {
 
   _gotoDetail = (rowData, selectIndex = 0) => {
     console.log('rowData', rowData)
-    this.props.navigator.push({
+    this.props.navigation.push('PageWarpper',{
       id: 'service_ticket_detail',
       component: TicketDetail,
       passProps: {

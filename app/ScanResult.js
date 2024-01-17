@@ -110,7 +110,7 @@ export default class extends Component {
         device.assetId
       ],
       "hierarchyId": device.locationId,
-      "pointCheckStatus": checkStatus,
+      "pointCheckStatus": checkStatus,  ///pointCheckStatus 已盘 :0  盘亏/未盘:1
     }
     apiCheckDeviceStatus(data).then(data => {
       if (data.code === '0') {
@@ -155,7 +155,7 @@ export default class extends Component {
           duration: 1000,
           position: -80,
         });
-        this.props.navigator.pop()
+        this.props.navigation.pop()
       } else {
         Toast.show(localStr('lang_scan_result_submit_error_tip'), {
           duration: 1000,
@@ -355,7 +355,7 @@ export default class extends Component {
           title={localStr('lang_scan_result_label8')}
           navIcon="back"
           onIconClicked={() => {
-            this.props.navigator.pop()
+            this.props.navigation.pop()
           }}
           actions={[]}
           color={Colors.seBrandNomarl}

@@ -22,7 +22,7 @@ import { SwipeRow } from 'react-native-swipe-list-view';
 
 export default class List extends Component{
   static contextTypes = {
-    navigator:PropTypes.object
+    navigation:PropTypes.object
   }
   constructor(props){
     super(props);

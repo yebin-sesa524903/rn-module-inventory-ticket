@@ -8,7 +8,7 @@ import TouchFeedback from './TouchFeedback.js';
 
 export default class ClickableRow extends Component {
   static contextTypes = {
-    navigator:PropTypes.object
+    navigation:PropTypes.object
   }
   constructor(props){
     super(props);
@@ -30,9 +30,9 @@ export default class ClickableRow extends Component {
     });
   }
   _bindEvent(){
-    var navigator = this.context.navigator;
-    // console.warn('navigator',navigator);
-    if (navigator) {
+    var navigation = this.context.navigation;
+    // console.warn('navigation',navigation);
+    if (navigation) {
       var callback = (event) => {
         // console.warn('route',event.data.route,this.props.currentRouteId);
         if(!event.data.route || !event.data.route.id || event.data.route.id === 'main'|| (event.data.route.id === this.props.currentRouteId)){
@@ -40,7 +40,7 @@ export default class ClickableRow extends Component {
         }
       };
       // Observe focus change events from the owner.
-      this._listener= navigator.navigationContext.addListener('didfocus', callback);
+      this._listener= navigation.navigationContext.addListener('didfocus', callback);
 
     }
   }

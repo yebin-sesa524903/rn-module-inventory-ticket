@@ -76,7 +76,7 @@ export default class CameraView extends Component{
 }
 
 CameraView.propTypes = {
-  navigator:PropTypes.object,
+  navigation:PropTypes.object,
   isFetching:PropTypes.bool.isRequired,
   openCamera:PropTypes.bool.isRequired,
   barCodeComplete:PropTypes.func.isRequired,

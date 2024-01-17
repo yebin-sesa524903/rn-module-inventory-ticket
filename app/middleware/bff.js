@@ -54,7 +54,8 @@ let defaultFetch = async function (options) {
     } else {
       body = {
         ...options.body,
-        sysId, userId
+        sysId, userId,
+        customerId
       }
     }
 
@@ -307,12 +308,12 @@ export async function apiTplTree(spid) {
 }
 
 //获取层级台账模板
-export async function apiHierarchyTpl() {
+export async function apiHierarchyTpl(customerId) {
   return await defaultFetch({
     url: `/bff/xiot/rest/getHierarchyTemplate`,
     verb: 'post',
     body: {
-      id: '1',
+      id: customerId,
       type: 'fmhc'
     }
   })
@@ -344,6 +345,18 @@ export async function apiLoadDevicePointCheckStatus(data) {
     url: `/bff/eh/rest/hierarchyInstantiation/getAssetStatus`,
     verb: 'post',
     body: data
+  })
+}
+
+/**
+ * 获取取fieldTemplateId
+ * @param id
+ * @returns {Promise<unknown>}
+ */
+export async function apiGetNodeTemplateDetail(id) {
+  return await defaultFetch({
+    url: `/bff/xiot/rest/eh/getNodeTemplateDetial?id=${id}`,
+    verb: 'get',
   })
 }
 

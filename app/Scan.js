@@ -107,7 +107,7 @@ export default class Scan extends Component {
     }
   }
   _onBackClick() {
-    this.props.navigator.pop();
+    this.props.navigation.pop();
   }
 
   _delayZoom() {
@@ -162,8 +162,8 @@ export default class Scan extends Component {
         }
       });
       let that = this;
-      var navigator = this.props.navigator;
-      if (navigator) {
+      var navigation = this.props.navigation;
+      if (navigation) {
         let callback = (event) => {
           if (event.data.route && event.data.route.id && event.data.route.id === this.props.route.id) {
             InteractionManager.runAfterInteractions(() => {
@@ -179,8 +179,8 @@ export default class Scan extends Component {
             })
           }
         };
-        if (navigator.navigationContext && navigator.navigationContext.addListener)
-          this._listener = navigator.navigationContext.addListener('willfocus', callback);
+        if (navigation.navigationContext && navigation.navigationContext.addListener)
+          this._listener = navigation.navigationContext.addListener('willfocus', callback);
 
       }
     });
@@ -243,7 +243,7 @@ export default class Scan extends Component {
           }}
           onBack={() => {
             this._mounted(false, () => {
-              this.props.navigator.pop()
+              this.props.navigation.pop()
             })
           }}
           onBarCodeRead={(data) => this._getScanData(data?.data)} />
@@ -256,7 +256,7 @@ export default class Scan extends Component {
           </Text>
         </View>
         <TouchableOpacity style={{ position: 'absolute', left: 22, top: 44 }}
-          onPress={() => this.props.navigator.pop()}
+          onPress={() => this.props.navigation.pop()}
         >
           <Image source={require('./images/close/close.png')} style={{ width: 28, height: 28, }} />
         </TouchableOpacity>

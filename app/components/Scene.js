@@ -22,7 +22,7 @@ export default class Scene extends Component {
       }
     };
   }
-  _renderScene(route, navigator) {
+  _renderScene(route, navigation) {
     const Component = route.component;
     var barStyle = 'default';
     if(route.barStyle){
@@ -45,7 +45,7 @@ export default class Scene extends Component {
     }
   }
   getNavigator(){
-    // console.warn('getNavigator',this.refs.navigator.resetTo);
+    // console.warn('getNavigator',this.refs.navigation.resetTo);
     return this._navigator;
   }
   render() {
