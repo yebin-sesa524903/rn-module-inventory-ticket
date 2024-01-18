@@ -41,7 +41,7 @@ export default class extends Component {
     //这里根据device进行初始化
     let info = props.device.extensionProperties;
     let inventoryType = 1;
-    let tags = [{ tag: localStr('lang_scan_result_page_tag1'), sel: false }, { tag: localStr('lang_scan_result_page_tag2'), sel: false }];
+    let tags = [{ tag: localStr('lang_scan_result_page_tag1'), tagEn: 'Fault', sel: false }, { tag: localStr('lang_scan_result_page_tag2'), tagEn: 'Marked', sel: false }];
     let remark = '';
     let imgUrl = null;
     if (info) {
@@ -51,7 +51,7 @@ export default class extends Component {
       if (info.assetRemark) remark = info.assetRemark;
       if (Array.isArray(info.assetTags) && info.assetTags.length > 0) {
         tags.forEach(tag => {
-          if (info.assetTags.includes(tag.tag)) tag.sel = true;
+          if (info.assetTags.includes(tag.tag) || info.assetTags.includes(tag.tagEn)) tag.sel = true;
         })
       }
 
@@ -131,7 +131,12 @@ export default class extends Component {
     let arrTags = [];
     this.state.tags.map(item => {
       if (item.sel === true) {
-        arrTags.push(item.tag);
+        if (item.tag.indexOf('故障') !== -1){
+          arrTags.push('Fault');
+        }
+        if (item.tag.indexOf('待清理') !== -1){
+          arrTags.push('Marked');
+        }
       }
     })
     ///修改设备状态
@@ -364,7 +369,7 @@ export default class extends Component {
         />
         <View style={{
           flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 16,
-          borderTopWidth: 1, paddingTop: 10, backgroundColor: Colors.seBgContainer, borderRadius: 12, margin: 16, padding: 16, marginBottom: 0,
+          borderTopWidth: 1, paddingTop: 10, backgroundColor: Colors.seBgContainer, borderRadius: 12, margin: 16, padding: 16, marginBottom: 0, borderColor: Colors.seTextInverse
         }}>
           <CacheImage imageKey={this.state.imgUrl} borderWidth={0} defaultImgPath={isDarkMode() ? require('./images/building_default/placeholder.png') : require('./images/building_default/building.png')} width={96} height={54} />
           <View style={{ marginLeft: 16, flex: 1 }}>

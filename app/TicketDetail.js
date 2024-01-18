@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 import Toolbar from './components/Toolbar';
-// import Share from "react-native-share";
 import { GRAY, BLACK, TAB, TAB_BORDER, GREEN, TICKET_STATUS, LINE, LIST_BG, ADDICONCOLOR } from './styles/color';
 import moment from 'moment';
 
@@ -28,9 +27,6 @@ import ScanResult from "./ScanResult";
 
 import SchActionSheet from './components/actionsheet/SchActionSheet';
 import CommonDialog from './components/actionsheet/CommonActionSheet';
-// import AssetsText from '../AssetsText';
-// import ViewShot from "react-native-view-shot";
-// import CameraRoll from "@react-native-community/cameraroll";
 
 let ViewShot = View;
 
