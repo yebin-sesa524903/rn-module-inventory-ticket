@@ -16,6 +16,7 @@ import ScanResult from "./ScanResult";
 import { openCamera } from 'react-native-image-crop-picker';
 import SndAlert from "../../../app/utils/components/SndAlert";
 import Colors, {isDarkMode} from "../../../app/utils/const/Colors";
+import ViewFinder from '../app/components/ViewFinder.js';
 
 
 export default class Scan extends Component {
@@ -162,7 +163,7 @@ export default class Scan extends Component {
         }
       });
       let that = this;
-      var navigation = this.props.navigation;
+      let navigation = this.props.navigation;
       if (navigation) {
         let callback = (event) => {
           if (event.data.route && event.data.route.id && event.data.route.id === this.props.route.id) {
@@ -179,8 +180,8 @@ export default class Scan extends Component {
             })
           }
         };
-        if (navigation.navigationContext && navigation.navigationContext.addListener)
-          this._listener = navigation.navigationContext.addListener('willfocus', callback);
+        if (navigation && navigation.addListener)
+          this._listener = navigation.addListener('willFocus', callback);
 
       }
     });
@@ -226,27 +227,28 @@ export default class Scan extends Component {
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
-        <ScanView
-          isFetching={this.props.isFetching}
-          hidden={this.state.hidden}
-          hasCameraAuth={this.state.hasCameraAuth}
-          openCamera={this.state.openCamera}
-          scanText={this.props.scanText}
-          scanTitle={this.props.scanTitle}
-          isFromPanelAdd={this.props.isFromPanelAdd}
-          modalShow={this.state.modalShow}
-          zoom={this.state.zoom}
-          flashMode={this.state.flashMode}
-          onOncancelInputDialog={() => {
-          }}
-          onConfirmInputDialog={(name) => {
-          }}
-          onBack={() => {
-            this._mounted(false, () => {
-              this.props.navigation.pop()
-            })
-          }}
-          onBarCodeRead={(data) => this._getScanData(data?.data)} />
+        {
+          this.state.hasCameraAuth ?
+              <ScanView
+                  hidden={this.state.hidden}
+                  hasCameraAuth={this.state.hasCameraAuth}
+                  openCamera={this.state.openCamera}
+                  zoom={this.state.zoom}
+                  flashMode={this.state.flashMode}
+                  onOncancelInputDialog={() => {
+                  }}
+                  onConfirmInputDialog={(name) => {
+                  }}
+                  onBack={() => {
+                    this._mounted(false, () => {
+                      this.props.navigation.pop()
+                    })
+                  }}
+                  onBarCodeRead={(data) => this._getScanData(data?.data)} />
+              : <ViewFinder/>
+
+        }
+
         <View style={{ height: 160, backgroundColor: Colors.seBgContainer, alignItems: 'center', justifyContent: 'center' }}>
           <TouchableOpacity onPress={() => this._didSwitchLight()}>
             <Image style={{ width: 56, height: 56,}} source={this._getLightIcon()}/>
