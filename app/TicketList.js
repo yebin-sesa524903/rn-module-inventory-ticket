@@ -9,13 +9,12 @@ import {
   Text,
   View
 } from "react-native";
-import { GREEN } from "./styles/color";
 import TicketRow from "./TicketRow";
 import { localStr } from "./utils/Localizations/localization";
 import TicketDetail from "./TicketDetail";
 import {
   apiAppTicketList,
-  apiHierarchyList, customerId,
+  customerId,
 } from "./middleware/bff";
 
 import { isPhoneX } from "./utils";
@@ -126,32 +125,20 @@ export default class TicketList extends Component {
   }
 
   _getLocationInfo(hierarchies, locationId) {
-    let locationMsg = '';
-    let parentName = '';
-    let parentParentName = '';
-    let parentId = 0;
-    for (let hierarchy of hierarchies) {
-      if (locationId == hierarchy.id) {
-        locationMsg = hierarchy.name;
-        parentId = hierarchy.parentId;
-        break;
+    let locations = [];
+    let findParent = function (id) {
+      for (let hierarchy of hierarchies) {
+        if (hierarchy.id === id){
+          locations.push(hierarchy.name);
+          if (hierarchy.parentId !== undefined){
+            findParent(hierarchy.parentId);
+          }
+          break
+        }
       }
     }
-    let parParentId = 0;
-    for (let hierarchy of hierarchies) {
-      if (parentId == hierarchy.id) {
-        parentName = hierarchy.name;
-        parParentId = hierarchy.parentId;
-        break;
-      }
-    }
-    for (let hierarchy of hierarchies) {
-      if (parParentId == hierarchy.id) {
-        parentParentName = hierarchy.name;
-        break;
-      }
-    }
-    return parentParentName + '/' + parentName + '/' + locationMsg;
+    findParent(locationId);
+    return locations.reverse().join('/');
   }
 
 
