@@ -606,7 +606,7 @@ export default class TicketDetail extends Component {
       let arrTags = item.extensionProperties?.assetTags;
       // console.warn("=========", index, arrTags, item.assetName);
       //待清理资产
-      if (arrTags && arrTags.includes(localStr('lang_scan_result_page_tag2')) && isWillClearCheck) {
+      if (arrTags && (arrTags.includes(localStr('lang_scan_result_page_tag2')) || arrTags.includes('Marked')) && isWillClearCheck) {
         this._updateDevicePandianStatus(item);
         arrScrapDevices.push(item);
       }

@@ -131,10 +131,10 @@ export default class extends Component {
     let arrTags = [];
     this.state.tags.map(item => {
       if (item.sel === true) {
-        if (item.tag.indexOf('故障') !== -1){
+        if (item.tag.indexOf('故障') !== -1 || item.tag.indexOf('Fault') !== -1){
           arrTags.push('Fault');
         }
-        if (item.tag.indexOf('待清理') !== -1){
+        if (item.tag.indexOf('待清理') !== -1 || item.tag.indexOf('Marked') !== -1){
           arrTags.push('Marked');
         }
       }
