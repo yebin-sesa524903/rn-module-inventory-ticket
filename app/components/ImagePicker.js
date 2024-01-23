@@ -1,5 +1,5 @@
 'use strict';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -22,12 +22,12 @@ import RNFetchBlob from 'react-native-fetch-blob';
 import CameraRollPicker from './antd/image-picker/CameraRollPicker';
 import ImageItem from './antd/image-picker/ImageItem';
 import CameraRoll from "@react-native-community/cameraroll";
-import Permissions, {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import Permissions, { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import Loading from './Loading';
 
-var {ImagePickerManager} = NativeModules;
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {localStr} from "../utils/Localizations/localization";
+var { ImagePickerManager } = NativeModules;
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { localStr } from "../utils/Localizations/localization";
 import SndAlert from "../../../../app/utils/components/SndAlert";
 import Colors from "../../../../app/utils/const/Colors";
 
@@ -40,95 +40,103 @@ export default class ImagePicker extends Component {
   // static defaultProps = {
   //     max:100,
   // }
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state = {chosenImages:[]};
-    this.arrImages=[];
+    this.state = { chosenImages: [] };
+    this.arrImages = [];
   }
   componentWillMount() {
     let { width } = Dimensions.get('window');
-    var imageMargin=4;
-    var imagesPerRow=3;
+    var imageMargin = 4;
+    var imagesPerRow = 3;
     this._imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
   }
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.groupName!==this.props.groupName){
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.groupName !== this.props.groupName) {
       this.setState({
-        chosenImages:[]
+        chosenImages: []
       })
     }
   }
 
-  _imagePressed(image,selected){
+  _imagePressed(image, selected) {
     var ret = this.state.chosenImages;
-    var index = ret.findIndex((item)=> item.uri === image.uri);
-    if(index >= 0){
-      ret.splice(index,1);
+    var index = ret.findIndex((item) => item.uri === image.uri);
+    if (index >= 0) {
+      ret.splice(index, 1);
     }
     else {
-      if(ret.length >= this.props.max){
+      if (ret.length >= this.props.max) {
         return;
       }
       ret.push(image);
     }
-    this.setState({chosenImages:ret.slice()});
+    this.setState({ chosenImages: ret.slice() });
   }
-  static async _takePhoto (cbDone){
-      let lastClickTakePhoto = this._lastClickTakePhoto || 0;
-      if(Date.now() - lastClickTakePhoto < 1500) {
-        return;
-      }
-      this._lastClickTakePhoto = Date.now();
-      let cameraPermission = Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
-      try {
-          let response = await check(cameraPermission);
-          if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
-              response = await request(cameraPermission);
-              if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
-                  SndAlert.alert(localStr('lang_image_picker_accept_msg'),
-                  '',
-                  [
-                    {text: localStr('lang_image_picker_cancel'), onPress: () => {
-                      return;
-                    }},
-                    {text: localStr('lang_image_picker_accept'), onPress: () => {
-                      if (Permissions.openSettings()) {
-                        Permissions.openSettings();
-                      }
-                      return;
-                    }}
-                  ]
-                )
-                return;
+  static async _takePhoto(cbDone) {
+    let lastClickTakePhoto = this._lastClickTakePhoto || 0;
+    if (Date.now() - lastClickTakePhoto < 1500) {
+      return;
+    }
+    this._lastClickTakePhoto = Date.now();
+    let cameraPermission = Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
+    try {
+      let response = await check(cameraPermission);
+      if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
+        response = await request(cameraPermission);
+        if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
+          SndAlert.alert(localStr('lang_image_picker_accept_msg'),
+            '',
+            [
+              {
+                text: localStr('lang_image_picker_cancel'), onPress: () => {
+                  return;
+                }
+              },
+              {
+                text: localStr('lang_image_picker_accept'), onPress: () => {
+                  if (Permissions.openSettings()) {
+                    Permissions.openSettings();
+                  }
+                  return;
+                }
               }
-          }
-          //如果是android，为了兼容低版本，还需要判断权限
-        if (Platform.OS === 'android') {
-          response = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            ]
+          )
+          return;
+        }
+      }
+      //如果是android，为了兼容低版本，还需要判断权限
+      if (Platform.OS === 'android') {
+        response = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+        if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
+          response = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
           if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
-            response = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
-            if (!(response === RESULTS.GRANTED || response === RESULTS.LIMITED)) {
-             SndAlert.alert( localStr('lang_image_picker_access_storage'),'',
-                [
-                  {text: localStr('lang_image_picker_cancel'), onPress: () => {
-                      return;
-                    }},
-                  {text: localStr('lang_image_picker_accept'), onPress: () => {
-                      if (Permissions.openSettings()) {
-                        Permissions.openSettings();
-                      }
-                      return;
-                    }}
-                ]
-              )
-              return;
-            }
+            SndAlert.alert(localStr('lang_image_picker_access_storage'), '',
+              [
+                {
+                  text: localStr('lang_image_picker_cancel'), onPress: () => {
+                    return;
+                  }
+                },
+                {
+                  text: localStr('lang_image_picker_accept'), onPress: () => {
+                    if (Permissions.openSettings()) {
+                      Permissions.openSettings();
+                    }
+                    return;
+                  }
+                }
+              ]
+            )
+            return;
           }
         }
-      }catch (err) {
-        return;
       }
+    } catch (err) {
+      return;
+    }
 
     let options = {
       title: '', // specify null or empty string to remove the title
@@ -143,11 +151,11 @@ export default class ImagePicker extends Component {
       angle: 0, // android only, photos only
       allowsEditing: false,
       noData: true,
-      includeBase64:false,
-      maxHeight:1920,
+      includeBase64: false,
+      maxHeight: 1920,
       maxWidth: 1080,
-      saveToPhotos:true,
-      durationLimit:10,
+      saveToPhotos: true,
+      durationLimit: 10,
 
     };
     launchCamera(options, (response) => {
@@ -167,24 +175,24 @@ export default class ImagePicker extends Component {
 
         // var fileName=fileHelper.getFileNameFromFilePath(response.uri);
         // console.warn('fileName..',fileName);
-        var fileName='';
+        var fileName = '';
         // uri (on iOS)
         var source;
-        if(Platform.OS === 'ios'){
-          source = {filename:response.fileName || `${Date.now()}.jpg`,uri: response.uri.replace('file://', ''), isStatic: true};
+        if (Platform.OS === 'ios') {
+          source = { filename: response.fileName || `${Date.now()}.jpg`, uri: response.uri.replace('file://', ''), isStatic: true };
           CameraRoll.saveToCameraRoll(source.uri);
           // this.props.done([source]);
           cbDone([source]);
         }
         else {
-          RNFetchBlob.fs.stat(response.uri).then((fileData)=>{
-            source = {name:fileName,uri: response.uri, isStatic: true, filename:fileData.filename};
+          RNFetchBlob.fs.stat(response.uri).then((fileData) => {
+            source = { name: fileName, uri: response.uri, isStatic: true, filename: fileData.filename };
             CameraRoll.saveToCameraRoll(source.uri);
             // this.props.done([source]);
             cbDone([source]);
-          }).catch(err=>{
-              console.warn(err);
-              source = {name:fileName,uri: response.uri, isStatic: true, filename:response.filename};
+          }).catch(err => {
+            console.warn(err);
+            source = { name: fileName, uri: response.uri, isStatic: true, filename: response.filename };
             cbDone([source]);
           });
         }
@@ -192,24 +200,23 @@ export default class ImagePicker extends Component {
     });
   }
 
-  _takeFinish(imgs){
-    if(this.state.chosenImages>=this.props.max){
+  _takeFinish(imgs) {
+    if (this.state.chosenImages >= this.props.max) {
       return;
     }
     this.props.done(imgs);
   }
 
-  async _finishSelectImages()
-  {
-    if(Platform.OS !== 'ios'){
+  async _finishSelectImages() {
+    if (Platform.OS !== 'ios') {
       try {
-        const imagesPromise=this.state.chosenImages.map((item,index)=>{
+        const imagesPromise = this.state.chosenImages.map((item, index) => {
           return RNFetchBlob.fs.stat(item.uri);
         });
-        const imagesPaths=await Promise.all(imagesPromise);
-        this.state.chosenImages.forEach((item,index)=>{
-          const filename=imagesPaths[index].filename;
-          item.filename=filename;
+        const imagesPaths = await Promise.all(imagesPromise);
+        this.state.chosenImages.forEach((item, index) => {
+          const filename = imagesPaths[index].filename;
+          item.filename = filename;
         });
       } catch (e) {
       } finally {
@@ -217,40 +224,40 @@ export default class ImagePicker extends Component {
     }
     this.props.done(this.state.chosenImages);
   }
-  _getToolbar(){
+  _getToolbar() {
     var title = localStr('lang_image_picker_title');//this.props.album;//'图片';
-    if(this.state.chosenImages.length > 0){
+    if (this.state.chosenImages.length > 0) {
       title = `${title}（${this.state.chosenImages.length}/${this.props.max}）`;
     }
     return (
       <Toolbar title={title}
         navIcon="back"
         actions={[{
-          title:localStr('lang_toolbar_ok'),
+          title: localStr('lang_toolbar_ok'),
           show: 'always', showWithText: true
         }]}
         color={Colors.seBrandNomarl}
         borderColor={Colors.seBrandNomarl}
         // titleClick={()=>{this.props.titleClick()}}
-        onIconClicked={()=>this.props.onBack()}
-        onActionSelected={[()=>{
+        onIconClicked={() => this.props.onBack()}
+        onActionSelected={[() => {
           this._finishSelectImages();
         }]}
       />
     )
   }
   componentDidMount() {
-    if(Platform.OS === 'android'){
+    if (Platform.OS === 'android') {
       InteractionManager.runAfterInteractions(() => {
         this.requestExternalStorageAccess();
       });
-    }else {
+    } else {
       this.requestIOSPhotoPermission();
     }
   }
 
   async requestIOSPhotoPermission() {
-    try{
+    try {
       let res = check(PERMISSIONS.IOS.PHOTO_LIBRARY);
       if (!(res === RESULTS.GRANTED || res === RESULTS.LIMITED)) {
         res = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
@@ -259,20 +266,24 @@ export default class ImagePicker extends Component {
             localStr('lang_image_picker_access_photos'),
             '',
             [
-              {text: localStr('lang_image_picker_cancel'), onPress: () => {
-                }},
-              {text: localStr('lang_image_picker_accept'), onPress: () => {
-                if (Permissions.openSettings()) {
-                    Permissions.openSettings();
+              {
+                text: localStr('lang_image_picker_cancel'), onPress: () => {
                 }
-              }}
+              },
+              {
+                text: localStr('lang_image_picker_accept'), onPress: () => {
+                  if (Permissions.openSettings()) {
+                    Permissions.openSettings();
+                  }
+                }
+              }
             ]
           )
         }
       }
 
-    }catch (err) {
-        console.warn('check ios photo:'+err);
+    } catch (err) {
+      console.warn('check ios photo:' + err);
     }
 
   }
@@ -289,13 +300,17 @@ export default class ImagePicker extends Component {
           localStr('lang_image_picker_read_storage'),
           '',
           [
-            {text: localStr('lang_image_picker_cancel'), onPress: () => {
-            }},
-            {text: localStr('lang_image_picker_accept'), onPress: () => {
-              if (Permissions.openSettings()) {
-                Permissions.openSettings();
+            {
+              text: localStr('lang_image_picker_cancel'), onPress: () => {
               }
-            }}
+            },
+            {
+              text: localStr('lang_image_picker_accept'), onPress: () => {
+                if (Permissions.openSettings()) {
+                  Permissions.openSettings();
+                }
+              }
+            }
           ],
           { cancelable: false }
         )
@@ -315,7 +330,7 @@ export default class ImagePicker extends Component {
     const { width, height } = Dimensions.get('window');
     return (
       <View style={{
-          flex:1,height: height*0.1, justifyContent: 'center', alignItems: 'center'
+        flex: 1, height: height * 0.1, justifyContent: 'center', alignItems: 'center'
       }}
       >
         <Text style={{}}>
@@ -329,10 +344,10 @@ export default class ImagePicker extends Component {
     const { width, height } = Dimensions.get('window');
     return (
       <View style={{
-          flex:1,height: height*0.1, justifyContent: 'center', alignItems: 'center'
+        flex: 1, height: height * 0.1, justifyContent: 'center', alignItems: 'center'
       }}
       >
-        <Loading/>
+        <Loading />
       </View>
     )
   }
@@ -341,10 +356,10 @@ export default class ImagePicker extends Component {
     const { width, height } = Dimensions.get('window');
     return (
       <View style={{
-          flex:1,height: height*0.1, justifyContent: 'center', alignItems: 'center'
+        flex: 1, height: height * 0.1, justifyContent: 'center', alignItems: 'center'
       }}
       >
-        <Loading/>
+        <Loading />
       </View>
     )
   }
@@ -403,13 +418,13 @@ export default class ImagePicker extends Component {
   // }
   renderItem = (item, index, separator) => {
     if (item.isAddPic) {
-      var whStyle = {width:this._imageSize,height:this._imageSize};
+      var whStyle = { width: this._imageSize, height: this._imageSize };
       return (
-        <View key={'add'} style={[styles.addStyle,whStyle]}>
-          <TouchFeedback onPress={()=>ImagePicker._takePhoto((imgs)=>this._takeFinish(imgs))} style={{flex:1}}>
-            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-              <Icon type="photo" color={'white'} size={whStyle.width/3} />
-              <Text style={{color:'white',marginTop:6}}>{localStr('lang_image_take_photo')}</Text>
+        <View key={'add'} style={[styles.addStyle, whStyle]}>
+          <TouchFeedback onPress={() => ImagePicker._takePhoto((imgs) => this._takeFinish(imgs))} style={{ flex: 1 }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Icon type="photo" color={'white'} size={whStyle.width / 3} />
+              <Text style={{ color: 'white', marginTop: 6 }}>{localStr('lang_image_take_photo')}</Text>
             </View>
           </TouchFeedback>
         </View>
@@ -432,20 +447,21 @@ export default class ImagePicker extends Component {
         imageMargin={0}
         // selectedMarker={selectedMarker}
         imagesPerRow={3}
-        // containerWidth={containerWidth}
+      // containerWidth={containerWidth}
       />
     )
   }
   render() {
-    var whStyle = {width:this._imageSize,height:this._imageSize,
-      margin:4,
-      marginLeft:0,
-      marginTop:0,
+    var whStyle = {
+      width: this._imageSize, height: this._imageSize,
+      margin: 4,
+      marginLeft: 0,
+      marginTop: 0,
       backgroundColor: Colors.seBgContainer
     };
-    if(!this.state.rollPermissionExists&&Platform.OS==='android'){
+    if (!this.state.rollPermissionExists && Platform.OS === 'android') {
       return (
-        <View style={{flex:1}}>
+        <View style={{ flex: 1 }}>
           {this._getToolbar()}
           {this.renderPaginationWaitingView()}
         </View>
@@ -453,23 +469,23 @@ export default class ImagePicker extends Component {
     }
 
     return (
-      <View style={{flex:1}}>
+      <View style={{ flex: 1 }}>
         {this._getToolbar()}
         <CameraRollPicker
-            backgroundColor={Colors.seBgContainer}
-          loadingText={{loading:localStr('lang_loading_waiting')}}
-          groupName={Platform.OS==='ios'?'All Photos':undefined}
+          backgroundColor={Colors.seBgContainer}
+          loadingText={{ loading: localStr('lang_loading_waiting') }}
+          groupName={Platform.OS === 'ios' ? 'All Photos' : undefined}
           selected={this.state.chosenImages}
-          callback={(selected, image)=>{
-            this._imagePressed(image,selected);
+          callback={(selected, image) => {
+            this._imagePressed(image, selected);
           }}
-          getCaptureView={()=>{
+          getCaptureView={() => {
             return (
-              <View key={'add'} style={[styles.addStyle,whStyle]}>
-                <TouchFeedback onPress={()=>ImagePicker._takePhoto((imgs)=>this._takeFinish(imgs))} style={{flex:1}}>
-                  <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                    <Icon type="photo" color={'white'} size={whStyle.width/3} />
-                    <Text style={{color:Colors.seTextInverse,marginTop:6}}>{localStr('lang_image_take_photo')}</Text>
+              <View key={'add'} style={[styles.addStyle, whStyle]}>
+                <TouchFeedback onPress={() => ImagePicker._takePhoto((imgs) => this._takeFinish(imgs))} style={{ flex: 1 }}>
+                  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Icon type="photo" color={Colors.seTextTitle} size={whStyle.width / 3} />
+                    <Text style={{ color: Colors.seTextTitle, marginTop: 6 }}>{localStr('lang_image_take_photo')}</Text>
                   </View>
                 </TouchFeedback>
               </View>
@@ -482,28 +498,28 @@ export default class ImagePicker extends Component {
 }
 
 ImagePicker.propTypes = {
-  onBack:PropTypes.func,
-  done:PropTypes.func,
-  max:PropTypes.number,
+  onBack: PropTypes.func,
+  done: PropTypes.func,
+  max: PropTypes.number,
 }
 ImagePicker.defaultProps = {
-  max:100,
+  max: 100,
 }
 
 const styles = StyleSheet.create({
-  scrollView:{
-    flex:1,
+  scrollView: {
+    flex: 1,
 
   },
-  content:{
-    flexWrap:'wrap',
-    flexDirection:'row'
+  content: {
+    flexWrap: 'wrap',
+    flexDirection: 'row'
   },
 
 
 
   addStyle: {
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
