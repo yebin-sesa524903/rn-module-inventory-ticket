@@ -15,7 +15,7 @@ import Permissions, { PERMISSIONS, RESULTS, request, check } from 'react-native-
 import ScanResult from "./ScanResult";
 import { openCamera } from 'react-native-image-crop-picker';
 import SndAlert from "../../../app/utils/components/SndAlert";
-import Colors, {isDarkMode} from "../../../app/utils/const/Colors";
+import Colors, { isDarkMode } from "../../../app/utils/const/Colors";
 import ViewFinder from '../app/components/ViewFinder.js';
 
 
@@ -126,7 +126,7 @@ export default class Scan extends Component {
   componentDidMount() {
     // console.warn('scan load')
     // setTimeout(() => {
-    //   this._getScanData('{"DeviceId":192,"DeviceName":"制冰机"}');
+    //   this._getScanData('{"DeviceId":471,"DeviceName":"device-jo3"}');
     // }, 1000);
 
     InteractionManager.runAfterInteractions(() => {
@@ -166,12 +166,13 @@ export default class Scan extends Component {
       let navigation = this.props.navigation;
       if (navigation) {
         let callback = (event) => {
-          if (event.data.route && event.data.route.id && event.data.route.id === this.props.route.id) {
+          console.log('event', event, this.props);
+          if (event.state.params && event.state.params.id && event.state.params.id === this.props.route.id) {
             InteractionManager.runAfterInteractions(() => {
               this._mounted(true, () => this.setState({ hidden: false }));
             })
           }
-          if (event.data.route && event.data.route.id && event.data.route.id !== this.props.route.id) {
+          if (event.state.params && event.state.params.id && event.state.params.id !== this.props.route.id) {
             //导航切换到其他页面，关闭
             InteractionManager.runAfterInteractions(() => {
               that.setState({
@@ -211,15 +212,15 @@ export default class Scan extends Component {
   _getLightText(flashMode) {
     let lan = getLanguage();
     //{`${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')}`}</Text>
-    if(lan === 'en')
+    if (lan === 'en')
       return `${localStr('lang_scan_page_light')} ${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}`
     return `${this.state.flashMode === 'on' ? localStr('lang_scan_page_light_off') : localStr('lang_scan_page_light_on')}${localStr('lang_scan_page_light')} `
   }
 
-  _getLightIcon (){
-    if (isDarkMode()){
+  _getLightIcon() {
+    if (isDarkMode()) {
       return this.state.flashMode === 'on' ? require('./images/scan_light/light_on_dark.png') : require('./images/scan_light/light_off_dark.png')
-    }else {
+    } else {
       return this.state.flashMode === 'on' ? require('./images/scan_light/light_on_light.png') : require('./images/scan_light/light_off_light.png')
     }
   }
@@ -229,29 +230,29 @@ export default class Scan extends Component {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {
           this.state.hasCameraAuth ?
-              <ScanView
-                  hidden={this.state.hidden}
-                  hasCameraAuth={this.state.hasCameraAuth}
-                  openCamera={this.state.openCamera}
-                  zoom={this.state.zoom}
-                  flashMode={this.state.flashMode}
-                  onOncancelInputDialog={() => {
-                  }}
-                  onConfirmInputDialog={(name) => {
-                  }}
-                  onBack={() => {
-                    this._mounted(false, () => {
-                      this.props.navigation.pop()
-                    })
-                  }}
-                  onBarCodeRead={(data) => this._getScanData(data?.data)} />
-              : <ViewFinder/>
+            <ScanView
+              hidden={this.state.hidden}
+              hasCameraAuth={this.state.hasCameraAuth}
+              openCamera={this.state.openCamera}
+              zoom={this.state.zoom}
+              flashMode={this.state.flashMode}
+              onOncancelInputDialog={() => {
+              }}
+              onConfirmInputDialog={(name) => {
+              }}
+              onBack={() => {
+                this._mounted(false, () => {
+                  this.props.navigation.pop()
+                })
+              }}
+              onBarCodeRead={(data) => this._getScanData(data?.data)} />
+            : <ViewFinder />
 
         }
 
         <View style={{ height: 160, backgroundColor: Colors.seBgContainer, alignItems: 'center', justifyContent: 'center' }}>
           <TouchableOpacity onPress={() => this._didSwitchLight()}>
-            <Image style={{ width: 56, height: 56,}} source={this._getLightIcon()}/>
+            <Image style={{ width: 56, height: 56, }} source={this._getLightIcon()} />
           </TouchableOpacity>
           <Text style={{ color: Colors.seTextPrimary, fontSize: 16, marginTop: 12 }}>
             {this._getLightText(this.state.flashMode)}
