@@ -39,7 +39,7 @@ const STATE_CLOSED = 50
 const STATE_REJECTED = 40
 const REJECT_OPERATION_TYPE = 34
 
-import {getLanguage, localStr} from "./utils/Localizations/localization";
+import { getLanguage, localStr } from "./utils/Localizations/localization";
 import NetworkImage from './components/NetworkImage'
 import {
   apiCheckDeviceStatus,
@@ -71,7 +71,7 @@ import privilegeHelper, { CodeMap } from "./utils/privilegeHelper";
 import Scan from "./Scan";
 import DeviceAdd from "./DeviceAdd";
 import { Toast } from '@ant-design/react-native';
-import Colors, {AppearanceMode, isDarkMode} from "../../../app/utils/const/Colors";
+import Colors, { AppearanceMode, isDarkMode } from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
 // import Share from "react-native-share";
 
@@ -84,20 +84,20 @@ const DEVICE_STATUS_ICON = {
   4: require('./images/device_status/device_new.png'),
 }
 
-const DEVICE_STATUS_ICON2 = ()=>{
+const DEVICE_STATUS_ICON2 = () => {
   return {
-    dark_loss_zh:require('./images/device_status/pk-Dark-cn.png'),
-    dark_loss_en:require('./images/device_status/pk-Dark-en.png'),
-    light_loss_zh:require('./images/device_status/pk-Light-cn.png'),
-    light_loss_en:require('./images/device_status/pk-Light-en.png'),
-    dark_gain_zh:require('./images/device_status/py-Dark-cn.png'),
-    dark_gain_en:require('./images/device_status/py-Dark-en.png'),
-    light_gain_zh:require('./images/device_status/py-Light-cn.png'),
-    light_gain_en:require('./images/device_status/py-Light-en.png'),
-    dark_checked_zh:require('./images/device_status/yp-Dark-cn.png'),
-    dark_checked_en:require('./images/device_status/yp-Dark-en.png'),
-    light_checked_zh:require('./images/device_status/yp-Light-cn.png'),
-    light_checked_en:require('./images/device_status/yp-Light-en.png'),
+    dark_loss_zh: require('./images/device_status/pk-Dark-cn.png'),
+    dark_loss_en: require('./images/device_status/pk-Dark-en.png'),
+    light_loss_zh: require('./images/device_status/pk-Light-cn.png'),
+    light_loss_en: require('./images/device_status/pk-Light-en.png'),
+    dark_gain_zh: require('./images/device_status/py-Dark-cn.png'),
+    dark_gain_en: require('./images/device_status/py-Dark-en.png'),
+    light_gain_zh: require('./images/device_status/py-Light-cn.png'),
+    light_gain_en: require('./images/device_status/py-Light-en.png'),
+    dark_checked_zh: require('./images/device_status/yp-Dark-cn.png'),
+    dark_checked_en: require('./images/device_status/yp-Dark-en.png'),
+    light_checked_zh: require('./images/device_status/yp-Light-cn.png'),
+    light_checked_en: require('./images/device_status/yp-Light-en.png'),
   }
 }
 
@@ -108,19 +108,19 @@ function getInventoryIcon(status) {
   switch (status) {
     case 2:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2().light_checked_en : DEVICE_STATUS_ICON2().dark_checked_en
-          :
-          theme === light ? DEVICE_STATUS_ICON2().light_checked_zh : DEVICE_STATUS_ICON2().dark_checked_zh
+        theme === light ? DEVICE_STATUS_ICON2().light_checked_en : DEVICE_STATUS_ICON2().dark_checked_en
+        :
+        theme === light ? DEVICE_STATUS_ICON2().light_checked_zh : DEVICE_STATUS_ICON2().dark_checked_zh
     case 3:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2().light_loss_en : DEVICE_STATUS_ICON2().dark_loss_en
-          :
-          theme === light ? DEVICE_STATUS_ICON2().light_loss_zh : DEVICE_STATUS_ICON2().dark_loss_zh
+        theme === light ? DEVICE_STATUS_ICON2().light_loss_en : DEVICE_STATUS_ICON2().dark_loss_en
+        :
+        theme === light ? DEVICE_STATUS_ICON2().light_loss_zh : DEVICE_STATUS_ICON2().dark_loss_zh
     case 4:
       return lang === 'en' ?
-          theme === light ? DEVICE_STATUS_ICON2().light_gain_en : DEVICE_STATUS_ICON2().dark_gain_en
-          :
-          theme === light ? DEVICE_STATUS_ICON2().light_gain_zh : DEVICE_STATUS_ICON2().dark_gain_zh
+        theme === light ? DEVICE_STATUS_ICON2().light_gain_en : DEVICE_STATUS_ICON2().dark_gain_en
+        :
+        theme === light ? DEVICE_STATUS_ICON2().light_gain_zh : DEVICE_STATUS_ICON2().dark_gain_zh
 
   }
 }
@@ -300,7 +300,7 @@ export default class TicketDetail extends Component {
       arrActions: [{
         title: localStr('lang_ticket_detail_edit_log'),
         click: () => {
-          this.props.navigation.push('PageWarpper',{
+          this.props.navigation.push('PageWarpper', {
             id: 'ticket_log_edit',
             component: TicketLogEdit,
             passProps: {
@@ -321,7 +321,7 @@ export default class TicketDetail extends Component {
           SndAlert.alert(
 
             localStr('lang_ticket_log_del_confirm'),
-              '',
+            '',
             [
               { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
               {
@@ -354,7 +354,7 @@ export default class TicketDetail extends Component {
       let imgs = log.pictures.map((img, imgIndex) => {
         return (
           <TouchableWithoutFeedback key={imgIndex} onPress={() => {
-            this.props.navigation.push('PageWarpper',{
+            this.props.navigation.push('PageWarpper', {
               id: 'ticket_log_edit',
               component: PhotoShowView,
               passProps: {
@@ -648,7 +648,7 @@ export default class TicketDetail extends Component {
   }
 
   _writeLog() {
-    this.props.navigation.push('PageWarpper',{
+    this.props.navigation.push('PageWarpper', {
       id: 'ticket_log_edit',
       component: TicketLogEdit,
       passProps: {
@@ -666,7 +666,7 @@ export default class TicketDetail extends Component {
   _doIgnore() {
     SndAlert.alert(
       localStr('lang_ticket_detail_ignore_confirm'),
-        '',
+      '',
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -785,7 +785,7 @@ export default class TicketDetail extends Component {
       this.showToast(localStr('lang_ticekt_detail_info_exception'));
       return;
     }
-    this.props.navigation.push('PageWarpper',{
+    this.props.navigation.push('PageWarpper', {
       id: 'device_add',
       component: DeviceAdd,
       passProps: {
@@ -802,7 +802,7 @@ export default class TicketDetail extends Component {
 
   //扫描盘点
   _scanInventory = () => {
-    this.props.navigation.push('PageWarpper',{
+    this.props.navigation.push('PageWarpper', {
       id: 'scan_device',
       component: Scan,
       passProps: {
@@ -837,7 +837,7 @@ export default class TicketDetail extends Component {
     }
     SndAlert.alert(
       localStr(localStr('lang_ticket_detail_delete_device_confirm')),
-        '',
+      '',
       [
         { text: localStr('lang_ticket_filter_cancel'), onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         {
@@ -902,7 +902,7 @@ export default class TicketDetail extends Component {
             arrActions: [{
               title: localStr('lang_ticket_detail_change_executors'),
               click: () => {
-                this.props.navigation.push('PageWarpper',{
+                this.props.navigation.push('PageWarpper', {
                   id: 'ticket_select_executors',
                   component: TicketSelectExecutors,
                   passProps: {
@@ -940,7 +940,7 @@ export default class TicketDetail extends Component {
             }, {
               title: localStr('lang_ticket_detail_change_time'),
               click: () => {
-                this.props.navigation.push('PageWarpper',{
+                this.props.navigation.push('PageWarpper', {
                   id: 'ticket_select_time',
                   component: TicketSelectTime,
                   passProps: {
@@ -1025,7 +1025,7 @@ export default class TicketDetail extends Component {
         this._loadTicketDetail();
       } else {
         //给出提示
-        SndAlert.alert(data.msg || localStr('lang_ticket_detail_set_status_error'),"",  [
+        SndAlert.alert(data.msg || localStr('lang_ticket_detail_set_status_error'), "", [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
         ]);
       }
@@ -1166,11 +1166,11 @@ export default class TicketDetail extends Component {
     let RejectUser = this.state.rejectData.userName
     let rejectTime = moment(this.state.rejectData.createTime).format('YYYY-MM-DD HH:mm:ss');
     return (
-      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, marginBottom: 0, flexDirection:'row'}}>
-        <Image source={require('./images/reject/Union.png')} style={{width: 14, height: 14, marginTop: 3}}/>
-        <View style={{marginLeft: 8}}>
+      <View style={{ backgroundColor: Colors.seWarningBg, padding: 16, marginBottom: 0, flexDirection: 'row' }}>
+        <Image source={require('./images/reject/Union.png')} style={{ width: 14, height: 14, marginTop: 3 }} />
+        <View style={{ marginLeft: 8 }}>
           <Text style={{ fontSize: 14, color: Colors.seTextTitle, }}>{localStr('lang_ticket_detail_reject_reason')}</Text>
-          <Text style={{ fontSize: 14, color: Colors.seTextTitle, marginTop: 6}}>{reason}</Text>
+          <Text style={{ fontSize: 14, color: Colors.seTextTitle, marginTop: 6 }}>{reason}</Text>
           <Text style={{ fontSize: 12, color: Colors.seTextSecondary, marginTop: 6 }}>{`${RejectUser}  ${rejectTime}`}</Text>
         </View>
 
@@ -1198,7 +1198,7 @@ export default class TicketDetail extends Component {
     if (device.extensionProperties?.assetPointCheckState === 4) {
       Cmp = DeviceAdd;
     }
-    this.props.navigation.push('PageWarpper',{
+    this.props.navigation.push('PageWarpper', {
       id: 'ticket_pd',
       component: Cmp,
       passProps: {
@@ -1278,7 +1278,7 @@ export default class TicketDetail extends Component {
             </View>
 
             <View style={{ marginLeft: 16, flex: 1 }}>
-              <Text style={{ color: Colors.seTextTitle, fontSize: 14, fontWeight:'bold' }}>{item.assetName}</Text>
+              <Text style={{ color: Colors.seTextTitle, fontSize: 14, fontWeight: 'bold' }}>{item.assetName}</Text>
               <Text style={{ color: Colors.seTextPrimary, fontSize: 12, marginTop: 8 }}>{`${localStr('lang_scan_result_label10')}：${item.code || item.extensionProperties?.assetCode || ''}`}</Text>
             </View>
             {
@@ -1447,7 +1447,7 @@ export default class TicketDetail extends Component {
     if (bottomButton) {
       if (Platform.OS === 'ios') {
         bottomButton = (
-          <View style={{ backgroundColor: Colors.background.white }}>
+          <View style={{ backgroundColor: Colors.seBgContainer }}>
             <View style={{ marginBottom: (isPhoneX() ? 32 : 16) }}>
               {bottomButton}
             </View>
@@ -1455,7 +1455,7 @@ export default class TicketDetail extends Component {
         );
       } else {
         bottomButton = (
-          <View style={{ paddingBottom: 16, backgroundColor: Colors.seBgContainer , height: 84}}>
+          <View style={{ paddingBottom: 16, backgroundColor: Colors.seBgContainer, height: 84 }}>
             {bottomButton}
           </View>
         );
@@ -1463,10 +1463,10 @@ export default class TicketDetail extends Component {
     }
 
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout}}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
         {this._getToolbar(this.state.rowData)}
         <ScrollView showsVerticalScrollIndicator={false} style={[styles.wrapper]}>
-          <ViewShot style={{ flex: 1, backgroundColor: Colors.seBgLayout}} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
+          <ViewShot style={{ flex: 1, backgroundColor: Colors.seBgLayout }} ref="viewShot" options={{ format: "jpg", quality: 0.9 }}>
             {/*{this._getAssetView()}*/}
             {this._renderRejection()}
             {this._renderInventoryTicketInfo()}

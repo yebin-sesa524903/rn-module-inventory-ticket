@@ -126,7 +126,7 @@ export default class Scan extends Component {
   componentDidMount() {
     // console.warn('scan load')
     // setTimeout(() => {
-    //   this._getScanData('{"DeviceId":471,"DeviceName":"device-jo3"}');
+    //   this._getScanData('{"DeviceId":470,"DeviceName":"device-jo3"}');
     // }, 1000);
 
     InteractionManager.runAfterInteractions(() => {
@@ -165,25 +165,36 @@ export default class Scan extends Component {
       let that = this;
       let navigation = this.props.navigation;
       if (navigation) {
-        let callback = (event) => {
-          console.log('event', event, this.props);
-          if (event.state.params && event.state.params.id && event.state.params.id === this.props.route.id) {
+        // let callback = (event) => {
+        //   console.log('event', event, this.props);
+        //   if (event.state.params && event.state.params.id && event.state.params.id === this.props.route.id) {
+        //     InteractionManager.runAfterInteractions(() => {
+        //       this._mounted(true, () => this.setState({ hidden: false }));
+        //     })
+        //   }
+        //   if (event.state.params && event.state.params.id && event.state.params.id !== this.props.route.id) {
+        //     //导航切换到其他页面，关闭
+        //     InteractionManager.runAfterInteractions(() => {
+        //       that.setState({
+        //         openCamera: false, flashMode: 'off', hidden: true,
+        //       })
+        //     })
+        //   }
+        // };
+        if (navigation && navigation.addListener) {
+          this._listener = navigation.addListener('willFocus', () => {
             InteractionManager.runAfterInteractions(() => {
               this._mounted(true, () => this.setState({ hidden: false }));
             })
-          }
-          if (event.state.params && event.state.params.id && event.state.params.id !== this.props.route.id) {
-            //导航切换到其他页面，关闭
+          });
+          this._listener2 = navigation.addListener('willBlur', (event) => {
             InteractionManager.runAfterInteractions(() => {
               that.setState({
                 openCamera: false, flashMode: 'off', hidden: true,
               })
             })
-          }
-        };
-        if (navigation && navigation.addListener)
-          this._listener = navigation.addListener('willFocus', callback);
-
+          });
+        }
       }
     });
   }
@@ -193,6 +204,7 @@ export default class Scan extends Component {
     this._lastTime = null;
     this._preData = null;
     this._listener && this._listener.remove();
+    this._listener2 && this._listener2.remove()
     this._clearZoom();
   }
 

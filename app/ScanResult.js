@@ -23,7 +23,7 @@ import {
 import { forEach } from 'lodash';
 // import { Toast } from '@ant-design/react-native';
 import Toast from 'react-native-root-toast';
-import Colors, {isDarkMode} from "../../../app/utils/const/Colors";
+import Colors, { isDarkMode } from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
 const StatusTags = [
   localStr('lang_scan_result_page_status_tag1'),
@@ -120,7 +120,7 @@ export default class extends Component {
         // });
       } else {
         //给出提示
-        SndAlert.alert( data.msg || localStr('lang_ticket_detail_set_status_error'), '', [
+        SndAlert.alert(data.msg || localStr('lang_ticket_detail_set_status_error'), '', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
         ]);
       }
@@ -131,10 +131,10 @@ export default class extends Component {
     let arrTags = [];
     this.state.tags.map(item => {
       if (item.sel === true) {
-        if (item.tag.indexOf('故障') !== -1 || item.tag.indexOf('Fault') !== -1){
+        if (item.tag.indexOf('故障') !== -1 || item.tag.indexOf('Fault') !== -1) {
           arrTags.push('Fault');
         }
-        if (item.tag.indexOf('待清理') !== -1 || item.tag.indexOf('Marked') !== -1){
+        if (item.tag.indexOf('待清理') !== -1 || item.tag.indexOf('Marked') !== -1) {
           arrTags.push('Marked');
         }
       }
@@ -258,7 +258,7 @@ export default class extends Component {
     let ret = {
       label: localStr('lang_scan_result_label7'),
       textColor: Colors.seBrandNomarl,
-      bgColor:  Colors.seBrandBg,
+      bgColor: Colors.seBrandBg,
       borderColor: Colors.seBrandBorder,
     };
     switch (deviceStatus) {
@@ -317,7 +317,7 @@ export default class extends Component {
     return (
       <TouchableOpacity disabled={true || this.state.statusType === 4} onPress={this._showStatusTagsDialog}>
         <View style={{
-          borderRadius: 4, paddingHorizontal: 6, marginLeft: 6,backgroundColor: bgColor,
+          borderRadius: 4, paddingHorizontal: 6, marginLeft: 6, backgroundColor: bgColor,
           borderWidth: 0.8, borderColor: borderColor, paddingVertical: 2, justifyContent: 'center', alignItems: 'center'
         }}>
           <Text style={{ color: textColor, fontSize: 12 }}>{tag}</Text>
@@ -369,7 +369,7 @@ export default class extends Component {
         />
         <View style={{
           flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 16,
-          borderTopWidth: 1, paddingTop: 10, backgroundColor: Colors.seBgContainer, borderRadius: 12, margin: 16, padding: 16, marginBottom: 0, borderColor: Colors.seTextInverse
+          borderTopWidth: 0, paddingTop: 10, backgroundColor: Colors.seBgContainer, borderRadius: 12, margin: 16, padding: 16, marginBottom: 0, borderColor: Colors.seTextInverse
         }}>
           <CacheImage imageKey={this.state.imgUrl} borderWidth={0} defaultImgPath={isDarkMode() ? require('./images/building_default/placeholder.png') : require('./images/building_default/building.png')} width={96} height={54} />
           <View style={{ marginLeft: 16, flex: 1 }}>
