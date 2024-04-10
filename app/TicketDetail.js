@@ -58,6 +58,7 @@ import {
   spId,
   apiSubmitPointCheckResult,
   apiUpdateDevicePointCheckStatus,
+  apiGetOssPath,
 } from "./middleware/bff";
 import ImagePicker from "./components/ImagePicker";
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
@@ -73,6 +74,7 @@ import DeviceAdd from "./DeviceAdd";
 import { Toast } from '@ant-design/react-native';
 import Colors, { AppearanceMode, isDarkMode } from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
+import { getImageUrlByKey } from '../../../app/containers/fmcs/plantOperation/utils/Utils';
 // import Share from "react-native-share";
 
 
@@ -1037,17 +1039,26 @@ export default class TicketDetail extends Component {
       if (data.code === CODE_OK) {
         data.data.forEach(device => {
           if (device.logo) {
-            let logo = JSON.parse(device.logo);
+            let logo = null;
+            try {
+              logo = JSON.parse(device.logo);
+            } catch (err) {
+              logo = device.logo;
+            }
+
             if (logo) {
               //如果是数组
               if (logo instanceof Array && logo.length > 0) {
                 device.logoUrl = logo[0].key;
               } else if (logo instanceof Object && logo.key) {
                 device.logoUrl = logo.key
+              } else {
+                device.logoUrl = logo;
               }
               if (device.logoUrl) {
                 if ('device.logoUrl'.indexOf('/hardcore/') !== 0) {
-                  device.logoUrl = '/hardcore/se-xsup-static/' + device.logoUrl
+                  device.logoUrl = getImageUrlByKey(device.logoUrl);
+                  // device.logoUrl = '/hardcore/se-xsup-static/' + device.logoUrl
                 }
                 device.logoUrl = getBaseUri() + device.logoUrl;
               }

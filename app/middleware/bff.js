@@ -4,7 +4,7 @@ import RNFetchBlobFile from "react-native-fetch-blob/class/RNFetchBlobFile";
 import privilegeHelper from "../utils/privilegeHelper";
 import { localStr } from "../utils/Localizations/localization";
 import { DeviceEventEmitter } from "react-native";
-import {getLanguage} from "../../../../app/utils/Localizations/localization";
+import { getLanguage } from "../../../../app/utils/Localizations/localization";
 let _BASEURL = '';
 
 export function getBaseUri() {
@@ -15,9 +15,9 @@ export function getCookie() {
   return setCookie;
 }
 
-function configLan(){
+function configLan() {
   let lan = getLanguage()
-  if(lan === 'en') {
+  if (lan === 'en') {
     return `en-US`
   }
   return `zh-CN`
@@ -30,7 +30,7 @@ let defaultFetch = async function (options) {
     "Content-Type": "application/json",
     'Accept': 'application/json',
     'Cache-Control': 'no-store',
-    'Accept-Language':configLan(),
+    'Accept-Language': configLan(),
   };
   //headers[tokenKey] = token;
   //headers['Cookie'] = token;
@@ -129,7 +129,7 @@ let defaultFetch = async function (options) {
       //   console.log('data',data)
       //   return data//reader.result;
       // }
-      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:' + data + '\n\n' + JSON.stringify(data) + '\n\n',data);
+      console.log('\n请求参数:' + body + '\n请求地址:' + url + '\n请求结果:', data, + '\n\n', data);
 
       return data;
     }).catch(err => {
@@ -237,7 +237,7 @@ export async function apiQueryTicketList(filter) {
   })
 }
 
-export function updateInventoryCustomerId(id){
+export function updateInventoryCustomerId(id) {
   customerId = id;
 }
 
@@ -552,7 +552,7 @@ export async function apiHierarchyList(data) {
  * @param data
  * @returns {Promise<unknown>}
  */
-export async function apiAppTicketList(data){
+export async function apiAppTicketList(data) {
   return await defaultFetch({
     url: '/bff/eh/rest/ticket/appTicketList',
     verb: 'post',

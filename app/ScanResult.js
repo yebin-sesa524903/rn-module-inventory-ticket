@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import {
   View, Text,
-  StyleSheet, Image, TouchableOpacity, Platform, TextInput, InteractionManager, Alert,
+  StyleSheet, Image, TouchableOpacity, Platform, TextInput, InteractionManager, Alert, ScrollView,
 } from 'react-native';
 
 import Toolbar from "./components/Toolbar";
@@ -102,7 +102,7 @@ export default class extends Component {
    * @param checkStatus 0 已盘 1 盘亏
    * @private
    */
-  _checkDeviceStatus = (device, checkStatus) => {
+  _checkDeviceStatus = async (device, checkStatus) => {
     //这里转换提交参数格式
     let data = {
       "customerId": customerId,
@@ -112,22 +112,19 @@ export default class extends Component {
       "hierarchyId": device.locationId,
       "pointCheckStatus": checkStatus,  ///pointCheckStatus 已盘 :0  盘亏/未盘:1
     }
-    apiCheckDeviceStatus(data).then(data => {
-      if (data.code === '0') {
-        // Toast.show(localStr('lang_scan_result_submit_error_tip'), {
-        //   duration: 1000,
-        //   position: -80,
-        // });
-      } else {
-        //给出提示
-        SndAlert.alert(data.msg || localStr('lang_ticket_detail_set_status_error'), '', [
-          { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
-        ]);
-      }
-    })
+    let ret = await apiCheckDeviceStatus(data)
+    if (ret.code === '0') {
+      return true;
+    } else {
+      //给出提示
+      SndAlert.alert(ret.msg || ret.message || localStr('lang_ticket_detail_set_status_error'), '', [
+        { text: localStr('lang_ticket_filter_ok'), onPress: () => { } }
+      ]);
+    }
+    return false;
   }
 
-  _submitResult = () => {
+  _submitResult = async () => {
     let arrTags = [];
     this.state.tags.map(item => {
       if (item.sel === true) {
@@ -140,8 +137,8 @@ export default class extends Component {
       }
     })
     ///修改设备状态
-    this._checkDeviceStatus(this.props.device, this.state.inventoryType === 2 ? 1 : 0);
-
+    let ret = await this._checkDeviceStatus(this.props.device, this.state.inventoryType === 2 ? 1 : 0);
+    if (!ret) return;
     //这里转换提交参数格式
     let data = {
       "id": this.props.tid,
@@ -355,7 +352,7 @@ export default class extends Component {
       assetCode = this.props.device.extensionProperties.assetCode;
     }
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
+      <ScrollView scrollEnabled={false} style={{ flex: 1, backgroundColor: Colors.seBgLayout }} contentContainerStyle={{ flex: 1 }}>
         <Toolbar
           title={localStr('lang_scan_result_label8')}
           navIcon="back"
@@ -392,7 +389,7 @@ export default class extends Component {
         </View>
 
         {this._renderActionSheet()}
-      </View>
+      </ScrollView>
     )
   }
 
