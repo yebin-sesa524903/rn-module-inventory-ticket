@@ -36,7 +36,7 @@ import ImagePicker from './components/ImagePicker';
 import RNFS, { DocumentDirectoryPath } from 'react-native-fs';
 import Loading from './components/Loading';
 import CacheImage from "./CacheImage";
-import {getInterfaceLanguage, getLanguage, localStr} from "./utils/Localizations/localization";
+import { getInterfaceLanguage, getLanguage, localStr } from "./utils/Localizations/localization";
 import Colors from "../../../app/utils/const/Colors";
 import SndAlert from "../../../app/utils/components/SndAlert";
 const DataGroup = () => [
@@ -104,6 +104,9 @@ export default class extends Component {
     basicData.deviceClass = initData.paramsDetail.Class;
     basicData.deviceType = initData.paramsDetail.Type;
     basicData.deviceModel = initData.paramsDetail.Specification;
+    if (!basicData.deviceModel) {
+      this.state.groupData[1].items[2].hide = true;
+    }
     //还有logo
     let findLogo = initData?.fieldGroupEntityList[0]?.fieldValueEntityList?.find(f => f.code === 'logo');
     if (findLogo) {
@@ -128,15 +131,24 @@ export default class extends Component {
   }
 
   _setParamMenu() {
-    let values = this.tplData
-      .find((item) => item.Class === this.state.data[DeviceTplKey[0]])
-      .Children.find((item) => item.Type === this.state.data[DeviceTplKey[1]])
-      .Children.find((item) => item.Specification === this.state.data[DeviceTplKey[2]]).Values;
     let options = this.state.groupData[1].options;
-    options.forEach(op => {
-      let find = values.find(v => op.name === v.ValueName);
-      if (find) op.data = find.ValueText;
-    });
+    if (options && options.length > 0) {
+      let values = this.tplData
+        .find((item) => item.Class === this.state.data[DeviceTplKey[0]])
+        .Children.find((item) => item.Type === this.state.data[DeviceTplKey[1]])
+        .Children;//.find((item) => item.Specification === this.state.data[DeviceTplKey[2]]).Values;
+      if (this.state.data[DeviceTplKey[2]]) {
+        values = values.find((item) => item.Specification === this.state.data[DeviceTplKey[2]]).Values;
+      } else {
+        values = values[0].Values;
+      }
+
+      options.forEach(op => {
+        let find = values.find(v => op.name === v.ValueName);
+        if (find) op.data = find.ValueText;
+      });
+    }
+
     this.setState({});
   }
 
@@ -148,7 +160,7 @@ export default class extends Component {
         //这里给赋值
         if (this.props.device) this._setParamMenu(this.tplData)
       } else {
-        SndAlert.alert( data.Msg || localStr('lang_add_device_api_tpl_error'), '', [
+        SndAlert.alert(data.Msg || localStr('lang_add_device_api_tpl_error'), '', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
@@ -158,10 +170,10 @@ export default class extends Component {
       if (isCodeOk(data.Code)) {
         this.tplH = data.Data.datas.find(item => item.name === '设备');
         ///获取id
-        apiGetNodeTemplateDetail(this.tplH.id).then(data=>{
+        apiGetNodeTemplateDetail(this.tplH.id).then(data => {
           if (isCodeOk(data.Code)) {
-            if (data.Data && data.Data.groups){
-              if (data.Data.groups.length > 0){
+            if (data.Data && data.Data.groups) {
+              if (data.Data.groups.length > 0) {
                 let fields = data.Data.groups[0].fields;
                 this.setState({
                   fieldTemplate: fields
@@ -172,7 +184,7 @@ export default class extends Component {
         });
 
       } else {
-        SndAlert.alert( data.Msg || localStr('lang_add_device_api2_tpl_error'),'', [
+        SndAlert.alert(data.Msg || localStr('lang_add_device_api2_tpl_error'), '', [
           { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
         ]);
       }
@@ -206,13 +218,15 @@ export default class extends Component {
           borderTopWidth: 1,
           borderTopColor: Colors.seBorderSplit,
         }}>
-        <Text style={{ color: Colors.seTextPrimary, fontSize: 15 }}>{row.name}</Text>
-        {!row.option ? null : (
-          <Text style={{ color: Colors.seTextDisabled, fontSize: 15, marginLeft: 6 }}>
-            {localStr('lang_add_device_options')}
-          </Text>
-        )}
-        <View style={{ flex: 1 }} />
+        <Text numberOfLines={1} style={{ flex: 1 }}>
+          <Text style={{ color: Colors.seTextPrimary, fontSize: 15 }}>{row.name}</Text>
+          {!row.option ? null : (
+            <Text style={{ color: Colors.seTextDisabled, fontSize: 15, marginLeft: 6, }}>
+              {localStr('lang_add_device_options')}
+            </Text>
+          )}
+        </Text>
+        <View style={{ width: 6 }} />
         <TextInput
           numberOfLines={1}
           style={{
@@ -258,9 +272,10 @@ export default class extends Component {
           data = this.tplData
             .find((item) => item.Class === this.state.data[DeviceTplKey[0]])
             .Children.map((item) => item.Type);
-          callback = () => {
+          callback = (notUpdate) => {
             this.state.data[DeviceTplKey[2]] = '';
-            this.state.groupData[1].options = [];
+            if (!notUpdate)
+              this.state.groupData[1].options = [];
           };
           break;
         case DeviceTplKey[2]:
@@ -301,7 +316,7 @@ export default class extends Component {
       data = row.data;
     }
 
-    this.props.navigation.push('PageWarpper',{
+    this.props.navigation.push('PageWarpper', {
       id: 'device_add',
       component: SingleSelect,
       passProps: {
@@ -310,12 +325,53 @@ export default class extends Component {
         multi: row.multi,
         value: row.Value,
         onSelect: (text) => {
+          let p = text;
           if (row.isOptions) {
             row.Value = text;
           } else {
             this.state.data[row.key] = text;
+            this.state.groupData[1].items[2].hide = false;
+            if (row.key === DeviceTplKey[1]) {
+              this._setCheckModel(true)
+              p = null;
+              let sps = this.tplData
+                .find((item) => item.Class === this.state.data[DeviceTplKey[0]])
+                .Children.find(
+                  (item) => item.Type === this.state.data[DeviceTplKey[1]]
+                )
+                .Children;
+              if (!sps || sps.length === 0) {
+                this.state.groupData[1].items[2].hide = true;
+                p = true;
+                this._setCheckModel(false)
+              } else if (sps.length === 1 && sps[0].Specification === '') {
+                p = true;
+                this._setCheckModel(false)
+                this.state.groupData[1].items[2].hide = true;
+                let values = sps[0].Values;
+                if (values && values.length > 0) {
+                  this.state.groupData[1].options = values.map((v) => {
+                    return {
+                      isOptions: true,
+                      key: v.ValueName,
+                      name: v.ValueName,
+                      option: true,
+                      inputType: v.InputType,
+                      date: v.ValueName.includes('日期'), //,
+                      select: v.InputType !== 0,
+                      multi: v.InputType === 1,
+                      data: v.ValueText,
+                    };
+                  });
+                }
+              }
+
+            } else {
+              this._setCheckModel(true)
+            }
+
           }
-          if (callback) callback(text);
+          if (callback) callback(p);
           this.setState({});
         },
         onBack: this._doBack,
@@ -324,8 +380,13 @@ export default class extends Component {
     });
   }
 
+  _setCheckModel = (check) => {
+    this._checkModel = check;
+  }
+
   //选择行
   _renderSelectRow(row) {
+    if (row.key === DeviceTplKey[2] && row.hide) return null;
     let value = '';
     let color = Colors.seTextDisabled;
     if (row.isOptions) {
@@ -357,19 +418,21 @@ export default class extends Component {
         }}
         onPress={() => this._clickSelect(row)}
       >
-        <Text style={{ color: Colors.seTextPrimary, fontSize: 15 }}>{row.name}</Text>
-        {!row.option ? null : (
-          <Text style={{ color: Colors.seTextDisabled, fontSize: 15, marginLeft: 6 }}>
-            {localStr('lang_add_device_options')}
-          </Text>
-        )}
+        <Text style={{ flex: 1, }} numberOfLines={1}>
+          <Text style={{ color: Colors.seTextPrimary, fontSize: 15 }}>{row.name}</Text>
+          {!row.option ? null : (
+            <Text style={{ color: Colors.seTextDisabled, fontSize: 15, marginLeft: 6 }}>
+              {localStr('lang_add_device_options')}
+            </Text>
+          )}
+        </Text>
         {/*<View style={{flex:1}}/>*/}
-        <Text
+        <Text numberOfLines={1}
           style={{
             color,
             fontSize: 15,
             marginHorizontal: 6,
-            flex: 1,
+            marginLeft: 6,
             textAlign: 'right',
           }}
         >
@@ -426,7 +489,7 @@ export default class extends Component {
   }
 
   _openImagePicker = () => {
-    this.props.navigation.push('PageWarpper',{
+    this.props.navigation.push('PageWarpper', {
       id: 'imagePicker',
       component: ImagePicker,
       passProps: {
@@ -589,10 +652,10 @@ export default class extends Component {
    * @returns {undefined}
    * @private
    */
-  _findFieldTemplateId(code){
+  _findFieldTemplateId(code) {
     let id = undefined;
-    this.state.fieldTemplate.forEach((item)=>{
-      if (item.code === code){
+    this.state.fieldTemplate.forEach((item) => {
+      if (item.code === code) {
         id = item.id;
       }
     });
@@ -602,11 +665,12 @@ export default class extends Component {
   _doSubmit = () => {
     //资产名称、编号、总称、类型、型号都不能为空
     let find = Object.keys(this.state.data).find((key) => {
+      if (!this._checkModel && key === DeviceTplKey[2]) return false;
       let value = this.state.data[key];
       if (!value) return true;
     });
     if (find || !this.state.logo) {
-      SndAlert.alert( localStr('lang_add_device_submit_valid'), '', [
+      SndAlert.alert(localStr('lang_add_device_submit_valid'), '', [
         { text: localStr('lang_ticket_filter_ok'), onPress: () => { } },
       ]);
       return;
@@ -666,7 +730,7 @@ export default class extends Component {
       paramsDetail: {
         Class: this.state.data[DeviceTplKey[0]],
         Type: this.state.data[DeviceTplKey[1]],
-        Specification: this.state.data[DeviceTplKey[2]],
+        Specification: this.state.data[DeviceTplKey[2]] || undefined,
         LedgerParameters: this.state.groupData[1].options.map((p) => {
           let value = [];
           if (p.Value) {
@@ -730,7 +794,7 @@ export default class extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout}}>
+      <View style={{ flex: 1, backgroundColor: Colors.seBgLayout }}>
         <Toolbar
           title={localStr('lang_add_device_title')}
           navIcon="back"
